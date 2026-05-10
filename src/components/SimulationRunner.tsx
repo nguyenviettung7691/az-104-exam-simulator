@@ -482,7 +482,7 @@ export const SimulationRunner = ({
                     }}
                   />
                 </div>
-                <span style={{ fontFamily: "var(--mono)", fontSize: "0.82rem", whiteSpace: "nowrap" }}>
+                <span className="run-progress-count">
                   {Object.keys(session.evaluations).length}/{session.run.questions.length}
                 </span>
               </div>
@@ -531,33 +531,35 @@ export const SimulationRunner = ({
           {!paused && mode === "single" && currentSingleQuestion && displayedSingleQuestion ? (
             <article className="single-question">
               <div className="question-navigator" aria-label="Question navigation">
-                {session.run.questions.map((q, idx) => {
-                  const ev = session.evaluations[q.id];
-                  const isCurrent = idx === session.currentIndex;
-                  const dotClass = isCurrent
-                    ? "dot-current"
-                    : ev
-                      ? ev.isCorrect
-                        ? "dot-correct"
-                        : ev.userAnswer.type === "skipped"
-                          ? "dot-skipped"
-                          : "dot-incorrect"
-                      : "dot-unanswered";
-                  return (
-                    <button
-                      key={q.id}
-                      type="button"
-                      className={`q-dot ${dotClass}`}
-                      title={`Question ${idx + 1}`}
-                      onClick={() => {
-                        setSession((s) => s ? { ...s, currentIndex: idx } : s);
-                        setSingleRevealId(session.evaluations[q.id] ? q.id : null);
-                      }}
-                    >
-                      {idx + 1}
-                    </button>
-                  );
-                })}
+                <div className="q-dot-track">
+                  {session.run.questions.map((q, idx) => {
+                    const ev = session.evaluations[q.id];
+                    const isCurrent = idx === session.currentIndex;
+                    const dotClass = isCurrent
+                      ? "dot-current"
+                      : ev
+                        ? ev.isCorrect
+                          ? "dot-correct"
+                          : ev.userAnswer.type === "skipped"
+                            ? "dot-skipped"
+                            : "dot-incorrect"
+                        : "dot-unanswered";
+                    return (
+                      <button
+                        key={q.id}
+                        type="button"
+                        className={`q-dot ${dotClass}`}
+                        title={`Question ${idx + 1}`}
+                        onClick={() => {
+                          setSession((s) => s ? { ...s, currentIndex: idx } : s);
+                          setSingleRevealId(session.evaluations[q.id] ? q.id : null);
+                        }}
+                      >
+                        {idx + 1}
+                      </button>
+                    );
+                  })}
+                </div>
                 <div className="q-nav-legend">
                   <span><span className="q-nav-legend-dot" style={{ background: "var(--azure)" }} />Current</span>
                   <span><span className="q-nav-legend-dot" style={{ background: "var(--teal)" }} />Correct</span>

@@ -80,15 +80,15 @@ export const ResultsReport = ({ report, onNewRun }: ResultsReportProps) => {
           <ScoreRing score={report.scaledScore} passed={report.passed} />
           <div>
             <div className="result-banner-verdict">{report.passed ? "PASS" : "FAIL"}</div>
-            <div style={{ fontFamily: "var(--mono)", fontSize: "0.76rem", marginTop: "0.2rem", opacity: 0.7 }}>
+            <div className="result-threshold-line">
               Threshold: {PASS_SCALED_SCORE} / 1000
             </div>
           </div>
         </div>
         <div className="result-banner-meta">
           <div className="result-banner-score">{report.scaledScore}</div>
-          <div style={{ opacity: 0.7, fontSize: "0.8rem" }}>scaled score (estimated)</div>
-          <div style={{ marginTop: "0.25rem" }}>
+          <div className="result-meta-note">scaled score (estimated)</div>
+          <div className="result-meta-summary">
             {report.rawCorrect} / {report.totalQuestions} correct · {pct}%
           </div>
         </div>
@@ -202,36 +202,38 @@ export const ResultsReport = ({ report, onNewRun }: ResultsReportProps) => {
       {/* Question type breakdown */}
       <div className="results-section-card">
         <h3>Question Type Performance</h3>
-        <table className="qtype-table">
-          <thead>
-            <tr>
-              <th>Type</th>
-              <th>Score</th>
-              <th style={{ width: "55%" }}>Accuracy</th>
-            </tr>
-          </thead>
-          <tbody>
-            {report.questionTypeBreakdown.map((line) => {
-              const typePct = line.total > 0 ? Math.round((line.correct / line.total) * 100) : 0;
-              return (
-                <tr key={line.type}>
-                  <td>
-                    <span className="qtype-label">{typeLabels[line.type] ?? line.type}</span>
-                  </td>
-                  <td className="qtype-score">{line.correct}/{line.total}</td>
-                  <td>
-                    <div className="qtype-bar-wrap">
-                      <div className="qtype-bar-track">
-                        <div className="qtype-bar-fill" style={{ width: `${typePct}%` }} />
+        <div className="table-scroll">
+          <table className="qtype-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Score</th>
+                <th className="qtype-col-accuracy">Accuracy</th>
+              </tr>
+            </thead>
+            <tbody>
+              {report.questionTypeBreakdown.map((line) => {
+                const typePct = line.total > 0 ? Math.round((line.correct / line.total) * 100) : 0;
+                return (
+                  <tr key={line.type}>
+                    <td>
+                      <span className="qtype-label">{typeLabels[line.type] ?? line.type}</span>
+                    </td>
+                    <td className="qtype-score">{line.correct}/{line.total}</td>
+                    <td>
+                      <div className="qtype-bar-wrap">
+                        <div className="qtype-bar-track">
+                          <div className="qtype-bar-fill" style={{ width: `${typePct}%` }} />
+                        </div>
+                        <span className="qtype-bar-label">{typePct}%</span>
                       </div>
-                      <span className="qtype-bar-label">{typePct}%</span>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Action bar */}

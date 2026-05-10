@@ -29,7 +29,7 @@ export const AnswerReveal = ({ evaluation }: AnswerRevealProps) => {
         </details>
       ) : null}
 
-      <p className="reveal-line" style={{ marginTop: "0.4rem" }}>
+      <p className="reveal-line reveal-reference-line">
         <strong>Reference:</strong> {evaluation.referenceTopic}
       </p>
     </section>

@@ -171,7 +171,7 @@ export const QuestionBankAdmin = ({
           <div className="import-section-body">
             {/* File drop zone */}
             <div>
-              <p style={{ fontWeight: 600, marginBottom: "0.5rem", fontSize: "0.88rem" }}>
+              <p className="import-label">
                 From file
               </p>
               <label
@@ -191,13 +191,13 @@ export const QuestionBankAdmin = ({
                 type="file"
                 accept="application/json"
                 onChange={loadFile}
-                style={{ display: "none" }}
+                className="bank-file-input-hidden"
               />
             </div>
 
             {/* Paste JSON */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              <p style={{ fontWeight: 600, marginBottom: 0, fontSize: "0.88rem" }}>
+            <div className="import-json-panel">
+              <p className="import-json-label">
                 Or paste JSON
               </p>
               <textarea
@@ -206,7 +206,7 @@ export const QuestionBankAdmin = ({
                 onChange={(e) => setImportText(e.target.value)}
                 rows={8}
                 placeholder='{"version":"2026.04.17","questions":[],"caseStudies":[]}'
-                style={{ resize: "vertical" }}
+                className="import-textarea"
               />
               <button
                 type="button"
@@ -223,7 +223,7 @@ export const QuestionBankAdmin = ({
 
       {/* ── Feedback / validation */}
       {feedback ? (
-        <p className="inline-feedback" style={{ marginBottom: "0.8rem" }}>
+        <p className="inline-feedback import-feedback-line">
           {feedback}
         </p>
       ) : null}
@@ -413,7 +413,7 @@ export const QuestionBankAdmin = ({
             </p>
 
             {filteredQuestions.length === 0 ? (
-              <div className="empty-state" style={{ padding: "1.5rem 1rem" }}>
+              <div className="empty-state empty-state-tight">
                 <div className="empty-state-icon">🔍</div>
                 <h3>No questions match</h3>
                 <p>Try adjusting the search or filter selections above.</p>
