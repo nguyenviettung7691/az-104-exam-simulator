@@ -35,15 +35,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        shell: bash
-        run: |
-          REPO_NAME="${GITHUB_REPOSITORY#*/}"
-          if [[ "$REPO_NAME" == *.github.io ]]; then
-            BASE="/"
-          else
-            BASE="/$REPO_NAME/"
-          fi
-          npm run build -- --base="$BASE"
+        run: npm run build -- --base=/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
