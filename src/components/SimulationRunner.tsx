@@ -1,0 +1,694 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  DOMAIN_DEFINITIONS,
+  type GeneratedRun,
+  type PresentationMode,
+  type Question,
+  type QuestionBank,
+  type UserAnswer,
+} from "../types/exam";
+import type { QuestionEvaluation, SimulationRunReport } from "../types/results";
+import { EXAM_DURATION_MINUTES } from "../config/examBlueprint";
+import { buildHintText, evaluateQuestion } from "../services/evaluationService";
+import { generateExamRun } from "../services/examGenerator";
+import { withShuffledOptions } from "../services/optionShuffleService";
+import { buildSimulationRunReport } from "../services/scoringService";
+import { AnswerReveal } from "./AnswerReveal";
+import { CaseStudyPanel } from "./CaseStudyPanel";
+import { QuestionRenderer } from "./QuestionRenderer";
+import { ResultsReport } from "./ResultsReport";
+
+interface SimulationRunnerProps {
+  bank: QuestionBank;
+  previousRuns: SimulationRunReport[];
+  preferredMode: PresentationMode | null;
+  onModeChange: (mode: PresentationMode) => void;
+  onReportReady: (report: SimulationRunReport) => void;
+}
+
+interface ActiveSession {
+  run: GeneratedRun;
+  startedAt: string;
+  currentIndex: number;
+  batchStart: number;
+  answers: Record<string, UserAnswer>;
+  evaluations: Record<string, QuestionEvaluation>;
+  hintsShown: Record<string, string>;
+}
+
+const typeLabel = (type: Question["type"]): string => {
+  switch (type) {
+    case "multiple-choice":
+      return "Multiple Choice";
+    case "multi-select":
+      return "Multiple Response";
+    case "yes-no":
+      return "Yes/No";
+    case "case-study":
+      return "Case Study";
+    case "drag-drop":
+      return "Drag-and-Drop";
+    case "hot-area":
+      return "Hot Area";
+    default:
+      return type;
+  }
+};
+
+const toDifficultyLabel = (difficulty: Question["difficulty"]): string => {
+  return difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+};
+
+const createEmptySession = (run: GeneratedRun): ActiveSession => {
+  return {
+    run,
+    startedAt: new Date().toISOString(),
+    currentIndex: 0,
+    batchStart: 0,
+    answers: {},
+    evaluations: {},
+    hintsShown: {},
+  };
+};
+
+const EXAM_DURATION_SECONDS = EXAM_DURATION_MINUTES * 60;
+
+const formatTime = (totalSeconds: number): string => {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const mm = String(minutes).padStart(2, "0");
+  const ss = String(seconds).padStart(2, "0");
+  return hours > 0 ? `${hours}:${mm}:${ss}` : `${mm}:${ss}`;
+};
+
+const getCaseQuestionIndex = (run: GeneratedRun, questionId: string): number => {
+  const index = run.selectedCaseStudy.questionIds.findIndex((id) => id === questionId);
+  return index + 1;
+};
+
+const getPausedSummary = (
+  questions: Question[],
+  evaluations: Record<string, QuestionEvaluation>,
+): string => {
+  const answered = Object.keys(evaluations).length;
+  const byDomain = new Map<string, { done: number; total: number }>();
+
+  for (const question of questions) {
+    const current = byDomain.get(question.domain) ?? { done: 0, total: 0 };
+    current.total += 1;
+
+    if (evaluations[question.id]) {
+      current.done += 1;
+    }
+
+    byDomain.set(question.domain, current);
+  }
+
+  const domainSummary = [...byDomain.entries()]
+    .map(([domain, value]) => `${domain}: ${value.done}/${value.total}`)
+    .join(" · ");
+
+  return `Answered ${answered}/53 · ${domainSummary}`;
+};
+
+export const SimulationRunner = ({
+  bank,
+  previousRuns,
+  preferredMode,
+  onModeChange,
+  onReportReady,
+}: SimulationRunnerProps) => {
+  const [mode, setMode] = useState<PresentationMode | null>(preferredMode);
+  const [session, setSession] = useState<ActiveSession | null>(null);
+  const [error, setError] = useState<string>("");
+  const [warnings, setWarnings] = useState<string[]>([]);
+  const [paused, setPaused] = useState<boolean>(false);
+  const [pausedSummary, setPausedSummary] = useState<string>("");
+  const [singleRevealId, setSingleRevealId] = useState<string | null>(null);
+  const [batchRevealIds, setBatchRevealIds] = useState<string[]>([]);
+  const [latestReport, setLatestReport] = useState<SimulationRunReport | null>(null);
+  const [timeLeft, setTimeLeft] = useState<number>(EXAM_DURATION_SECONDS);
+  const timeLeftRef = useRef<number>(EXAM_DURATION_SECONDS);
+
+  const startRun = (): void => {
+    if (!mode) {
+      setError("Choose how you want questions presented before starting a run.");
+      return;
+    }
+
+    const generated = generateExamRun({
+      bank,
+      previousRuns,
+    });
+
+    if (!generated.run) {
+      setError(generated.error ?? "Unable to generate exam run.");
+      setWarnings(generated.warnings);
+      return;
+    }
+
+    setError("");
+    setWarnings(generated.warnings);
+    setPaused(false);
+    setPausedSummary("");
+    setSingleRevealId(null);
+    setBatchRevealIds([]);
+    setLatestReport(null);
+    setTimeLeft(EXAM_DURATION_SECONDS);
+    timeLeftRef.current = EXAM_DURATION_SECONDS;
+    setSession(createEmptySession(generated.run));
+  };
+
+  const finalizeIfComplete = useCallback((nextSession: ActiveSession): ActiveSession => {
+    if (Object.keys(nextSession.evaluations).length < nextSession.run.questions.length) {
+      return nextSession;
+    }
+
+    const evaluations = nextSession.run.questions
+      .map((question) => nextSession.evaluations[question.id])
+      .filter((value): value is QuestionEvaluation => Boolean(value));
+
+    const report = buildSimulationRunReport({
+      runNumber: nextSession.run.runNumber,
+      startedAt: nextSession.startedAt,
+      completedAt: new Date().toISOString(),
+      durationSeconds: Math.max(
+        1,
+        Math.round((Date.now() - new Date(nextSession.startedAt).getTime()) / 1000),
+      ),
+      questions: nextSession.run.questions,
+      evaluations,
+    });
+
+    setLatestReport(report);
+    onReportReady(report);
+    return nextSession;
+  }, [onReportReady]);
+
+  // Tick + time-up: use a ref to avoid stale closure; setSession called inside
+  // the interval callback (async), not synchronously in the effect body.
+  useEffect(() => {
+    if (!session || paused || latestReport) {
+      return;
+    }
+
+    const id = setInterval(() => {
+      const next = Math.max(0, timeLeftRef.current - 1);
+      timeLeftRef.current = next;
+      setTimeLeft(next);
+
+      if (next === 0) {
+        clearInterval(id);
+        setSession((current) => {
+          if (!current) return current;
+          const nextAnswers = { ...current.answers };
+          const nextEvaluations = { ...current.evaluations };
+          for (const question of current.run.questions) {
+            if (!nextEvaluations[question.id]) {
+              nextAnswers[question.id] = { type: "skipped" as const };
+              nextEvaluations[question.id] = evaluateQuestion(question, { type: "skipped" });
+            }
+          }
+          return finalizeIfComplete({ ...current, answers: nextAnswers, evaluations: nextEvaluations });
+        });
+      }
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [session, paused, latestReport, finalizeIfComplete]);
+
+  const updateAnswer = (questionId: string, answer: UserAnswer): void => {
+    setSession((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return {
+        ...current,
+        answers: {
+          ...current.answers,
+          [questionId]: answer,
+        },
+      };
+    });
+  };
+
+  const setHint = (question: Question): void => {
+    setSession((current) => {
+      if (!current || current.hintsShown[question.id]) {
+        return current;
+      }
+
+      return {
+        ...current,
+        hintsShown: {
+          ...current.hintsShown,
+          [question.id]: buildHintText(question),
+        },
+      };
+    });
+  };
+
+  const submitSingle = (): void => {
+    setSession((current) => {
+      if (!current) {
+        return current;
+      }
+
+      const question = current.run.questions[current.currentIndex];
+      const answer = current.answers[question.id];
+      const evaluation = evaluateQuestion(question, answer);
+      const next = {
+        ...current,
+        evaluations: {
+          ...current.evaluations,
+          [question.id]: evaluation,
+        },
+      };
+
+      setSingleRevealId(question.id);
+      return finalizeIfComplete(next);
+    });
+  };
+
+  const skipSingle = (): void => {
+    setSession((current) => {
+      if (!current) {
+        return current;
+      }
+
+      const question = current.run.questions[current.currentIndex];
+      const evaluation = evaluateQuestion(question, { type: "skipped" });
+      const isLast = current.currentIndex >= current.run.questions.length - 1;
+      const next = {
+        ...current,
+        answers: {
+          ...current.answers,
+          [question.id]: { type: "skipped" as const },
+        },
+        evaluations: {
+          ...current.evaluations,
+          [question.id]: evaluation,
+        },
+        currentIndex: isLast ? current.currentIndex : current.currentIndex + 1,
+      };
+
+      setSingleRevealId(null);
+      return finalizeIfComplete(next);
+    });
+  };
+
+  const nextSingle = (): void => {
+    setSession((current) => {
+      if (!current) {
+        return current;
+      }
+
+      const nextIndex = Math.min(current.currentIndex + 1, current.run.questions.length - 1);
+      return {
+        ...current,
+        currentIndex: nextIndex,
+      };
+    });
+
+    setSingleRevealId(null);
+  };
+
+  const submitBatch = (): void => {
+    setSession((current) => {
+      if (!current) {
+        return current;
+      }
+
+      const currentBatch = current.run.questions.slice(current.batchStart, current.batchStart + 10);
+      const batchEvaluationIds: string[] = [];
+      const nextEvaluations = { ...current.evaluations };
+      const nextAnswers = { ...current.answers };
+
+      for (const question of currentBatch) {
+        const answer = nextAnswers[question.id] ?? { type: "skipped" as const };
+        const evaluation = evaluateQuestion(question, answer);
+        nextAnswers[question.id] = answer;
+        nextEvaluations[question.id] = evaluation;
+        batchEvaluationIds.push(question.id);
+      }
+
+      setBatchRevealIds(batchEvaluationIds);
+
+      const next = {
+        ...current,
+        answers: nextAnswers,
+        evaluations: nextEvaluations,
+      };
+
+      return finalizeIfComplete(next);
+    });
+  };
+
+  const nextBatch = (): void => {
+    setSession((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return {
+        ...current,
+        batchStart: Math.min(current.batchStart + 10, current.run.questions.length - 1),
+      };
+    });
+
+    setBatchRevealIds([]);
+  };
+
+  const pauseRun = (): void => {
+    if (!session) {
+      return;
+    }
+
+    setPaused(true);
+    setPausedSummary(getPausedSummary(session.run.questions, session.evaluations));
+  };
+
+  const resumeRun = (): void => {
+    setPaused(false);
+    setPausedSummary("");
+  };
+
+  const onModeSelected = (nextMode: PresentationMode): void => {
+    setMode(nextMode);
+    onModeChange(nextMode);
+  };
+
+  const currentSingleQuestion = useMemo(() => {
+    if (!session) {
+      return null;
+    }
+
+    return session.run.questions[session.currentIndex] ?? null;
+  }, [session]);
+
+  const displayedSingleQuestion = useMemo(() => {
+    if (!session || !currentSingleQuestion) {
+      return null;
+    }
+
+    return withShuffledOptions(
+      currentSingleQuestion,
+      `${session.run.runNumber}|${currentSingleQuestion.id}`,
+    );
+  }, [session, currentSingleQuestion]);
+
+  const currentBatch = useMemo(() => {
+    if (!session || mode !== "batch") {
+      return [];
+    }
+
+    return session.run.questions.slice(session.batchStart, session.batchStart + 10);
+  }, [session, mode]);
+
+  const displayedBatch = useMemo(() => {
+    if (!session || mode !== "batch") {
+      return [];
+    }
+
+    return currentBatch.map((question) =>
+      withShuffledOptions(question, `${session.run.runNumber}|${question.id}`),
+    );
+  }, [session, mode, currentBatch]);
+
+  if (latestReport) {
+    return <ResultsReport report={latestReport} onNewRun={() => setLatestReport(null)} />;
+  }
+
+  return (
+    <section className="simulation-panel">
+      <header className="simulation-header">
+        <h2>AZ-104 EXAM SIMULATION</h2>
+        <p>53 Questions | ~120 Minutes | Pass: 700/1000</p>
+      </header>
+
+      {!session ? (
+        <div className="start-box">
+          <h3>Start a New Run</h3>
+          <p>Run #{previousRuns.length + 1} will be generated from your active question pool.</p>
+
+          <div className="mode-cards">
+            <button
+              type="button"
+              className={`mode-card${mode === "single" ? " selected" : ""}`}
+              onClick={() => onModeSelected("single")}
+            >
+              <div className="mode-card-title">One at a time</div>
+              <div className="mode-card-desc">Answer each question individually before seeing the result.</div>
+            </button>
+            <button
+              type="button"
+              className={`mode-card${mode === "batch" ? " selected" : ""}`}
+              onClick={() => onModeSelected("batch")}
+            >
+              <div className="mode-card-title">Batches of 10</div>
+              <div className="mode-card-desc">Answer 10 questions at a time, then review all at once.</div>
+            </button>
+          </div>
+
+          <button type="button" className="btn-generate" onClick={startRun}>
+            Generate Run #{previousRuns.length + 1}
+          </button>
+
+          {error ? <p className="inline-error">{error}</p> : null}
+
+          {warnings.length > 0 ? (
+            <ul className="inline-warning">
+              {warnings.map((warning) => (
+                <li key={warning}>{warning}</li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
+
+      {session ? (
+        <div className="run-shell">
+          <div className="run-sticky-header">
+            <div className="run-topline">
+              <p>Run #{session.run.runNumber}</p>
+              <div className="exam-progress-wrap">
+                <div className="exam-progress-bar">
+                  <div
+                    className="exam-progress-fill"
+                    style={{
+                      width: `${Math.round((Object.keys(session.evaluations).length / session.run.questions.length) * 100)}%`,
+                    }}
+                  />
+                </div>
+                <span style={{ fontFamily: "var(--mono)", fontSize: "0.82rem", whiteSpace: "nowrap" }}>
+                  {Object.keys(session.evaluations).length}/{session.run.questions.length}
+                </span>
+              </div>
+              <p
+                className={
+                  "run-timer" +
+                  (timeLeft === 0 ? " timer-expired" : timeLeft < 600 ? " timer-warning" : "")
+                }
+              >
+                {formatTime(timeLeft)}
+              </p>
+            </div>
+
+            <div className="domain-mini-bars">
+              {Object.entries(DOMAIN_DEFINITIONS).map(([domain, info]) => {
+                const total = session.run.questions.filter((q) => q.domain === domain).length;
+                const done = session.run.questions.filter(
+                  (q) => q.domain === domain && session.evaluations[q.id],
+                ).length;
+                const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+                return (
+                  <div key={domain} className="domain-mini-bar">
+                    <div className="domain-mini-bar-label">
+                      <span>{info.shortTitle}</span>
+                      <span>{done}/{total}</span>
+                    </div>
+                    <div className="domain-mini-bar-track">
+                      <div className="domain-mini-bar-fill" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {paused ? (
+            <div className="pause-box">
+              <p>{pausedSummary}</p>
+              <button type="button" onClick={resumeRun}>
+                Resume Run
+              </button>
+            </div>
+          ) : null}
+
+          {!paused && mode === "single" && currentSingleQuestion && displayedSingleQuestion ? (
+            <article className="single-question">
+              <div className="question-navigator" aria-label="Question navigation">
+                {session.run.questions.map((q, idx) => {
+                  const ev = session.evaluations[q.id];
+                  const isCurrent = idx === session.currentIndex;
+                  const dotClass = isCurrent
+                    ? "dot-current"
+                    : ev
+                      ? ev.isCorrect
+                        ? "dot-correct"
+                        : ev.userAnswer.type === "skipped"
+                          ? "dot-skipped"
+                          : "dot-incorrect"
+                      : "dot-unanswered";
+                  return (
+                    <button
+                      key={q.id}
+                      type="button"
+                      className={`q-dot ${dotClass}`}
+                      title={`Question ${idx + 1}`}
+                      onClick={() => {
+                        setSession((s) => s ? { ...s, currentIndex: idx } : s);
+                        setSingleRevealId(session.evaluations[q.id] ? q.id : null);
+                      }}
+                    >
+                      {idx + 1}
+                    </button>
+                  );
+                })}
+                <div className="q-nav-legend">
+                  <span><span className="q-nav-legend-dot" style={{ background: "var(--azure)" }} />Current</span>
+                  <span><span className="q-nav-legend-dot" style={{ background: "var(--teal)" }} />Correct</span>
+                  <span><span className="q-nav-legend-dot" style={{ background: "var(--red)" }} />Incorrect</span>
+                  <span><span className="q-nav-legend-dot" style={{ background: "var(--orange)" }} />Skipped</span>
+                  <span><span className="q-nav-legend-dot" style={{ background: "rgba(0,120,212,0.2)" }} />Unanswered</span>
+                </div>
+              </div>
+
+              <div className="question-meta-row">
+                <span className="q-meta-pill">Q {session.currentIndex + 1} of {session.run.questions.length}</span>
+                <span className="q-meta-pill pill-domain">Domain {currentSingleQuestion.domain}</span>
+                <span className="q-meta-pill">{typeLabel(currentSingleQuestion.type)}</span>
+                <span className={`q-meta-pill pill-${currentSingleQuestion.difficulty}`}>{toDifficultyLabel(currentSingleQuestion.difficulty)}</span>
+              </div>
+
+              {currentSingleQuestion.type === "case-study" ? (
+                <CaseStudyPanel
+                  caseStudy={session.run.selectedCaseStudy}
+                  caseQuestionIndex={getCaseQuestionIndex(session.run, currentSingleQuestion.id)}
+                />
+              ) : null}
+
+              <QuestionRenderer
+                question={displayedSingleQuestion}
+                value={session.answers[currentSingleQuestion.id]}
+                onChange={(value) => updateAnswer(currentSingleQuestion.id, value)}
+                disabled={Boolean(singleRevealId)}
+              />
+
+              {session.hintsShown[currentSingleQuestion.id] ? (
+                <p className="hint-box">Hint: {session.hintsShown[currentSingleQuestion.id]}</p>
+              ) : null}
+
+              <div className="question-actions">
+                {!singleRevealId ? (
+                  <>
+                    <button type="button" onClick={() => setHint(currentSingleQuestion)}>
+                      Hint
+                    </button>
+                    <button type="button" onClick={skipSingle}>
+                      Skip
+                    </button>
+                    <button type="button" onClick={pauseRun}>
+                      Pause
+                    </button>
+                    <button type="button" className="btn-submit" onClick={submitSingle}>
+                      Submit Answer
+                    </button>
+                  </>
+                ) : (
+                  <button type="button" className="btn-submit" onClick={nextSingle}>
+                    Next Question →
+                  </button>
+                )}
+              </div>
+
+              {singleRevealId && session.evaluations[singleRevealId] ? (
+                <AnswerReveal evaluation={session.evaluations[singleRevealId]} />
+              ) : null}
+            </article>
+          ) : null}
+
+          {!paused && mode === "batch" ? (
+            <article className="batch-question-list">
+              <h3>
+                Batch {Math.floor(session.batchStart / 10) + 1} · Questions {session.batchStart + 1}
+                -
+                {Math.min(session.batchStart + 10, session.run.questions.length)}
+              </h3>
+
+              {displayedBatch.map((question, index) => (
+                <div className="batch-question-card" key={question.id}>
+                  <div className="question-meta-row">
+                    <span className="q-meta-pill">Q {session.batchStart + index + 1} of {session.run.questions.length}</span>
+                    <span className="q-meta-pill pill-domain">Domain {question.domain}</span>
+                    <span className="q-meta-pill">{typeLabel(question.type)}</span>
+                    <span className={`q-meta-pill pill-${question.difficulty}`}>{toDifficultyLabel(question.difficulty)}</span>
+                  </div>
+
+                  {question.type === "case-study" ? (
+                    <CaseStudyPanel
+                      caseStudy={session.run.selectedCaseStudy}
+                      caseQuestionIndex={getCaseQuestionIndex(session.run, question.id)}
+                    />
+                  ) : null}
+
+                  <QuestionRenderer
+                    question={question}
+                    value={session.answers[question.id]}
+                    onChange={(value) => updateAnswer(question.id, value)}
+                    disabled={batchRevealIds.length > 0}
+                  />
+
+                  {session.hintsShown[question.id] ? (
+                    <p className="hint-box">Hint: {session.hintsShown[question.id]}</p>
+                  ) : (
+                    <button type="button" onClick={() => setHint(question)} disabled={batchRevealIds.length > 0}>
+                      Hint
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              <div className="question-actions">
+                <button type="button" onClick={pauseRun}>
+                  Pause
+                </button>
+                {batchRevealIds.length === 0 ? (
+                  <button type="button" className="btn-submit" onClick={submitBatch}>
+                    Submit Batch
+                  </button>
+                ) : (
+                  <button type="button" className="btn-submit" onClick={nextBatch}>
+                    Next Batch →
+                  </button>
+                )}
+              </div>
+
+              {batchRevealIds.length > 0 ? (
+                <div className="batch-reveal-grid">
+                  {batchRevealIds.map((questionId) => {
+                    const evaluation = session.evaluations[questionId];
+                    return evaluation ? <AnswerReveal key={questionId} evaluation={evaluation} /> : null;
+                  })}
+                </div>
+              ) : null}
+            </article>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
+  );
+};
