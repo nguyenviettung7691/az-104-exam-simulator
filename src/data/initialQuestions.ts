@@ -127,12 +127,12 @@ export const initialQuestions: Question[] = [
     subtopic: "Manage Microsoft Entra users and groups",
     referenceTopic: "Microsoft Entra built-in roles",
     options: [
-      option("A", "Groups Administrator", "This role can create and manage groups without adding unrelated tenant-wide permissions."),
-      option("B", "User Administrator", "This role can manage users and groups, which is broader than the stated requirement."),
+      option("A", "User Administrator", "This role can manage users and groups, which is broader than the stated requirement."),
+      option("B", "Groups Administrator", "This role can create and manage groups without adding unrelated tenant-wide permissions."),
       option("C", "Security Administrator", "This role is intended for security posture and policy tasks, not day-to-day group administration."),
       option("D", "Global Administrator", "This role grants full directory control and violates least privilege."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "B",
     explanation:
       "Groups Administrator is the least-privileged built-in role that covers creating and managing Microsoft Entra groups.",
   }),
@@ -190,12 +190,12 @@ export const initialQuestions: Question[] = [
     subtopic: "Manage access to Azure resources",
     referenceTopic: "Manage built-in Azure roles",
     options: [
-      option("A", "Contributor", "Contributor can manage most resources in the resource group, which is broader than the requirement."),
-      option("B", "Virtual Machine Contributor", "This role is scoped to virtual machine management tasks without granting user access administration rights."),
-      option("C", "Reader", "Reader cannot start or stop virtual machines."),
-      option("D", "User Access Administrator", "This role manages access assignments rather than virtual machine operations."),
+      option("A", "Reader", "Reader cannot start or stop virtual machines."),
+      option("B", "User Access Administrator", "This role manages access assignments rather than virtual machine operations."),
+      option("C", "Virtual Machine Contributor", "This role is scoped to virtual machine management tasks without granting user access administration rights."),
+      option("D", "Contributor", "Contributor can manage most resources in the resource group, which is broader than the requirement."),
     ],
-    correctOptionId: "B",
+    correctOptionId: "C",
     explanation:
       "Virtual Machine Contributor grants the required VM management permissions without the broad resource control of Contributor.",
   }),
@@ -216,9 +216,8 @@ export const initialQuestions: Question[] = [
       option("C", "The engineer can only view resources in RG-Dev", "Contributor overrides the read-only assignment within RG-Dev for management operations."),
       option("D", "The engineer can assign roles in RG-Dev", "Contributor does not include RBAC role assignment rights."),
     ],
-    correctOptionId: "A",
-    explanation:
-      "Effective access is additive and scope-bound. Contributor applies inside RG-Dev, Reader still applies outside that scope, and neither assignment grants RBAC administration rights.",
+    correctOptionId: "C",
+    explanation: "Effective access is additive and scope-bound: Contributor at RG-Dev allows write operations only inside that resource group, while subscription-level Reader still applies outside RG-Dev. Neither assignment grants RBAC administration rights (User Access Administrator). Role combinations follow the principle of highest-privilege-at-any-scope.",
   }),
   choiceQuestion({
     id: "Q2006",
@@ -259,8 +258,7 @@ export const initialQuestions: Question[] = [
       option("D", "A budget alert", "Budgets are for cost management, not resource protection."),
     ],
     correctOptionId: "B",
-    explanation:
-      "A CanNotDelete lock is the standard governance control when deletion must be blocked but updates must remain available.",
+    explanation: "CanNotDelete lock is the appropriate governance control for this scenario. It blocks deletion of the resource group itself (which is the accidental deletion risk) but still permits all write operations (scaling, patching, updates) inside the group. ReadOnly would block writes and violate the operational requirement.",
   }),
   choiceQuestion({
     id: "Q2008",
@@ -295,12 +293,12 @@ export const initialQuestions: Question[] = [
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Manage costs by using alerts and budgets",
     options: [
-      option("A", "A budget with an alert threshold", "Budgets are designed to monitor spend and trigger alerts at defined thresholds."),
+      option("A", "An Azure Service Health alert", "Service Health tracks Microsoft service events, not subscription spending."),
       option("B", "A ReadOnly lock", "Locks do not provide spending notifications and would disrupt deployments."),
       option("C", "A management group", "Management groups are organizational, not spend-threshold alerting tools."),
-      option("D", "An Azure Service Health alert", "Service Health tracks Microsoft service events, not subscription spending."),
+      option("D", "A budget with an alert threshold", "Budgets are designed to monitor spend and trigger alerts at defined thresholds."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "D",
     explanation:
       "Budgets can trigger notifications at custom cost thresholds without enforcing a deployment stop or changing deployment behavior.",
   }),
@@ -363,7 +361,7 @@ export const initialQuestions: Question[] = [
       option("C", "Azure Advisor", "Advisor can recommend changes but cannot block deployments."),
       option("D", "A budget alert", "Budgets track spending and do not enforce resource-type restrictions."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "C",
     explanation:
       "Azure Policy with a Deny effect is the correct control when new public IP deployments must be prevented while leaving already deployed resources alone.",
   }),
@@ -409,7 +407,7 @@ export const initialQuestions: Question[] = [
     selectCount: 2,
     correctOptionIds: ["B", "C"],
     explanation:
-      "Deny blocks disallowed resource types, while Modify is the right effect for stamping or correcting tag values. Using both effects lets the team enforce the deployment rule and the tagging rule without splitting the policy intent.",
+      "Deny and Modify are complementary: Deny blocks deployment of disallowed resource types (public IPs), while Modify adds or corrects tags during deployment. Using both effects together satisfies the dual requirement of enforcement (Deny) and automated tagging (Modify) without requiring separate manual processes.",
   }),
   multiSelectQuestion({
     id: "Q2015",
@@ -556,8 +554,7 @@ export const initialQuestions: Question[] = [
     type: "multiple-choice",
     difficulty: "easy",
     company: "Fabrikam Retail",
-    scenario:
-      "A container stores rarely accessed data that must remain online and should incur the lowest possible online storage cost.",
+    scenario: "A container stores rarely accessed archived product catalogs that must remain online for compliance audit purposes. The storage solution must incur the lowest possible monthly storage cost while meeting the 24-hour retrieval SLA for audit requests.",
     stem: "Which blob access tier should you use?",
     subtopic: "Configure Azure Files and Azure Blob Storage",
     referenceTopic: "Configure storage tiers",
@@ -609,7 +606,7 @@ export const initialQuestions: Question[] = [
       option("C", "Azure Front Door", "Front Door is a global application delivery service, not a subnet-to-storage access control feature."),
       option("D", "A NAT gateway", "NAT gateway controls outbound internet translation, not storage firewall integration."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "C",
     explanation:
       "Service endpoints are the correct subnet-side feature when the storage account should still be reached through its public endpoint but limited to selected virtual networks.",
   }),
@@ -693,7 +690,7 @@ export const initialQuestions: Question[] = [
       option("C", "NFS 3.0 support", "NFS support is unrelated to blob replication."),
       option("D", "A private endpoint", "Private connectivity is optional and not the replication prerequisite."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "B",
     explanation:
       "Blob versioning is a core prerequisite for object replication between storage accounts and is required so changes can be tracked between source and destination.",
   }),
@@ -724,8 +721,7 @@ export const initialQuestions: Question[] = [
     type: "multiple-choice",
     difficulty: "medium",
     company: "Southridge Video",
-    scenario:
-      "A support team frequently overwrites the same blobs by mistake and needs an easy way to recover previous blob contents without restoring the whole account or involving a separate backup product. The team must keep recovery simple for help desk staff and avoid changing the application release process.",
+    scenario: "A support team frequently overwrites the same blobs by mistake during bulk data operations. Recovery must be possible without restoring the entire storage account or involving a third-party backup system, and the team's junior staff must be able to perform recovery without extensive training.",
     stem: "Which feature should you enable to make recovery straightforward?",
     subtopic: "Configure Azure Files and Azure Blob Storage",
     referenceTopic: "Configure blob versioning",
@@ -1019,8 +1015,7 @@ export const initialQuestions: Question[] = [
     type: "multiple-choice",
     difficulty: "easy",
     company: "Woodgrove Bank",
-    scenario:
-      "You need to run a containerized data processing task for 30 minutes without managing servers or orchestrators.",
+    scenario: "A data processing pipeline must run a containerized batch task for 30 minutes daily without managing servers, clusters, or paying for idle compute time. Cost efficiency is critical since this runs across multiple time zones.",
     stem: "Which service should you use?",
     subtopic: "Provision and manage containers in the Azure portal",
     referenceTopic: "Provision a container by using Azure Container Instances",
@@ -1082,8 +1077,7 @@ export const initialQuestions: Question[] = [
     type: "multiple-choice",
     difficulty: "medium",
     company: "Blue Yonder Airlines",
-    scenario:
-      "An App Service app must be reachable by the existing subdomain app.contoso.com, and the DNS change must work without moving the app to a different hosting platform.",
+    scenario: "An App Service app must be reachable by the existing subdomain app.contoso.com. The DNS change must work without moving the app to a different hosting platform or requiring SSL/TLS certificate redirection complications.",
     stem: "Which DNS record type is commonly used for this App Service custom domain mapping?",
     subtopic: "Create and configure Azure App Service",
     referenceTopic: "Map an existing custom DNS name to an App Service",
@@ -1272,19 +1266,20 @@ export const initialQuestions: Question[] = [
     difficulty: "medium",
     company: "Graphic Design Institute",
     scenario:
-      "You are deploying a new environment from a Bicep file at the resource group scope, and the team must keep the rollout repeatable without skipping the required target resource group setup.",
-    stem: "Arrange the actions in the correct order so the deployment succeeds without manual cleanup.",
+      "You are deploying a new environment from a Bicep file at the resource group scope. The team must keep the rollout repeatable, validate parameter overrides for cost estimation before applying them, and avoid manual cleanup after each deployment.",
+    stem: "Arrange the actions in the correct order so the deployment succeeds without manual cleanup or unexpected costs.",
     subtopic: "Automate deployment of resources by using Azure Resource Manager templates or Bicep files",
     referenceTopic: "Deploy resources by using a Bicep file",
     availableItems: [
     "Create the resource group",
+    "Validate the Bicep template with parameters",
     "Run the Bicep deployment",
     "Review the deployment outputs"
   ],
-    answerSlots: ["Step 1", "Step 2", "Step 3"],
-    correctOrder: ["Create the resource group", "Run the Bicep deployment", "Review the deployment outputs"],
+    answerSlots: ["Step 1", "Step 2", "Step 3", "Step 4"],
+    correctOrder: ["Create the resource group", "Validate the Bicep template with parameters", "Run the Bicep deployment", "Review the deployment outputs"],
     explanation:
-      "The target scope must exist before deployment, and outputs are reviewed after the deployment completes.",
+      "The target scope must exist first, then validate the template to catch errors and cost overruns before deployment, deploy, and finally review outputs to confirm expected results.",
   }),
   dragDropQuestion({
     id: "Q2057",
@@ -1397,20 +1392,19 @@ export const initialQuestions: Question[] = [
     type: "multiple-choice",
     difficulty: "easy",
     company: "Contoso Operations",
-    scenario:
-      "Administrators must connect to Azure virtual machines over RDP and SSH without exposing those VMs with public IP addresses.",
+    scenario: "Administrators must connect to Azure virtual machines over RDP and SSH without exposing those VMs with public IP addresses. Audit and compliance teams must be able to review access logs for the administrative sessions.",
     stem: "Which service should you deploy?",
     subtopic: "Configure secure access to virtual networks",
     referenceTopic: "Implement Azure Bastion",
     options: [
       option("A", "Azure Bastion", "Azure Bastion provides browser-based RDP and SSH to VMs without public IPs on the VM NICs."),
       option("B", "Azure DNS", "Azure DNS hosts DNS records and does not provide remote access."),
-      option("C", "A public load balancer", "A load balancer exposes traffic and does not replace secure admin access tooling."),
+      option("C", "A jump host VM with a public IP", "A jump host VM can provide access but requires a public IP on the VM, violating the no-public-IP requirement."),
       option("D", "A recovery vault", "Recovery vaults do not provide interactive VM access."),
     ],
     correctOptionId: "A",
     explanation:
-      "Azure Bastion is purpose-built for secure management access to Azure VMs without public IP exposure.",
+      "Azure Bastion is purpose-built for secure management access to Azure VMs without public IP exposure; it provides browser-based RDP/SSH access and audit logging without placing public IPs on the VMs themselves.",
   }),
   choiceQuestion({
     id: "Q2063",
@@ -1431,7 +1425,7 @@ export const initialQuestions: Question[] = [
     ],
     correctOptionId: "A",
     explanation:
-      "Service endpoints are used when you want a subnet to access a PaaS service over the Azure backbone while still targeting the service's public endpoint.",
+      "Service endpoints extend a subnet's identity to reach a PaaS service's public endpoint over the Azure backbone, allowing private connectivity without exposing the PaaS service to every network on the internet; private endpoints use a different mechanism (private IP inside your VNet) and are a separate feature for different scenarios.",
   }),
   choiceQuestion({
     id: "Q2064",
@@ -1468,7 +1462,7 @@ export const initialQuestions: Question[] = [
     options: [
       option("A", "Azure DNS", "Azure DNS hosts authoritative public and private DNS zones in Azure."),
       option("B", "Azure Private DNS only", "Private DNS zones are for internal name resolution and do not host a public internet domain."),
-      option("C", "Azure Bastion", "Bastion is for secure VM administration and does not host DNS zones."),
+      option("C", "Azure Traffic Manager", "Traffic Manager is a DNS-based load balancer for routing user traffic, not for hosting authoritative DNS zones."),
       option("D", "Azure Policy", "Policy does not provide DNS hosting."),
     ],
     correctOptionId: "A",
@@ -1579,7 +1573,7 @@ export const initialQuestions: Question[] = [
     selectCount: 2,
     correctOptionIds: ["A", "B"],
     explanation:
-      "Private endpoint name resolution requires the correct private DNS zone and a VNet link for the consuming network.",
+      "Private endpoint name resolution requires the correct private DNS zone (which holds the DNS records) and a VNet link (which makes those records resolvable from the consuming network). Without the VNet link, records exist but are invisible to clients in the VNet.",
   }),
   multiSelectQuestion({
     id: "Q2071",
@@ -1601,7 +1595,7 @@ export const initialQuestions: Question[] = [
     selectCount: 2,
     correctOptionIds: ["A", "B"],
     explanation:
-      "Application security groups reduce rule sprawl between your own workloads, and service tags reduce maintenance for Azure-managed service address spaces.",
+      "Application security groups simplify NSG rules between your own resources by allowing you to target groups of NICs without rewriting every rule; service tags simplify rules for Azure-managed services because Microsoft automatically updates the IP ranges when services change their public endpoints.",
   }),
   multiSelectQuestion({
     id: "Q2072",
@@ -1661,7 +1655,7 @@ export const initialQuestions: Question[] = [
       { id: "S3", text: "If a load balancer health probe is blocked, the backend instance can be marked unhealthy.", answer: "Yes" },
     ],
     explanation:
-      "Private endpoints create private connectivity, service endpoints keep the public endpoint, and blocked health probes cause backend health failures.",
+      "Private endpoints assign a private IP from your VNet to the service (replacing the public endpoint for your traffic); service endpoints keep the public endpoint but extend your VNet's identity to it over the Azure backbone; and blocked health probes are a common cause of backend marking as unhealthy, especially if NSG rules inadvertently block the AzureLoadBalancer service tag.",
   }),
   dragDropQuestion({
     id: "Q2075",
@@ -1670,20 +1664,20 @@ export const initialQuestions: Question[] = [
     difficulty: "medium",
     company: "Lucerne Publishing",
     scenario:
-      "You are deploying an Azure Load Balancer for an internal application and must build the rule set in the correct order without skipping the frontend, backend, or probe configuration.",
-    stem: "Arrange the actions in the correct order.",
+      "You are deploying an Azure Load Balancer for an internal application. The health probe must be configured to detect backend failures within 30 seconds, and the rule must tie everything together so traffic is routed only to healthy backends.",
+    stem: "Arrange the actions in the correct order so the load balancer monitors backend health and routes traffic appropriately.",
     subtopic: "Configure name resolution and load balancing",
     referenceTopic: "Configure an internal or public load balancer",
     availableItems: [
-    "Create the health probe",
+    "Create the frontend IP configuration",
     "Create the backend pool",
-    "Create the load-balancing rule",
-    "Create the frontend IP configuration"
+    "Create the health probe",
+    "Create the load-balancing rule"
   ],
     answerSlots: ["Step 1", "Step 2", "Step 3", "Step 4"],
     correctOrder: ["Create the frontend IP configuration", "Create the backend pool", "Create the health probe", "Create the load-balancing rule"],
     explanation:
-      "You first define the frontend and backend, then the probe, and finally the rule that ties them together.",
+      "Define the frontend IP and backend pool first, then configure the health probe to detect failures, and finally link everything with the load-balancing rule so traffic routes only to healthy instances.",
   }),
   dragDropQuestion({
     id: "Q2076",
@@ -1741,12 +1735,12 @@ export const initialQuestions: Question[] = [
     options: [
       option("A", "A metric alert rule", "Metric alerts evaluate platform metrics such as CPU and memory-related counters."),
       option("B", "A budget alert", "Budgets monitor cost rather than operational metrics."),
-      option("C", "A resource lock", "Locks do not evaluate telemetry."),
+      option("C", "An Activity Log alert rule", "Activity Log alerts monitor control-plane events, not operational metrics like CPU."),
       option("D", "A management group", "Management groups do not perform telemetry evaluation."),
     ],
     correctOptionId: "A",
     explanation:
-      "Metric alerts are the Azure Monitor feature used for threshold-based alerts on platform metrics such as CPU.",
+      "Metric alerts are the Azure Monitor feature used for threshold-based alerts on platform metrics such as CPU; Activity Log alerts are for control-plane events like resource creation/deletion, not for operational metrics.",
   }),
   choiceQuestion({
     id: "Q2079",
@@ -1761,13 +1755,13 @@ export const initialQuestions: Question[] = [
     referenceTopic: "Configure log settings in Azure Monitor",
     options: [
       option("A", "A Log Analytics workspace", "Log Analytics workspaces store Azure Monitor logs for KQL querying and analysis."),
-      option("B", "A route table", "Route tables control networking and do not store logs."),
+      option("B", "An Application Insights workspace", "Application Insights is specialized for app-level telemetry and diagnostics, not general Azure Monitor logs."),
       option("C", "Azure DNS", "Azure DNS resolves names and does not provide log storage or querying."),
       option("D", "Azure Bastion", "Bastion secures VM access and is unrelated to log storage."),
     ],
     correctOptionId: "A",
     explanation:
-      "Log Analytics workspaces are the core data store for Azure Monitor logs and KQL-based analysis.",
+      "Log Analytics workspaces are the core data store for Azure Monitor logs and KQL-based analysis; Application Insights is for application-specific telemetry, not general operational logs.",
   }),
   choiceQuestion({
     id: "Q2080",
@@ -1825,12 +1819,12 @@ export const initialQuestions: Question[] = [
     options: [
       option("A", "Connection Monitor", "Connection Monitor is designed for continuous network reachability checks and historical reporting."),
       option("B", "Azure Policy", "Policy does not test end-to-end network connectivity."),
-      option("C", "Azure Backup", "Backup protects data and does not test connectivity."),
+      option("C", "Packet capture via Network Watcher", "Packet capture is a one-time diagnostic tool for analyzing traffic, not for ongoing recurring tests and reporting."),
       option("D", "A resource lock", "Locks do not provide connectivity tests."),
     ],
     correctOptionId: "A",
     explanation:
-      "Connection Monitor is the correct Azure tool for recurring connectivity testing and analysis.",
+      "Connection Monitor is the correct Azure tool for recurring connectivity testing, historical trending, and alerting; packet capture is a one-time diagnostic tool, not for ongoing monitoring.",
   }),
   choiceQuestion({
     id: "Q2083",

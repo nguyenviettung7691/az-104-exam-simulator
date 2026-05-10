@@ -156,19 +156,19 @@ export const additionalQuestions: Question[] = [
     difficulty: "easy",
     company: "Coho Vineyard",
     scenario:
-      "Helpdesk staff in the Paris office must reset passwords and update profile details only for users who belong to the Paris office.",
+      "Helpdesk staff in the Paris office must reset passwords and update profile details only for users who belong to the Paris office. Auditors must verify that access scope is narrowed to the Paris region and no global administrative access is granted.",
     stem: "Which Microsoft Entra object should you use to scope the delegated administration?",
     subtopic: "Manage Microsoft Entra users and groups",
     referenceTopic: "Administrative units in Microsoft Entra ID",
     options: [
-      option("A", "An administrative unit", "Administrative units scope directory administration to a subset of users, groups, or devices."),
-      option("B", "A management group", "Management groups scope Azure subscriptions, not Microsoft Entra directory objects."),
+      option("A", "A Conditional Access policy", "Conditional Access controls sign-in behavior rather than delegated user administration scope."),
+      option("B", "An administrative unit", "Administrative units scope directory administration to an organizational boundary (e.g., geographic region), enabling delegated management without tenant-wide access rights."),
       option("C", "A resource group", "Resource groups organize Azure resources and do not scope user administration."),
-      option("D", "A Conditional Access policy", "Conditional Access controls sign-in behavior rather than delegated user administration scope."),
+      option("D", "A management group", "Management groups scope Azure subscriptions, not Microsoft Entra directory objects."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "B",
     explanation:
-      "Administrative units are the Microsoft Entra feature used to delegate limited user and group administration for only a subset of directory objects.",
+      "Administrative units scope directory administration to a specific organizational boundary (region, business unit), enabling delegated user password resets and profile updates without granting full tenant-wide administrative rights. This satisfies the audit requirement for narrowed scope.",
   }),
   choiceQuestion({
     id: "Q2102",
@@ -177,19 +177,19 @@ export const additionalQuestions: Question[] = [
     difficulty: "easy",
     company: "Lucerne Publishing",
     scenario:
-      "All members of the Sales department need the same Microsoft 365 license package. New sales employees must receive the licenses automatically.",
+      "All members of the Sales department need the same Microsoft 365 license package. New sales employees must receive the licenses automatically, and finance must be able to track licensing costs per department or business unit for chargeback purposes.",
     stem: "Which approach should you use?",
     subtopic: "Manage Microsoft Entra users and groups",
     referenceTopic: "Group-based licensing",
     options: [
-      option("A", "Assign the licenses to a Microsoft Entra group", "Group-based licensing automatically applies licenses to current and future members."),
+      option("A", "Assign the licenses to a Microsoft Entra group", "Group-based licensing automatically applies licenses to current and future members and groups are typically organized by department for cost tracking."),
       option("B", "Create a budget at the subscription scope", "Budgets track cost and do not assign user licenses."),
       option("C", "Create a resource lock", "Resource locks protect Azure resources and do not affect user licensing."),
       option("D", "Use an NSG application security group", "Application security groups are networking constructs and unrelated to licensing."),
     ],
     correctOptionId: "A",
     explanation:
-      "Group-based licensing is the standard way to assign the same licenses automatically to all current and future members of a group.",
+      "Group-based licensing is the standard way to assign the same licenses automatically to all current and future members of a group; organizing groups by department enables finance teams to track license costs per department for chargeback.",
   }),
   choiceQuestion({
     id: "Q2103",
@@ -245,12 +245,12 @@ export const additionalQuestions: Question[] = [
     subtopic: "Manage access to Azure resources",
     referenceTopic: "Scope access assignments",
     options: [
-      option("A", "At the Audit management group", "Assignments at a management group are inherited by child subscriptions."),
-      option("B", "At each resource group", "This would require manual assignments and would not cover future subscriptions automatically."),
+      option("A", "At an administrative unit", "Administrative units do not scope Azure resource access."),
+      option("B", "At the Audit management group", "Assignments at a management group are inherited by child subscriptions."),
       option("C", "At one storage account", "That scope is too narrow and does not cover all subscriptions."),
-      option("D", "At an administrative unit", "Administrative units do not scope Azure resource access."),
+      option("D", "At each resource group", "This would require manual assignments and would not cover future subscriptions automatically."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "B",
     explanation:
       "Assigning Reader at the management group scope is the correct way to provide inherited read-only access to all child subscriptions.",
   }),
@@ -345,19 +345,19 @@ export const additionalQuestions: Question[] = [
     difficulty: "easy",
     company: "Nod Publishers",
     scenario:
-      "You must notify the finance team when subscription spending reaches 80 percent of the monthly budget amount, and the alert must be informational rather than a deployment control.",
+      "You must notify the finance team when subscription spending reaches 80 percent of the monthly budget amount to prevent overages, and the alert must be informational rather than a deployment control. Operations must still be able to override the budget during critical incidents without breaking deployments.",
     stem: "Which Azure feature should you configure?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Configure budgets and alerts",
     options: [
-      option("A", "A budget with an alert threshold", "Budgets can send alerts when forecasted or actual spend crosses thresholds."),
+      option("A", "Cost analysis with manual approval gates", "Manual approval processes can gate costs but do not provide automatic threshold-based alerting."),
       option("B", "A resource lock", "Locks protect resources but do not monitor spend."),
-      option("C", "A virtual network gateway", "Virtual network gateways provide connectivity, not cost alerts."),
-      option("D", "A management group", "Management groups organize subscriptions but do not send spend alerts by themselves."),
+      option("C", "A budget with an alert threshold", "Budgets can send alerts when forecasted or actual spend crosses thresholds without blocking operations; still allows emergency overrides."),
+      option("D", "A virtual network gateway", "Virtual network gateways provide connectivity, not cost alerts."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "C",
     explanation:
-      "Azure Cost Management budgets support threshold-based alerting for actual and forecasted subscription spend.",
+      "Azure Cost Management budgets support threshold-based alerting for actual and forecasted subscription spend and provide notifications that inform without blocking deployments, allowing operations to override during critical incidents.",
   }),
   choiceQuestion({
     id: "Q2111",
@@ -372,13 +372,13 @@ export const additionalQuestions: Question[] = [
     referenceTopic: "Managed identities for Azure resources",
     options: [
       option("A", "A managed identity", "Managed identities let Azure workloads authenticate without storing credentials in code or configuration."),
-      option("B", "A guest user", "Guest users represent external people, not workload identities."),
+      option("B", "A shared access key (SAS)", "SAS tokens are account-level secrets that must be stored and rotated, not suitable for workload identity."),
       option("C", "A resource lock", "Resource locks do not provide authentication."),
       option("D", "A budget", "Budgets are used for cost tracking and alerting, not authentication."),
     ],
     correctOptionId: "A",
     explanation:
-      "Managed identities are designed for Azure resources such as Automation accounts to obtain tokens without embedded secrets.",
+      "Managed identities are designed for Azure resources such as Automation accounts to obtain tokens without embedded secrets; they replace key/SAS-based authentication by using Azure-managed credentials.",
   }),
   choiceQuestion({
     id: "Q2112",
@@ -392,12 +392,12 @@ export const additionalQuestions: Question[] = [
     subtopic: "Manage access to Azure resources",
     referenceTopic: "Built-in Azure RBAC roles",
     options: [
-      option("A", "User Access Administrator", "This role manages access to Azure resources without granting general resource management rights."),
+      option("A", "Reader", "Reader cannot create or remove role assignments."),
       option("B", "Contributor", "Contributor can manage resources, which exceeds the requirement."),
       option("C", "Virtual Machine Contributor", "This role manages VMs rather than RBAC assignments."),
-      option("D", "Reader", "Reader cannot create or remove role assignments."),
+      option("D", "User Access Administrator", "This role manages access to Azure resources without granting general resource management rights."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "D",
     explanation:
       "User Access Administrator is the least-privileged built-in Azure role for managing RBAC role assignments without broader resource management.",
   }),
@@ -748,19 +748,19 @@ export const additionalQuestions: Question[] = [
     difficulty: "easy",
     company: "Tailwind Traders",
     scenario:
-      "A storage account must reject requests that use unencrypted HTTP so external clients and scripts are forced onto HTTPS only.",
+      "A storage account must reject requests that use unencrypted HTTP to comply with data security audit standards. Existing scripts and integrations currently use HTTP, so the team needs time to migrate gradually without breaking deployments immediately.",
     stem: "Which storage account setting should you configure?",
     subtopic: "Configure and manage storage accounts",
     referenceTopic: "Secure transfer required",
     options: [
-      option("A", "Secure transfer required", "This setting forces clients to use HTTPS instead of HTTP."),
-      option("B", "Blob versioning", "Versioning preserves prior blob states but does not enforce transport encryption."),
+      option("A", "Blob versioning", "Versioning preserves prior blob states but does not enforce transport encryption."),
+      option("B", "Secure transfer required", "This setting forces clients to use HTTPS instead of HTTP; works gradually as clients update their connections."),
       option("C", "Zone-redundant storage", "Redundancy settings affect durability, not transport security."),
       option("D", "Azure Files identity-based authentication", "Azure Files authentication is unrelated to blocking HTTP access."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "B",
     explanation:
-      "Secure transfer required enforces HTTPS-only access to the storage account endpoints.",
+      "Secure transfer required enforces HTTPS-only access to the storage account endpoints; when enabled, existing HTTP connections will fail and must be updated by clients, which allows a phased migration approach.",
   }),
   choiceQuestion({
     id: "Q2128",
@@ -816,12 +816,12 @@ export const additionalQuestions: Question[] = [
     subtopic: "Configure data protection for storage",
     referenceTopic: "Object replication",
     options: [
-      option("A", "Object replication", "Object replication asynchronously copies block blobs between source and destination storage accounts."),
+      option("A", "A backup vault", "Backup vaults are not used for block-blob replication between storage accounts."),
       option("B", "A resource lock", "Locks do not replicate blob data."),
-      option("C", "A site-to-site VPN", "VPN gateways provide connectivity and do not replicate storage objects."),
-      option("D", "A backup vault", "Backup vaults are not used for block-blob replication between storage accounts."),
+      option("C", "Object replication", "Object replication asynchronously copies block blobs between source and destination storage accounts."),
+      option("D", "A site-to-site VPN", "VPN gateways provide connectivity and do not replicate storage objects."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "C",
     explanation:
       "Object replication is the correct Azure Storage capability for asynchronous block-blob replication between storage accounts.",
   }),
@@ -832,19 +832,19 @@ export const additionalQuestions: Question[] = [
     difficulty: "easy",
     company: "Fourth Coffee",
     scenario:
-      "A storage account must prevent anonymous access to blob containers even when users try to browse the endpoint directly.",
+      "A storage account must prevent anonymous access to blob containers even when users try to browse the endpoint directly. Some specific containers do hold public data that should be accessible with shared access tokens, so you need granular control rather than account-level blocking.",
     stem: "Which storage account setting should you disable?",
     subtopic: "Configure access to storage",
     referenceTopic: "Anonymous blob access",
     options: [
-      option("A", "Allow Blob anonymous access", "Disabling this setting blocks anonymous public access to blob data."),
+      option("A", "Object replication", "Object replication asynchronously copies blobs between accounts for disaster recovery."),
       option("B", "Secure transfer required", "This setting enforces HTTPS but does not specifically disable anonymous access."),
       option("C", "Infrastructure encryption", "Infrastructure encryption is unrelated to anonymous blob access."),
-      option("D", "Versioning", "Versioning keeps earlier blob versions and does not affect anonymous access."),
+      option("D", "Allow Blob anonymous access", "Disabling this setting blocks anonymous public access at the account level while still allowing SAS-based container access for specific scenarios."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "D",
     explanation:
-      "Disable Allow Blob anonymous access when blob containers must not be accessible anonymously.",
+      "Disable Allow Blob anonymous access when blob containers must not be accessible anonymously; this account-level control prevents anonymous browsing while still allowing container-level SAS grants for specific public data containers.",
   }),
   choiceQuestion({
     id: "Q2132",
@@ -1071,12 +1071,12 @@ export const additionalQuestions: Question[] = [
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Managed identities for Azure resources",
     options: [
-      option("A", "A system-assigned managed identity", "A system-assigned managed identity lets the VM obtain tokens without stored credentials."),
+      option("A", "A budget", "Budgets are unrelated to authentication from a VM."),
       option("B", "A public IP address", "A public IP affects connectivity and does not provide authenticated access to Azure services."),
-      option("C", "A network security group", "An NSG filters traffic but does not provide workload identity."),
-      option("D", "A budget", "Budgets are unrelated to authentication from a VM."),
+      option("C", "A system-assigned managed identity", "A system-assigned managed identity lets the VM obtain tokens without stored credentials."),
+      option("D", "A network security group", "An NSG filters traffic but does not provide workload identity."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "C",
     explanation:
       "A system-assigned managed identity is the simplest way for an Azure VM to authenticate to Azure services without stored credentials.",
   }),
@@ -1155,12 +1155,12 @@ export const additionalQuestions: Question[] = [
     subtopic: "Provision and manage containers",
     referenceTopic: "Azure Container Instances",
     options: [
-      option("A", "Azure Container Instances", "ACI runs containers directly without requiring VM or cluster management."),
-      option("B", "A dedicated host", "Dedicated hosts are for VM placement on dedicated physical servers."),
+      option("A", "A Recovery Services vault", "A Recovery Services vault is not a container execution platform."),
+      option("B", "Azure Container Instances", "ACI runs containers directly without requiring VM or cluster management."),
       option("C", "A virtual machine scale set", "VM scale sets require VM management and are not the simplest container-only option."),
-      option("D", "A Recovery Services vault", "A Recovery Services vault is not a container execution platform."),
+      option("D", "A dedicated host", "Dedicated hosts are for VM placement on dedicated physical servers."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "B",
     explanation:
       "Azure Container Instances is the fastest Azure option for running a container without cluster or guest OS management.",
   }),
@@ -1239,12 +1239,12 @@ export const additionalQuestions: Question[] = [
     subtopic: "Create and configure Azure App Service",
     referenceTopic: "Deployment slot settings",
     options: [
-      option("A", "Mark it as a deployment slot setting", "Slot settings stay with the slot and are not swapped into the target slot."),
+      option("A", "Assign it as a route table property", "Route tables manage network routes and do not hold application configuration."),
       option("B", "Store it in an NSG", "NSGs do not store App Service connection strings."),
       option("C", "Place it in a budget", "Budgets do not contain application settings."),
-      option("D", "Assign it as a route table property", "Route tables manage network routes and do not hold application configuration."),
+      option("D", "Mark it as a deployment slot setting", "Slot settings stay with the slot and are not swapped into the target slot."),
     ],
-    correctOptionId: "A",
+    correctOptionId: "D",
     explanation:
       "Slot-specific settings must be marked as deployment slot settings so they remain bound to the staging or production slot during swaps.",
   }),
@@ -1609,7 +1609,7 @@ export const additionalQuestions: Question[] = [
     difficulty: "easy",
     company: "Contoso Manufacturing",
     scenario:
-      "Two virtual networks in the same Azure region must communicate privately by using the Microsoft backbone while traffic stays off the public internet path.",
+      "Two virtual networks in the same Azure region must communicate privately by using the Microsoft backbone while traffic stays off the public internet path. Auditors must verify that cross-VNet traffic uses private IP-only routing and that routing remains transparent (no manual entry) to both teams.",
     stem: "Which networking feature should you configure?",
     subtopic: "Configure virtual networks",
     referenceTopic: "Virtual network peering",
@@ -1726,7 +1726,7 @@ export const additionalQuestions: Question[] = [
     ],
     correctOptionId: "A",
     explanation:
-      "Azure Firewall is the Azure-managed security service that provides centralized filtering and NAT capabilities for network traffic.",
+      "Azure Firewall provides centralized FQDN-based filtering (private DNS zones only do DNS resolution; NSGs don't inspect FQDN), DNAT/SNAT translation, and single-point policy administration across all subnets—unlike NSGs which are subnet-bound and don't support application-layer FQDN rules.",
   }),
   choiceQuestion({
     id: "Q2171",
@@ -2094,8 +2094,8 @@ export const additionalQuestions: Question[] = [
     referenceTopic: "Log Analytics workspaces",
     options: [
       option("A", "A Log Analytics workspace", "Log Analytics workspaces are the Azure Monitor log data platform for KQL queries and analysis."),
-      option("B", "A virtual network gateway", "Virtual network gateways provide connectivity rather than log analytics."),
-      option("C", "A budget", "Budgets monitor cost, not operational logs."),
+      option("B", "An Application Insights workspace", "Application Insights is app-focused telemetry (APM), whereas Log Analytics is platform-focused logging and events."),
+      option("C", "An Event Hub namespace", "Event Hub is used for telemetry streaming and ingestion, but not for centralized log analytics queries."),
       option("D", "An availability set", "Availability sets provide VM placement guidance and not centralized logging."),
     ],
     correctOptionId: "A",
@@ -2157,8 +2157,8 @@ export const additionalQuestions: Question[] = [
     referenceTopic: "Backup vault and operational backup for blobs",
     options: [
       option("A", "A Backup vault", "Operational backup for Azure Blobs is managed through a Backup vault."),
-      option("B", "A Standard Load Balancer", "Load balancers do not provide data protection."),
-      option("C", "A local network gateway", "Local network gateways define on-premises VPN endpoints and do not provide backup."),
+      option("B", "A Recovery Services vault", "Recovery Services vaults are used for VM/on-premises backup, not Azure Blob operational backup."),
+      option("C", "An Azure Site Recovery vault", "Site Recovery is for disaster recovery and migration, not blob backup management."),
       option("D", "An NSG", "NSGs control network traffic and do not manage backups."),
     ],
     correctOptionId: "A",
@@ -2178,8 +2178,8 @@ export const additionalQuestions: Question[] = [
     referenceTopic: "Diagnostic settings",
     options: [
       option("A", "Diagnostic settings", "Diagnostic settings route platform logs and metrics to destinations such as Log Analytics workspaces."),
-      option("B", "A resource lock", "Locks do not export metrics or logs."),
-      option("C", "An availability set", "Availability sets do not control monitoring exports."),
+      option("B", "Activity Log", "Activity Log captures subscription-level events, but diagnostic settings are the resource-level configuration for telemetry export."),
+      option("C", "A Log Analytics agent", "The agent is deployed on VMs to collect guest logs; diagnostic settings are the resource-level configuration on the storage account."),
       option("D", "A NAT gateway", "NAT gateways affect outbound internet access, not observability configuration."),
     ],
     correctOptionId: "A",
@@ -2199,8 +2199,8 @@ export const additionalQuestions: Question[] = [
     referenceTopic: "Service Health",
     options: [
       option("A", "Service Health", "Service Health reports Azure service incidents, planned maintenance, and health advisories that affect your subscriptions."),
-      option("B", "Azure Advisor", "Advisor recommends improvements but does not provide service incident and maintenance views."),
-      option("C", "A route table", "Route tables do not report Azure platform incidents."),
+      option("B", "Azure Monitor", "Azure Monitor provides alerts and metrics, but Service Health specifically shows service incidents and planned maintenance."),
+      option("C", "An Application Gateway", "Application Gateway routes layer-7 traffic and does not report Azure platform incidents."),
       option("D", "An NSG", "NSGs control traffic but do not surface platform health information."),
     ],
     correctOptionId: "A",
@@ -2412,7 +2412,7 @@ export const additionalQuestions: Question[] = [
     ],
     correctOptionId: "A",
     explanation:
-      "Azure Update Manager is the correct central Azure service for VM patch assessment and patch orchestration.",
+      "Azure Update Manager is the correct central Azure service for VM patch assessment and patch orchestration. Azure Policy can enforce settings but doesn't orchestrate patching; Advisor only recommends updates; neither handles deployment scheduling like Update Manager does.",
   }),
   choiceQuestion({
     id: "Q2200",
@@ -2428,7 +2428,7 @@ export const additionalQuestions: Question[] = [
     caseStudyId: "CS-PROSEWARE-RESEARCH",
     options: [
       option("A", "An action group", "Action groups are reusable containers for alert notifications and automation endpoints."),
-      option("B", "A route table", "Route tables control packet forwarding and do not define alert targets."),
+      option("B", "An Azure Automation runbook", "Runbooks execute task automation, whereas action groups define alert notification targets and automated responses."),
       option("C", "A virtual machine scale set", "A scale set hosts compute and does not standardize alert notifications."),
       option("D", "A budget", "Budgets can create cost alerts but do not act as reusable alert action containers for general monitoring rules."),
     ],

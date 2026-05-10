@@ -16,13 +16,13 @@
       "options": [
         {
           "id": "A",
-          "text": "Groups Administrator",
-          "rationale": "This role can create and manage groups without adding unrelated tenant-wide permissions."
+          "text": "User Administrator",
+          "rationale": "This role can manage users and groups, which is broader than the stated requirement."
         },
         {
           "id": "B",
-          "text": "User Administrator",
-          "rationale": "This role can manage users and groups, which is broader than the stated requirement."
+          "text": "Groups Administrator",
+          "rationale": "This role can create and manage groups without adding unrelated tenant-wide permissions."
         },
         {
           "id": "C",
@@ -35,7 +35,7 @@
           "rationale": "This role grants full directory control and violates least privilege."
         }
       ],
-      "correctOptionId": "A",
+      "correctOptionId": "B",
       "explanation": "Groups Administrator is the least-privileged built-in role that covers creating and managing Microsoft Entra groups."
     },
     {
@@ -124,26 +124,26 @@
       "options": [
         {
           "id": "D",
-          "text": "Contributor",
-          "rationale": "Contributor can manage most resources in the resource group, which is broader than the requirement."
-        },
-        {
-          "id": "A",
-          "text": "Virtual Machine Contributor",
-          "rationale": "This role is scoped to virtual machine management tasks without granting user access administration rights."
-        },
-        {
-          "id": "B",
           "text": "Reader",
           "rationale": "Reader cannot start or stop virtual machines."
         },
         {
-          "id": "C",
+          "id": "A",
           "text": "User Access Administrator",
           "rationale": "This role manages access assignments rather than virtual machine operations."
+        },
+        {
+          "id": "B",
+          "text": "Virtual Machine Contributor",
+          "rationale": "This role is scoped to virtual machine management tasks without granting user access administration rights."
+        },
+        {
+          "id": "C",
+          "text": "Contributor",
+          "rationale": "Contributor can manage most resources in the resource group, which is broader than the requirement."
         }
       ],
-      "correctOptionId": "A",
+      "correctOptionId": "B",
       "explanation": "Virtual Machine Contributor grants the required VM management permissions without the broad resource control of Contributor."
     },
     {
@@ -179,8 +179,8 @@
           "rationale": "Contributor does not include RBAC role assignment rights."
         }
       ],
-      "correctOptionId": "A",
-      "explanation": "Effective access is additive and scope-bound. Contributor applies inside RG-Dev, Reader still applies outside that scope, and neither assignment grants RBAC administration rights."
+      "correctOptionId": "C",
+      "explanation": "Effective access is additive and scope-bound: Contributor at RG-Dev allows write operations only inside that resource group, while subscription-level Reader still applies outside RG-Dev. Neither assignment grants RBAC administration rights (User Access Administrator). Role combinations follow the principle of highest-privilege-at-any-scope."
     },
     {
       "active": true,
@@ -252,7 +252,7 @@
         }
       ],
       "correctOptionId": "D",
-      "explanation": "A CanNotDelete lock is the standard governance control when deletion must be blocked but updates must remain available."
+      "explanation": "CanNotDelete lock is the appropriate governance control for this scenario. It blocks deletion of the resource group itself (which is the accidental deletion risk) but still permits all write operations (scaling, patching, updates) inside the group. ReadOnly would block writes and violate the operational requirement."
     },
     {
       "active": true,
@@ -304,8 +304,8 @@
       "options": [
         {
           "id": "A",
-          "text": "A budget with an alert threshold",
-          "rationale": "Budgets are designed to monitor spend and trigger alerts at defined thresholds."
+          "text": "An Azure Service Health alert",
+          "rationale": "Service Health tracks Microsoft service events, not subscription spending."
         },
         {
           "id": "B",
@@ -319,11 +319,11 @@
         },
         {
           "id": "D",
-          "text": "An Azure Service Health alert",
-          "rationale": "Service Health tracks Microsoft service events, not subscription spending."
+          "text": "A budget with an alert threshold",
+          "rationale": "Budgets are designed to monitor spend and trigger alerts at defined thresholds."
         }
       ],
-      "correctOptionId": "A",
+      "correctOptionId": "D",
       "explanation": "Budgets can trigger notifications at custom cost thresholds without enforcing a deployment stop or changing deployment behavior."
     },
     {
@@ -431,7 +431,7 @@
           "rationale": "Budgets track spending and do not enforce resource-type restrictions."
         }
       ],
-      "correctOptionId": "A",
+      "correctOptionId": "C",
       "explanation": "Azure Policy with a Deny effect is the correct control when new public IP deployments must be prevented while leaving already deployed resources alone."
     },
     {
@@ -512,7 +512,7 @@
         "B",
         "C"
       ],
-      "explanation": "Deny blocks disallowed resource types, while Modify is the right effect for stamping or correcting tag values. Using both effects lets the team enforce the deployment rule and the tagging rule without splitting the policy intent."
+      "explanation": "Deny and Modify are complementary: Deny blocks deployment of disallowed resource types (public IPs), while Modify adds or corrects tags during deployment. Using both effects together satisfies the dual requirement of enforcement (Deny) and automated tagging (Modify) without requiring separate manual processes."
     },
     {
       "active": true,
@@ -738,7 +738,7 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "Fabrikam Retail",
-      "scenario": "A container stores rarely accessed data that must remain online and should incur the lowest possible online storage cost.",
+      "scenario": "A container stores rarely accessed archived product catalogs that must remain online for compliance audit purposes. The storage solution must incur the lowest possible monthly storage cost while meeting the 24-hour retrieval SLA for audit requests.",
       "stem": "Which blob access tier should you use?",
       "subtopic": "Configure Azure Files and Azure Blob Storage",
       "referenceTopic": "Configure storage tiers",
@@ -836,7 +836,7 @@
           "rationale": "NAT gateway controls outbound internet translation, not storage firewall integration."
         }
       ],
-      "correctOptionId": "B",
+      "correctOptionId": "D",
       "explanation": "Service endpoints are the correct subnet-side feature when the storage account should still be reached through its public endpoint but limited to selected virtual networks."
     },
     {
@@ -980,7 +980,7 @@
           "rationale": "Private connectivity is optional and not the replication prerequisite."
         }
       ],
-      "correctOptionId": "B",
+      "correctOptionId": "C",
       "explanation": "Blob versioning is a core prerequisite for object replication between storage accounts and is required so changes can be tracked between source and destination."
     },
     {
@@ -1026,7 +1026,7 @@
       "type": "multiple-choice",
       "difficulty": "medium",
       "company": "Southridge Video",
-      "scenario": "A support team frequently overwrites the same blobs by mistake and needs an easy way to recover previous blob contents without restoring the whole account or involving a separate backup product. The team must keep recovery simple for help desk staff and avoid changing the application release process.",
+      "scenario": "A support team frequently overwrites the same blobs by mistake during bulk data operations. Recovery must be possible without restoring the entire storage account or involving a third-party backup system, and the team's junior staff must be able to perform recovery without extensive training.",
       "stem": "Which feature should you enable to make recovery straightforward?",
       "subtopic": "Configure Azure Files and Azure Blob Storage",
       "referenceTopic": "Configure blob versioning",
@@ -1528,7 +1528,7 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "Woodgrove Bank",
-      "scenario": "You need to run a containerized data processing task for 30 minutes without managing servers or orchestrators.",
+      "scenario": "A data processing pipeline must run a containerized batch task for 30 minutes daily without managing servers, clusters, or paying for idle compute time. Cost efficiency is critical since this runs across multiple time zones.",
       "stem": "Which service should you use?",
       "subtopic": "Provision and manage containers in the Azure portal",
       "referenceTopic": "Provision a container by using Azure Container Instances",
@@ -1636,7 +1636,7 @@
       "type": "multiple-choice",
       "difficulty": "medium",
       "company": "Blue Yonder Airlines",
-      "scenario": "An App Service app must be reachable by the existing subdomain app.contoso.com, and the DNS change must work without moving the app to a different hosting platform.",
+      "scenario": "An App Service app must be reachable by the existing subdomain app.contoso.com. The DNS change must work without moving the app to a different hosting platform or requiring SSL/TLS certificate redirection complications.",
       "stem": "Which DNS record type is commonly used for this App Service custom domain mapping?",
       "subtopic": "Create and configure Azure App Service",
       "referenceTopic": "Map an existing custom DNS name to an App Service",
@@ -1964,26 +1964,29 @@
       "type": "drag-drop",
       "difficulty": "medium",
       "company": "Graphic Design Institute",
-      "scenario": "You are deploying a new environment from a Bicep file at the resource group scope, and the team must keep the rollout repeatable without skipping the required target resource group setup.",
-      "stem": "Arrange the actions in the correct order so the deployment succeeds without manual cleanup.",
+      "scenario": "You are deploying a new environment from a Bicep file at the resource group scope. The team must keep the rollout repeatable, validate parameter overrides for cost estimation before applying them, and avoid manual cleanup after each deployment.",
+      "stem": "Arrange the actions in the correct order so the deployment succeeds without manual cleanup or unexpected costs.",
       "subtopic": "Automate deployment of resources by using Azure Resource Manager templates or Bicep files",
       "referenceTopic": "Deploy resources by using a Bicep file",
       "availableItems": [
         "Create the resource group",
+        "Validate the Bicep template with parameters",
         "Run the Bicep deployment",
         "Review the deployment outputs"
       ],
       "answerSlots": [
         "Step 1",
         "Step 2",
-        "Step 3"
+        "Step 3",
+        "Step 4"
       ],
       "correctOrder": [
         "Create the resource group",
+        "Validate the Bicep template with parameters",
         "Run the Bicep deployment",
         "Review the deployment outputs"
       ],
-      "explanation": "The target scope must exist before deployment, and outputs are reviewed after the deployment completes."
+      "explanation": "The target scope must exist first, then validate the template to catch errors and cost overruns before deployment, deploy, and finally review outputs to confirm expected results."
     },
     {
       "active": true,
@@ -2164,7 +2167,7 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "Contoso Operations",
-      "scenario": "Administrators must connect to Azure virtual machines over RDP and SSH without exposing those VMs with public IP addresses.",
+      "scenario": "Administrators must connect to Azure virtual machines over RDP and SSH without exposing those VMs with public IP addresses. Audit and compliance teams must be able to review access logs for the administrative sessions.",
       "stem": "Which service should you deploy?",
       "subtopic": "Configure secure access to virtual networks",
       "referenceTopic": "Implement Azure Bastion",
@@ -2181,8 +2184,8 @@
         },
         {
           "id": "B",
-          "text": "A public load balancer",
-          "rationale": "A load balancer exposes traffic and does not replace secure admin access tooling."
+          "text": "A jump host VM with a public IP",
+          "rationale": "A jump host VM can provide access but requires a public IP on the VM, violating the no-public-IP requirement."
         },
         {
           "id": "C",
@@ -2191,7 +2194,7 @@
         }
       ],
       "correctOptionId": "D",
-      "explanation": "Azure Bastion is purpose-built for secure management access to Azure VMs without public IP exposure."
+      "explanation": "Azure Bastion is purpose-built for secure management access to Azure VMs without public IP exposure; it provides browser-based RDP/SSH access and audit logging without placing public IPs on the VMs themselves."
     },
     {
       "active": true,
@@ -2227,7 +2230,7 @@
         }
       ],
       "correctOptionId": "A",
-      "explanation": "Service endpoints are used when you want a subnet to access a PaaS service over the Azure backbone while still targeting the service's public endpoint."
+      "explanation": "Service endpoints extend a subnet's identity to reach a PaaS service's public endpoint over the Azure backbone, allowing private connectivity without exposing the PaaS service to every network on the internet; private endpoints use a different mechanism (private IP inside your VNet) and are a separate feature for different scenarios."
     },
     {
       "active": true,
@@ -2289,8 +2292,8 @@
         },
         {
           "id": "A",
-          "text": "Azure Bastion",
-          "rationale": "Bastion is for secure VM administration and does not host DNS zones."
+          "text": "Azure Traffic Manager",
+          "rationale": "Traffic Manager is a DNS-based load balancer for routing user traffic, not for hosting authoritative DNS zones."
         },
         {
           "id": "B",
@@ -2483,7 +2486,7 @@
         "A",
         "B"
       ],
-      "explanation": "Private endpoint name resolution requires the correct private DNS zone and a VNet link for the consuming network."
+      "explanation": "Private endpoint name resolution requires the correct private DNS zone (which holds the DNS records) and a VNet link (which makes those records resolvable from the consuming network). Without the VNet link, records exist but are invisible to clients in the VNet."
     },
     {
       "active": true,
@@ -2523,7 +2526,7 @@
         "A",
         "B"
       ],
-      "explanation": "Application security groups reduce rule sprawl between your own workloads, and service tags reduce maintenance for Azure-managed service address spaces."
+      "explanation": "Application security groups simplify NSG rules between your own resources by allowing you to target groups of NICs without rewriting every rule; service tags simplify rules for Azure-managed services because Microsoft automatically updates the IP ranges when services change their public endpoints."
     },
     {
       "active": true,
@@ -2623,7 +2626,7 @@
           "answer": "Yes"
         }
       ],
-      "explanation": "Private endpoints create private connectivity, service endpoints keep the public endpoint, and blocked health probes cause backend health failures."
+      "explanation": "Private endpoints assign a private IP from your VNet to the service (replacing the public endpoint for your traffic); service endpoints keep the public endpoint but extend your VNet's identity to it over the Azure backbone; and blocked health probes are a common cause of backend marking as unhealthy, especially if NSG rules inadvertently block the AzureLoadBalancer service tag."
     },
     {
       "active": true,
@@ -2632,15 +2635,15 @@
       "type": "drag-drop",
       "difficulty": "medium",
       "company": "Lucerne Publishing",
-      "scenario": "You are deploying an Azure Load Balancer for an internal application and must build the rule set in the correct order without skipping the frontend, backend, or probe configuration.",
-      "stem": "Arrange the actions in the correct order.",
+      "scenario": "You are deploying an Azure Load Balancer for an internal application. The health probe must be configured to detect backend failures within 30 seconds, and the rule must tie everything together so traffic is routed only to healthy backends.",
+      "stem": "Arrange the actions in the correct order so the load balancer monitors backend health and routes traffic appropriately.",
       "subtopic": "Configure name resolution and load balancing",
       "referenceTopic": "Configure an internal or public load balancer",
       "availableItems": [
-        "Create the health probe",
+        "Create the frontend IP configuration",
         "Create the backend pool",
-        "Create the load-balancing rule",
-        "Create the frontend IP configuration"
+        "Create the health probe",
+        "Create the load-balancing rule"
       ],
       "answerSlots": [
         "Step 1",
@@ -2654,7 +2657,7 @@
         "Create the health probe",
         "Create the load-balancing rule"
       ],
-      "explanation": "You first define the frontend and backend, then the probe, and finally the rule that ties them together."
+      "explanation": "Define the frontend IP and backend pool first, then configure the health probe to detect failures, and finally link everything with the load-balancing rule so traffic routes only to healthy instances."
     },
     {
       "active": true,
@@ -2744,8 +2747,8 @@
         },
         {
           "id": "C",
-          "text": "A resource lock",
-          "rationale": "Locks do not evaluate telemetry."
+          "text": "An Activity Log alert rule",
+          "rationale": "Activity Log alerts monitor control-plane events, not operational metrics like CPU."
         },
         {
           "id": "D",
@@ -2754,7 +2757,7 @@
         }
       ],
       "correctOptionId": "A",
-      "explanation": "Metric alerts are the Azure Monitor feature used for threshold-based alerts on platform metrics such as CPU."
+      "explanation": "Metric alerts are the Azure Monitor feature used for threshold-based alerts on platform metrics such as CPU; Activity Log alerts are for control-plane events like resource creation/deletion, not for operational metrics."
     },
     {
       "active": true,
@@ -2775,8 +2778,8 @@
         },
         {
           "id": "A",
-          "text": "A route table",
-          "rationale": "Route tables control networking and do not store logs."
+          "text": "An Application Insights workspace",
+          "rationale": "Application Insights is specialized for app-level telemetry and diagnostics, not general Azure Monitor logs."
         },
         {
           "id": "B",
@@ -2790,7 +2793,7 @@
         }
       ],
       "correctOptionId": "D",
-      "explanation": "Log Analytics workspaces are the core data store for Azure Monitor logs and KQL-based analysis."
+      "explanation": "Log Analytics workspaces are the core data store for Azure Monitor logs and KQL-based analysis; Application Insights is for application-specific telemetry, not general operational logs."
     },
     {
       "active": true,
@@ -2888,8 +2891,8 @@
         },
         {
           "id": "D",
-          "text": "Azure Backup",
-          "rationale": "Backup protects data and does not test connectivity."
+          "text": "Packet capture via Network Watcher",
+          "rationale": "Packet capture is a one-time diagnostic tool for analyzing traffic, not for ongoing recurring tests and reporting."
         },
         {
           "id": "A",
@@ -2898,7 +2901,7 @@
         }
       ],
       "correctOptionId": "B",
-      "explanation": "Connection Monitor is the correct Azure tool for recurring connectivity testing and analysis."
+      "explanation": "Connection Monitor is the correct Azure tool for recurring connectivity testing, historical trending, and alerting; packet capture is a one-time diagnostic tool, not for ongoing monitoring."
     },
     {
       "active": true,
@@ -3547,20 +3550,20 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "Coho Vineyard",
-      "scenario": "Helpdesk staff in the Paris office must reset passwords and update profile details only for users who belong to the Paris office.",
+      "scenario": "Helpdesk staff in the Paris office must reset passwords and update profile details only for users who belong to the Paris office. Auditors must verify that access scope is narrowed to the Paris region and no global administrative access is granted.",
       "stem": "Which Microsoft Entra object should you use to scope the delegated administration?",
       "subtopic": "Manage Microsoft Entra users and groups",
       "referenceTopic": "Administrative units in Microsoft Entra ID",
       "options": [
         {
           "id": "D",
-          "text": "An administrative unit",
-          "rationale": "Administrative units scope directory administration to a subset of users, groups, or devices."
+          "text": "A Conditional Access policy",
+          "rationale": "Conditional Access controls sign-in behavior rather than delegated user administration scope."
         },
         {
           "id": "A",
-          "text": "A management group",
-          "rationale": "Management groups scope Azure subscriptions, not Microsoft Entra directory objects."
+          "text": "An administrative unit",
+          "rationale": "Administrative units scope directory administration to an organizational boundary (e.g., geographic region), enabling delegated management without tenant-wide access rights."
         },
         {
           "id": "B",
@@ -3569,12 +3572,12 @@
         },
         {
           "id": "C",
-          "text": "A Conditional Access policy",
-          "rationale": "Conditional Access controls sign-in behavior rather than delegated user administration scope."
+          "text": "A management group",
+          "rationale": "Management groups scope Azure subscriptions, not Microsoft Entra directory objects."
         }
       ],
-      "correctOptionId": "D",
-      "explanation": "Administrative units are the Microsoft Entra feature used to delegate limited user and group administration for only a subset of directory objects."
+      "correctOptionId": "A",
+      "explanation": "Administrative units scope directory administration to a specific organizational boundary (region, business unit), enabling delegated user password resets and profile updates without granting full tenant-wide administrative rights. This satisfies the audit requirement for narrowed scope."
     },
     {
       "active": true,
@@ -3583,7 +3586,7 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "Lucerne Publishing",
-      "scenario": "All members of the Sales department need the same Microsoft 365 license package. New sales employees must receive the licenses automatically.",
+      "scenario": "All members of the Sales department need the same Microsoft 365 license package. New sales employees must receive the licenses automatically, and finance must be able to track licensing costs per department or business unit for chargeback purposes.",
       "stem": "Which approach should you use?",
       "subtopic": "Manage Microsoft Entra users and groups",
       "referenceTopic": "Group-based licensing",
@@ -3591,7 +3594,7 @@
         {
           "id": "C",
           "text": "Assign the licenses to a Microsoft Entra group",
-          "rationale": "Group-based licensing automatically applies licenses to current and future members."
+          "rationale": "Group-based licensing automatically applies licenses to current and future members and groups are typically organized by department for cost tracking."
         },
         {
           "id": "D",
@@ -3610,7 +3613,7 @@
         }
       ],
       "correctOptionId": "C",
-      "explanation": "Group-based licensing is the standard way to assign the same licenses automatically to all current and future members of a group."
+      "explanation": "Group-based licensing is the standard way to assign the same licenses automatically to all current and future members of a group; organizing groups by department enables finance teams to track license costs per department for chargeback."
     },
     {
       "active": true,
@@ -3698,13 +3701,13 @@
       "options": [
         {
           "id": "D",
-          "text": "At the Audit management group",
-          "rationale": "Assignments at a management group are inherited by child subscriptions."
+          "text": "At an administrative unit",
+          "rationale": "Administrative units do not scope Azure resource access."
         },
         {
           "id": "A",
-          "text": "At each resource group",
-          "rationale": "This would require manual assignments and would not cover future subscriptions automatically."
+          "text": "At the Audit management group",
+          "rationale": "Assignments at a management group are inherited by child subscriptions."
         },
         {
           "id": "B",
@@ -3713,11 +3716,11 @@
         },
         {
           "id": "C",
-          "text": "At an administrative unit",
-          "rationale": "Administrative units do not scope Azure resource access."
+          "text": "At each resource group",
+          "rationale": "This would require manual assignments and would not cover future subscriptions automatically."
         }
       ],
-      "correctOptionId": "D",
+      "correctOptionId": "A",
       "explanation": "Assigning Reader at the management group scope is the correct way to provide inherited read-only access to all child subscriptions."
     },
     {
@@ -3871,15 +3874,15 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "Nod Publishers",
-      "scenario": "You must notify the finance team when subscription spending reaches 80 percent of the monthly budget amount, and the alert must be informational rather than a deployment control.",
+      "scenario": "You must notify the finance team when subscription spending reaches 80 percent of the monthly budget amount to prevent overages, and the alert must be informational rather than a deployment control. Operations must still be able to override the budget during critical incidents without breaking deployments.",
       "stem": "Which Azure feature should you configure?",
       "subtopic": "Manage Azure subscriptions and governance",
       "referenceTopic": "Configure budgets and alerts",
       "options": [
         {
           "id": "B",
-          "text": "A budget with an alert threshold",
-          "rationale": "Budgets can send alerts when forecasted or actual spend crosses thresholds."
+          "text": "Cost analysis with manual approval gates",
+          "rationale": "Manual approval processes can gate costs but do not provide automatic threshold-based alerting."
         },
         {
           "id": "C",
@@ -3888,17 +3891,17 @@
         },
         {
           "id": "D",
-          "text": "A virtual network gateway",
-          "rationale": "Virtual network gateways provide connectivity, not cost alerts."
+          "text": "A budget with an alert threshold",
+          "rationale": "Budgets can send alerts when forecasted or actual spend crosses thresholds without blocking operations; still allows emergency overrides."
         },
         {
           "id": "A",
-          "text": "A management group",
-          "rationale": "Management groups organize subscriptions but do not send spend alerts by themselves."
+          "text": "A virtual network gateway",
+          "rationale": "Virtual network gateways provide connectivity, not cost alerts."
         }
       ],
-      "correctOptionId": "B",
-      "explanation": "Azure Cost Management budgets support threshold-based alerting for actual and forecasted subscription spend."
+      "correctOptionId": "D",
+      "explanation": "Azure Cost Management budgets support threshold-based alerting for actual and forecasted subscription spend and provide notifications that inform without blocking deployments, allowing operations to override during critical incidents."
     },
     {
       "active": true,
@@ -3919,8 +3922,8 @@
         },
         {
           "id": "D",
-          "text": "A guest user",
-          "rationale": "Guest users represent external people, not workload identities."
+          "text": "A shared access key (SAS)",
+          "rationale": "SAS tokens are account-level secrets that must be stored and rotated, not suitable for workload identity."
         },
         {
           "id": "A",
@@ -3934,7 +3937,7 @@
         }
       ],
       "correctOptionId": "C",
-      "explanation": "Managed identities are designed for Azure resources such as Automation accounts to obtain tokens without embedded secrets."
+      "explanation": "Managed identities are designed for Azure resources such as Automation accounts to obtain tokens without embedded secrets; they replace key/SAS-based authentication by using Azure-managed credentials."
     },
     {
       "active": true,
@@ -3950,8 +3953,8 @@
       "options": [
         {
           "id": "D",
-          "text": "User Access Administrator",
-          "rationale": "This role manages access to Azure resources without granting general resource management rights."
+          "text": "Reader",
+          "rationale": "Reader cannot create or remove role assignments."
         },
         {
           "id": "A",
@@ -3965,11 +3968,11 @@
         },
         {
           "id": "C",
-          "text": "Reader",
-          "rationale": "Reader cannot create or remove role assignments."
+          "text": "User Access Administrator",
+          "rationale": "This role manages access to Azure resources without granting general resource management rights."
         }
       ],
-      "correctOptionId": "D",
+      "correctOptionId": "C",
       "explanation": "User Access Administrator is the least-privileged built-in Azure role for managing RBAC role assignments without broader resource management."
     },
     {
@@ -4466,20 +4469,20 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "Tailwind Traders",
-      "scenario": "A storage account must reject requests that use unencrypted HTTP so external clients and scripts are forced onto HTTPS only.",
+      "scenario": "A storage account must reject requests that use unencrypted HTTP to comply with data security audit standards. Existing scripts and integrations currently use HTTP, so the team needs time to migrate gradually without breaking deployments immediately.",
       "stem": "Which storage account setting should you configure?",
       "subtopic": "Configure and manage storage accounts",
       "referenceTopic": "Secure transfer required",
       "options": [
         {
           "id": "D",
-          "text": "Secure transfer required",
-          "rationale": "This setting forces clients to use HTTPS instead of HTTP."
+          "text": "Blob versioning",
+          "rationale": "Versioning preserves prior blob states but does not enforce transport encryption."
         },
         {
           "id": "A",
-          "text": "Blob versioning",
-          "rationale": "Versioning preserves prior blob states but does not enforce transport encryption."
+          "text": "Secure transfer required",
+          "rationale": "This setting forces clients to use HTTPS instead of HTTP; works gradually as clients update their connections."
         },
         {
           "id": "B",
@@ -4492,8 +4495,8 @@
           "rationale": "Azure Files authentication is unrelated to blocking HTTP access."
         }
       ],
-      "correctOptionId": "D",
-      "explanation": "Secure transfer required enforces HTTPS-only access to the storage account endpoints."
+      "correctOptionId": "A",
+      "explanation": "Secure transfer required enforces HTTPS-only access to the storage account endpoints; when enabled, existing HTTP connections will fail and must be updated by clients, which allows a phased migration approach."
     },
     {
       "active": true,
@@ -4581,8 +4584,8 @@
       "options": [
         {
           "id": "D",
-          "text": "Object replication",
-          "rationale": "Object replication asynchronously copies block blobs between source and destination storage accounts."
+          "text": "A backup vault",
+          "rationale": "Backup vaults are not used for block-blob replication between storage accounts."
         },
         {
           "id": "A",
@@ -4591,16 +4594,16 @@
         },
         {
           "id": "B",
-          "text": "A site-to-site VPN",
-          "rationale": "VPN gateways provide connectivity and do not replicate storage objects."
+          "text": "Object replication",
+          "rationale": "Object replication asynchronously copies block blobs between source and destination storage accounts."
         },
         {
           "id": "C",
-          "text": "A backup vault",
-          "rationale": "Backup vaults are not used for block-blob replication between storage accounts."
+          "text": "A site-to-site VPN",
+          "rationale": "VPN gateways provide connectivity and do not replicate storage objects."
         }
       ],
-      "correctOptionId": "D",
+      "correctOptionId": "B",
       "explanation": "Object replication is the correct Azure Storage capability for asynchronous block-blob replication between storage accounts."
     },
     {
@@ -4610,15 +4613,15 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "Fourth Coffee",
-      "scenario": "A storage account must prevent anonymous access to blob containers even when users try to browse the endpoint directly.",
+      "scenario": "A storage account must prevent anonymous access to blob containers even when users try to browse the endpoint directly. Some specific containers do hold public data that should be accessible with shared access tokens, so you need granular control rather than account-level blocking.",
       "stem": "Which storage account setting should you disable?",
       "subtopic": "Configure access to storage",
       "referenceTopic": "Anonymous blob access",
       "options": [
         {
           "id": "A",
-          "text": "Allow Blob anonymous access",
-          "rationale": "Disabling this setting blocks anonymous public access to blob data."
+          "text": "Object replication",
+          "rationale": "Object replication asynchronously copies blobs between accounts for disaster recovery."
         },
         {
           "id": "B",
@@ -4632,12 +4635,12 @@
         },
         {
           "id": "D",
-          "text": "Versioning",
-          "rationale": "Versioning keeps earlier blob versions and does not affect anonymous access."
+          "text": "Allow Blob anonymous access",
+          "rationale": "Disabling this setting blocks anonymous public access at the account level while still allowing SAS-based container access for specific scenarios."
         }
       ],
-      "correctOptionId": "A",
-      "explanation": "Disable Allow Blob anonymous access when blob containers must not be accessible anonymously."
+      "correctOptionId": "D",
+      "explanation": "Disable Allow Blob anonymous access when blob containers must not be accessible anonymously; this account-level control prevents anonymous browsing while still allowing container-level SAS grants for specific public data containers."
     },
     {
       "active": true,
@@ -4983,8 +4986,8 @@
       "options": [
         {
           "id": "D",
-          "text": "A system-assigned managed identity",
-          "rationale": "A system-assigned managed identity lets the VM obtain tokens without stored credentials."
+          "text": "A budget",
+          "rationale": "Budgets are unrelated to authentication from a VM."
         },
         {
           "id": "A",
@@ -4993,16 +4996,16 @@
         },
         {
           "id": "B",
-          "text": "A network security group",
-          "rationale": "An NSG filters traffic but does not provide workload identity."
+          "text": "A system-assigned managed identity",
+          "rationale": "A system-assigned managed identity lets the VM obtain tokens without stored credentials."
         },
         {
           "id": "C",
-          "text": "A budget",
-          "rationale": "Budgets are unrelated to authentication from a VM."
+          "text": "A network security group",
+          "rationale": "An NSG filters traffic but does not provide workload identity."
         }
       ],
-      "correctOptionId": "D",
+      "correctOptionId": "B",
       "explanation": "A system-assigned managed identity is the simplest way for an Azure VM to authenticate to Azure services without stored credentials."
     },
     {
@@ -5127,13 +5130,13 @@
       "options": [
         {
           "id": "D",
-          "text": "Azure Container Instances",
-          "rationale": "ACI runs containers directly without requiring VM or cluster management."
+          "text": "A Recovery Services vault",
+          "rationale": "A Recovery Services vault is not a container execution platform."
         },
         {
           "id": "A",
-          "text": "A dedicated host",
-          "rationale": "Dedicated hosts are for VM placement on dedicated physical servers."
+          "text": "Azure Container Instances",
+          "rationale": "ACI runs containers directly without requiring VM or cluster management."
         },
         {
           "id": "B",
@@ -5142,11 +5145,11 @@
         },
         {
           "id": "C",
-          "text": "A Recovery Services vault",
-          "rationale": "A Recovery Services vault is not a container execution platform."
+          "text": "A dedicated host",
+          "rationale": "Dedicated hosts are for VM placement on dedicated physical servers."
         }
       ],
-      "correctOptionId": "D",
+      "correctOptionId": "A",
       "explanation": "Azure Container Instances is the fastest Azure option for running a container without cluster or guest OS management."
     },
     {
@@ -5271,8 +5274,8 @@
       "options": [
         {
           "id": "D",
-          "text": "Mark it as a deployment slot setting",
-          "rationale": "Slot settings stay with the slot and are not swapped into the target slot."
+          "text": "Assign it as a route table property",
+          "rationale": "Route tables manage network routes and do not hold application configuration."
         },
         {
           "id": "A",
@@ -5286,11 +5289,11 @@
         },
         {
           "id": "C",
-          "text": "Assign it as a route table property",
-          "rationale": "Route tables manage network routes and do not hold application configuration."
+          "text": "Mark it as a deployment slot setting",
+          "rationale": "Slot settings stay with the slot and are not swapped into the target slot."
         }
       ],
-      "correctOptionId": "D",
+      "correctOptionId": "C",
       "explanation": "Slot-specific settings must be marked as deployment slot settings so they remain bound to the staging or production slot during swaps."
     },
     {
@@ -5836,7 +5839,7 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "Contoso Manufacturing",
-      "scenario": "Two virtual networks in the same Azure region must communicate privately by using the Microsoft backbone while traffic stays off the public internet path.",
+      "scenario": "Two virtual networks in the same Azure region must communicate privately by using the Microsoft backbone while traffic stays off the public internet path. Auditors must verify that cross-VNet traffic uses private IP-only routing and that routing remains transparent (no manual entry) to both teams.",
       "stem": "Which networking feature should you configure?",
       "subtopic": "Configure virtual networks",
       "referenceTopic": "Virtual network peering",
@@ -6043,7 +6046,7 @@
         }
       ],
       "correctOptionId": "D",
-      "explanation": "Azure Firewall is the Azure-managed security service that provides centralized filtering and NAT capabilities for network traffic."
+      "explanation": "Azure Firewall provides centralized FQDN-based filtering (private DNS zones only do DNS resolution; NSGs don't inspect FQDN), DNAT/SNAT translation, and single-point policy administration across all subnets—unlike NSGs which are subnet-bound and don't support application-layer FQDN rules."
     },
     {
       "active": true,
@@ -6596,13 +6599,13 @@
         },
         {
           "id": "D",
-          "text": "A virtual network gateway",
-          "rationale": "Virtual network gateways provide connectivity rather than log analytics."
+          "text": "An Application Insights workspace",
+          "rationale": "Application Insights is app-focused telemetry (APM), whereas Log Analytics is platform-focused logging and events."
         },
         {
           "id": "A",
-          "text": "A budget",
-          "rationale": "Budgets monitor cost, not operational logs."
+          "text": "An Event Hub namespace",
+          "rationale": "Event Hub is used for telemetry streaming and ingestion, but not for centralized log analytics queries."
         },
         {
           "id": "B",
@@ -6704,13 +6707,13 @@
         },
         {
           "id": "A",
-          "text": "A Standard Load Balancer",
-          "rationale": "Load balancers do not provide data protection."
+          "text": "A Recovery Services vault",
+          "rationale": "Recovery Services vaults are used for VM/on-premises backup, not Azure Blob operational backup."
         },
         {
           "id": "B",
-          "text": "A local network gateway",
-          "rationale": "Local network gateways define on-premises VPN endpoints and do not provide backup."
+          "text": "An Azure Site Recovery vault",
+          "rationale": "Site Recovery is for disaster recovery and migration, not blob backup management."
         },
         {
           "id": "C",
@@ -6740,13 +6743,13 @@
         },
         {
           "id": "C",
-          "text": "A resource lock",
-          "rationale": "Locks do not export metrics or logs."
+          "text": "Activity Log",
+          "rationale": "Activity Log captures subscription-level events, but diagnostic settings are the resource-level configuration for telemetry export."
         },
         {
           "id": "D",
-          "text": "An availability set",
-          "rationale": "Availability sets do not control monitoring exports."
+          "text": "A Log Analytics agent",
+          "rationale": "The agent is deployed on VMs to collect guest logs; diagnostic settings are the resource-level configuration on the storage account."
         },
         {
           "id": "A",
@@ -6776,13 +6779,13 @@
         },
         {
           "id": "D",
-          "text": "Azure Advisor",
-          "rationale": "Advisor recommends improvements but does not provide service incident and maintenance views."
+          "text": "Azure Monitor",
+          "rationale": "Azure Monitor provides alerts and metrics, but Service Health specifically shows service incidents and planned maintenance."
         },
         {
           "id": "A",
-          "text": "A route table",
-          "rationale": "Route tables do not report Azure platform incidents."
+          "text": "An Application Gateway",
+          "rationale": "Application Gateway routes layer-7 traffic and does not report Azure platform incidents."
         },
         {
           "id": "B",
@@ -7065,7 +7068,7 @@
         }
       ],
       "correctOptionId": "C",
-      "explanation": "Azure Update Manager is the correct central Azure service for VM patch assessment and patch orchestration."
+      "explanation": "Azure Update Manager is the correct central Azure service for VM patch assessment and patch orchestration. Azure Policy can enforce settings but doesn't orchestrate patching; Advisor only recommends updates; neither handles deployment scheduling like Update Manager does."
     },
     {
       "active": true,
@@ -7087,8 +7090,8 @@
         },
         {
           "id": "C",
-          "text": "A route table",
-          "rationale": "Route tables control packet forwarding and do not define alert targets."
+          "text": "An Azure Automation runbook",
+          "rationale": "Runbooks execute task automation, whereas action groups define alert notification targets and automated responses."
         },
         {
           "id": "D",
@@ -7291,7 +7294,7 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "City Power and Light",
-      "scenario": "The finance team wants to receive an email alert when their Azure spending reaches 80% of their monthly $10,000 budget. The budget should apply only to the Finance resource group, not the entire subscription.",
+      "scenario": "The finance team wants to receive an email alert when monthly Azure spending reaches 80% of their budgeted limit of $10,000. The budget threshold and alert must apply only to the Finance resource group and must not trigger for spending in other resource groups within the same subscription.",
       "stem": "Where in the Azure portal should you create the budget?",
       "subtopic": "Configure Azure Cost Management and billing",
       "referenceTopic": "Azure Cost Management  budget scope and alert thresholds",
@@ -7367,7 +7370,7 @@
       "type": "multiple-choice",
       "difficulty": "medium",
       "company": "Alpine Ski House",
-      "scenario": "Your organization wants to use Microsoft Entra Privileged Identity Management (PIM) to manage eligible role assignments for Azure resources. You need to confirm the minimum Microsoft Entra ID license required to use PIM for Azure resource roles.",
+      "scenario": "Your organization wants to use Microsoft Entra Privileged Identity Management (PIM) to manage eligible role assignments for Azure resources, including just-in-time activation with time limits and approval workflows. You need to confirm the minimum Microsoft Entra ID license required to enable PIM for both Microsoft Entra directory roles and Azure resource roles.",
       "stem": "Which license is required? Consider governance, resiliency, and least-privilege requirements.",
       "subtopic": "Manage Microsoft Entra Privileged Identity Management",
       "referenceTopic": "Microsoft Entra PIM  licensing requirements",
@@ -7394,7 +7397,7 @@
         }
       ],
       "correctOptionId": "A",
-      "explanation": "Microsoft Entra Privileged Identity Management is a premium feature that requires Microsoft Entra ID P2 licensing (or the Microsoft Entra ID Governance add-on). P1 licensing covers Conditional Access but stops short of JIT access management via PIM."
+      "explanation": "Microsoft Entra Privileged Identity Management (PIM) for both Microsoft Entra directory roles (such as Global Administrator) and Azure resource roles is a premium feature requiring Microsoft Entra ID P2 licensing (or the bundled Microsoft Entra ID Governance add-on). P1 licensing covers Conditional Access and self-service capabilities but does not include PIM's just-in-time, approval-based role activation features."
     },
     {
       "active": true,
@@ -7605,7 +7608,7 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "Litware",
-      "scenario": "A customer has 200 TB of on-premises data in a datacenter with a 1 Gbps internet connection. The team estimates that uploading all data over the internet would take approximately 18 days. The data must be in Azure Blob Storage within 5 days.",
+      "scenario": "A customer has 200 TB of on-premises data in a datacenter with a 1 Gbps internet connection and no dedicated Azure ExpressRoute link. The team estimates that uploading all data over the internet would take approximately 18 days of continuous transfer. The data must be in Azure Blob Storage within 5 days, and network provisioning lead time is not available.",
       "stem": "Which Azure data transfer option should you recommend?",
       "subtopic": "Configure Azure import/export and data movement",
       "referenceTopic": "Azure Data Box vs online transfer options",
@@ -7613,7 +7616,7 @@
         {
           "id": "A",
           "text": "Use AzCopy with the --parallel-level flag to maximize upload throughput over the internet.",
-          "rationale": "Incorrect. Even with maximum parallel transfers, the 1 Gbps link is the bottleneck. The network constraint cannot be overcome with software optimization."
+          "rationale": "Incorrect. Even with maximum parallel transfers and optimized concurrency, the 1 Gbps link remains the fundamental bottleneck. Software-based optimization cannot overcome the network bandwidth constraint for such large-scale one-time migration."
         },
         {
           "id": "B",
@@ -7632,7 +7635,7 @@
         }
       ],
       "correctOptionId": "B",
-      "explanation": "Azure Data Box is the recommended solution when data volume and deadline make online transfer impractical. For 200 TB within 5 days with a limited internet connection, physical shipment via Data Box is the only reliable option."
+      "explanation": "Azure Data Box is purpose-built for large-scale bulk migrations where time constraints or limited bandwidth make online transfer infeasible. For 200 TB within 5 days using a 1 Gbps link (18+ days of continuous transfer needed), physical shipment via Data Box is the only viable option. A standard Data Box unit holds 80 TB; multiple units would be ordered for the full 200 TB."
     },
     {
       "active": true,
@@ -7811,7 +7814,7 @@
       "type": "multiple-choice",
       "difficulty": "hard",
       "company": "Adatum",
-      "scenario": "You manage a Virtual Machine Scale Set (VMSS) that processes messages from an Azure Storage Queue. During business hours, queue depth can spike to 50,000 messages within minutes. A custom autoscale rule must scale out when the queue's ApproximateMessageCount exceeds a threshold. You are configuring the scale rule in Azure Monitor autoscale for VMSS.",
+      "scenario": "You manage a Virtual Machine Scale Set (VMSS) that processes messages from an Azure Storage Queue. During business hours, queue depth can spike to 50,000 messages within minutes. The VMSS is currently set to scale based on VM CPU utilization but this reactive approach causes unacceptable latency. A custom autoscale rule must scale out preemptively when the queue's ApproximateMessageCount exceeds a threshold, before CPU is impacted. You are configuring this external metric-based custom scale rule in Azure Monitor autoscale.",
       "stem": "Which metric source and metric name should you select when configuring the custom autoscale rule? Select the option that must ensure required controls, meet minimum risk tolerance, and prevent service impact while minimizing operational overhead without broad exceptions.",
       "subtopic": "Configure Azure Virtual Machine scale sets",
       "referenceTopic": "VMSS autoscale  custom metrics from Azure Storage Queue",
@@ -7838,7 +7841,7 @@
         }
       ],
       "correctOptionId": "B",
-      "explanation": "VMSS autoscale in Azure Monitor can use metrics from any monitored Azure resource, not just the scale set itself. For an Azure Storage Queue, the ApproximateMessageCount metric is emitted by the Storage Account Queue service. You configure the autoscale rule to trigger when this external metric exceeds the defined threshold."
+      "explanation": "VMSS autoscale in Azure Monitor can use metrics from any monitored Azure resource via external metric-based custom rules, not just the scale set itself. For an Azure Storage Queue, the ApproximateMessageCount metric is emitted by the Storage Account Queue service. By configuring autoscale to trigger on this external metric, the VMSS scales preemptively based on queue depth rather than reactively based on CPU, reducing message processing latency."
     },
     {
       "active": true,
@@ -8169,8 +8172,8 @@
       "type": "multiple-choice",
       "difficulty": "medium",
       "company": "Contoso",
-      "scenario": "Your organization needs to apply operating system patches to a fleet of 200 Azure VMs during a scheduled maintenance window on the second Tuesday of every month. The patching must not proceed automatically outside this window. You are using Azure Update Manager.",
-      "stem": "Which Azure Update Manager feature should you configure? Select the option that must ensure required controls, meet minimum risk tolerance, and prevent service impact while minimizing operational overhead without broad exceptions.",
+      "scenario": "Your organization needs to apply operating system patches to a fleet of 200 Azure VMs during a scheduled maintenance window: the second Tuesday of every month between 8 PM and 10 PM UTC. The patching must not proceed automatically outside this window, and any patching outside the window must be prevented. You are using Azure Update Manager.",
+      "stem": "Which Azure Update Manager feature should you configure?",
       "subtopic": "Manage virtual machine updates by using Azure Update Manager",
       "referenceTopic": "Azure Update Manager  maintenance configurations for scheduled patching",
       "options": [
@@ -8196,7 +8199,7 @@
         }
       ],
       "correctOptionId": "D",
-      "explanation": "Azure Update Manager maintenance configurations define specific recurring schedules for patch deployment. By associating VMs with a maintenance configuration, you ensure patches are only applied during the approved window  in this case, the second Tuesday of each month."
+      "explanation": "Azure Update Manager maintenance configurations define specific recurring schedules (including day of week, time range, and timezone) for patch deployment. By associating the 200 VMs with a maintenance configuration set to the second Tuesday 8-10 PM UTC, Azure ensures patches are deployed only during that window. No patches are applied outside the configured window, satisfying the compliance requirement."
     },
     {
       "active": true,
@@ -8666,7 +8669,7 @@
       "type": "multiple-choice",
       "difficulty": "hard",
       "company": "Fabrikam",
-      "scenario": "A production application uses Application Insights SDK-based telemetry collection. At peak load, the application generates approximately 2,000 telemetry events per second. The development team is concerned about telemetry ingestion costs and wants to reduce the volume of data sent to Application Insights without modifying application code or losing representative samples of all operation types.",
+      "scenario": "A production application uses Application Insights SDK-based telemetry collection. At peak load, the application generates approximately 2,000 telemetry events per second, resulting in ingest costs of approximately $10,000 per month. The development team is concerned about rising telemetry ingestion costs and wants to reduce the volume without modifying application code. It is critical that all operation types (successful requests, failed requests, exceptions, dependencies) remain proportionally represented in the sampled data.",
       "stem": "Which Application Insights feature should you configure? Select the option that must ensure required controls, meet minimum risk tolerance, and prevent service impact while minimizing operational overhead without broad exceptions.",
       "subtopic": "Configure Application Insights monitoring",
       "referenceTopic": "Application Insights  adaptive sampling",
@@ -8693,7 +8696,7 @@
         }
       ],
       "correctOptionId": "B",
-      "explanation": "Adaptive sampling in the Application Insights SDK automatically adjusts the sampling percentage to target a configured maximum telemetry rate. It reduces costs during high-volume periods while ensuring that all operation types (successes, failures, exceptions) are represented proportionally. It does not require code changes beyond initial SDK configuration."
+      "explanation": "Adaptive sampling in the Application Insights SDK automatically adjusts the sampling percentage (e.g., from 50% to 10% or lower) to target a configured maximum telemetry rate (e.g., 500 events per second). It reduces costs during high-volume periods while ensuring that all operation types (successes, failures, exceptions, dependencies) are represented proportionally in the sampled set. The sampling rate adapts automatically; no code changes are required beyond initial SDK configuration."
     },
     {
       "active": true,
@@ -8808,7 +8811,7 @@
       "type": "multiple-choice",
       "difficulty": "hard",
       "company": "Woodgrove",
-      "scenario": "Woodgrove Bank uses Azure Site Recovery to protect production VMs. The current DR configuration has an RPO of 15 minutes. The CTO wants to reduce the RPO to 5 minutes for a tier-1 workload. An engineer proposes that reducing the RPO will also reduce the RTO and may increase storage costs on the recovery side.",
+      "scenario": "Woodgrove Bank uses Azure Site Recovery to protect production VMs and their data replicated to a secondary region. The current DR configuration has an RPO of 15 minutes, meaning up to 15 minutes of recent transaction data could be lost in a failover scenario. The CTO wants to reduce the RPO to 5 minutes for a tier-1 workload to minimize potential data loss. An engineer proposes that reducing the RPO from 15 to 5 minutes will also reduce the RTO and may increase storage costs on the recovery side.",
       "stem": "Which statements in the engineer's proposal are accurate? Select the option that must ensure required controls, meet minimum risk tolerance, and prevent service impact while minimizing operational overhead without broad exceptions.",
       "subtopic": "Manage site recovery and backups",
       "referenceTopic": "Azure Site Recovery  RPO vs RTO and cost implications",
@@ -8821,21 +8824,21 @@
         {
           "id": "C",
           "text": "Reducing the RPO automatically reduces the RTO because failover is initiated more quickly.",
-          "rationale": "Incorrect. RTO is determined by the failover and recovery process (VM boot time, application startup, DNS propagation, etc.), not by the frequency of replication checkpoints."
+          "rationale": "Incorrect. RTO (time to restore service after disaster) is determined by the failover and recovery process (VM boot time, application startup, DNS propagation, network reconfiguration), not by the frequency of replication checkpoints. Reducing RPO (checkpoint frequency) does not accelerate the recovery process itself."
         },
         {
           "id": "D",
           "text": "Reducing the RPO has no impact on storage costs because Site Recovery stores only the latest recovery point.",
-          "rationale": "Incorrect. Azure Site Recovery stores multiple crash-consistent and app-consistent recovery points. More frequent checkpoints (to meet a lower RPO) result in more recovery point snapshots in storage."
+          "rationale": "Incorrect. Lower RPO requires MORE frequent replication checkpoints, not fewer. More frequent checkpoints create additional crash-consistent and app-consistent recovery point snapshots, increasing storage consumption on the recovery site."
         },
         {
           "id": "A",
           "text": "Reducing the RPO to 5 minutes requires upgrading the Site Recovery replication appliance to a Premium SKU.",
-          "rationale": "Incorrect. RPO configuration is a replication frequency setting, not tied to an appliance SKU upgrade."
+          "rationale": "Incorrect. RPO is a replication frequency setting (how often checkpoints occur), not tied to a Site Recovery appliance SKU. Appliance SKU determines replication throughput capacity; RPO is configured independently via policy."
         }
       ],
       "correctOptionId": "B",
-      "explanation": "RPO and RTO are separate SLA dimensions in disaster recovery. RPO (Recovery Point Objective) measures maximum acceptable data loss and is directly tied to replication checkpoint frequency. RTO (Recovery Time Objective) measures time to restore service and depends on the failover process. Lower RPO checkpoints create additional recovery point snapshots, which consume more storage."
+      "explanation": "RPO (Recovery Point Objective) and RTO (Recovery Time Objective) are independent SLA dimensions in disaster recovery. RPO measures maximum acceptable data loss and is directly tied to replication checkpoint frequency; lower RPO requires more frequent checkpoints (e.g., every 5 minutes instead of 15), creating more recovery point snapshots and increasing storage. RTO measures time to restore full service after a disaster and depends on failover process, VM boot time, and application startup  not on checkpoint frequency. Therefore, reducing RPO from 15 to 5 minutes will NOT reduce RTO, but it will increase recovery point storage costs."
     },
     {
       "active": true,
@@ -9210,8 +9213,8 @@
       "type": "yes-no",
       "difficulty": "medium",
       "company": "Proseware",
-      "scenario": "You are reviewing Azure Container Registry (ACR) features. Evaluate the following statements about ACR capabilities. The implementation must ensure least-privilege access, prevent avoidable downtime, and meet minimum compliance requirements without broad policy exceptions.",
-      "stem": "For each statement, select Yes if the statement is true. Otherwise, select No.",
+      "scenario": "Your development team is migrating on-premises CI/CD pipelines to Azure DevOps and planning to store container images in Azure Container Registry (ACR). Evaluate the following statements about which ACR capabilities will automate image builds and trigger downstream deployments.",
+      "stem": "For each statement, select Yes if the statement is true. Otherwise, select No. Select the option that must ensure required controls, meet minimum risk tolerance, and prevent service impact while minimizing operational overhead without broad exceptions.",
       "subtopic": "Configure container registry",
       "referenceTopic": "Azure Container Registry  tasks, webhooks, and content trust",
       "statements": [
@@ -10147,7 +10150,7 @@
       "type": "multiple-choice",
       "difficulty": "medium",
       "company": "Litware",
-      "scenario": "A Recovery Services vault backs up 50 VMs. The backup policy retains daily recovery points for 30 days and weekly for 12 weeks. Compliance requires extending weekly retention to 52 weeks.",
+      "scenario": "A Recovery Services vault backs up 50 VMs with a policy retaining daily recovery points for 30 days and weekly for 12 weeks. A compliance audit mandates extending weekly retention to 52 weeks and requires that all policy modifications be logged and auditable for governance tracking.",
       "stem": "Where should you modify the retention period? Select the option that must ensure required controls, meet minimum risk tolerance, and prevent service impact while minimizing operational overhead without broad exceptions.",
       "subtopic": "Manage site recovery and backups",
       "referenceTopic": "Azure Backup  backup policies and retention",
@@ -10410,7 +10413,7 @@
       "type": "yes-no",
       "difficulty": "easy",
       "company": "Contoso",
-      "scenario": "You are reviewing Azure RBAC behaviour for a user who is a member of the Entra ID group Finance-Readers. Evaluate the following statements.",
+      "scenario": "You are troubleshooting access issues for the Finance-Readers group, which was granted Reader role on a resource group but members report inability to perform certain expected read operations. Evaluate the following statements about Azure RBAC group membership and permission inheritance to diagnose the issue.",
       "stem": "For each statement about Azure RBAC group-based access, select Yes if true or No if false. Select the option that must ensure required controls, meet minimum risk tolerance, and prevent service impact while minimizing operational overhead without broad exceptions.",
       "subtopic": "Manage access to Azure resources",
       "referenceTopic": "RBAC inheritance - group membership and scope",
@@ -10684,7 +10687,7 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "Contoso Retail",
-      "scenario": "A helpdesk team must reset passwords for only users in the London office. The implementation must ensure least-privilege controls, prevent avoidable service disruption, and satisfy minimum governance requirements without broad exceptions.",
+      "scenario": "A helpdesk team must reset passwords for only users in the London office with audit compliance tracking and approval workflow requirements.",
       "stem": "Which Microsoft Entra feature should you use to scope this delegation?",
       "subtopic": "Manage Microsoft Entra users and groups",
       "referenceTopic": "Administrative units",
@@ -11002,7 +11005,7 @@
       "type": "hot-area",
       "difficulty": "hard",
       "company": "Proseware",
-      "scenario": "A policy must apply only to production subscriptions grouped under one management group. The implementation must ensure least-privilege controls, prevent avoidable service disruption, and satisfy minimum governance requirements without broad exceptions.",
+      "scenario": "A policy must apply only to production subscriptions grouped under one management group, ensuring dev/test subscriptions are excluded without broad exceptions. The implementation must ensure least-privilege controls, prevent avoidable service disruption, and satisfy minimum governance requirements without broad exceptions.",
       "stem": "At which scope should you assign the policy?",
       "subtopic": "Manage Azure subscriptions and governance",
       "referenceTopic": "Policy assignment scopes",
@@ -11928,7 +11931,7 @@
       "type": "multiple-choice",
       "difficulty": "easy",
       "company": "A. Datum",
-      "scenario": "A line-of-business app should be reachable only inside VNet and connected private networks. The implementation must ensure least-privilege controls, prevent avoidable service disruption, and satisfy minimum governance requirements without broad exceptions.",
+      "scenario": "A regulated finance line-of-business app must enforce private-only access inside VNet and connected private networks per compliance mandate.",
       "stem": "Which load balancer type is appropriate?",
       "subtopic": "Configure name resolution and load balancing",
       "referenceTopic": "Internal load balancer",
@@ -12283,7 +12286,7 @@
       "type": "multiple-choice",
       "difficulty": "hard",
       "company": "Woodgrove",
-      "scenario": "A business-critical VM requires orchestrated regional failover and non-disruptive DR testing. The implementation must ensure least-privilege controls, prevent avoidable service disruption, and satisfy minimum governance requirements without broad exceptions.",
+      "scenario": "Woodgrove Bank's mission-critical trading VM (currently in primary region) requires orchestrated regional failover with less-than-1-hour RTO and monthly non-disruptive DR drills. The implementation must ensure least-privilege controls, prevent avoidable service disruption, and satisfy minimum governance requirements without broad exceptions.",
       "stem": "Which service supports this requirement?",
       "subtopic": "Implement backup and recovery",
       "referenceTopic": "Azure Site Recovery",

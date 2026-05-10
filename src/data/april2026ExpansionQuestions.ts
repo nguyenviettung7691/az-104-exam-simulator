@@ -127,7 +127,7 @@ export const april2026ExpansionQuestions: Question[] = [
     difficulty: "easy",
     company: "Contoso Retail",
     scenario:
-      "A helpdesk team must reset passwords for only users in the London office.",
+      "A helpdesk team must reset passwords for only users in the London office with audit compliance tracking and approval workflow requirements.",
     stem: "Which Microsoft Entra feature should you use to scope this delegation?",
     subtopic: "Manage Microsoft Entra users and groups",
     referenceTopic: "Administrative units",
@@ -318,7 +318,7 @@ export const april2026ExpansionQuestions: Question[] = [
     difficulty: "hard",
     company: "Proseware",
     scenario:
-      "A policy must apply only to production subscriptions grouped under one management group.",
+      "A policy must apply only to production subscriptions grouped under one management group, ensuring dev/test subscriptions are excluded without broad exceptions.",
     stem: "At which scope should you assign the policy?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Policy assignment scopes",
@@ -875,7 +875,7 @@ export const april2026ExpansionQuestions: Question[] = [
     difficulty: "easy",
     company: "A. Datum",
     scenario:
-      "A line-of-business app should be reachable only inside VNet and connected private networks.",
+      "A regulated finance line-of-business app must enforce private-only access inside VNet and connected private networks per compliance mandate.",
     stem: "Which load balancer type is appropriate?",
     subtopic: "Configure name resolution and load balancing",
     referenceTopic: "Internal load balancer",
@@ -1089,7 +1089,7 @@ export const april2026ExpansionQuestions: Question[] = [
     difficulty: "hard",
     company: "Woodgrove",
     scenario:
-      "A business-critical VM requires orchestrated regional failover and non-disruptive DR testing.",
+      "Woodgrove Bank's mission-critical trading VM (currently in primary region) requires orchestrated regional failover with less-than-1-hour RTO and monthly non-disruptive DR drills.",
     stem: "Which service supports this requirement?",
     subtopic: "Implement backup and recovery",
     referenceTopic: "Azure Site Recovery",

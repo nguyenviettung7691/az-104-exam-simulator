@@ -268,7 +268,7 @@ export const finalPrepQuestions = [
     type: "multiple-choice",
     difficulty: "easy",
     company: "City Power and Light",
-    scenario: "The finance team wants to receive an email alert when their Azure spending reaches 80% of their monthly $10,000 budget. The budget should apply only to the Finance resource group, not the entire subscription.",
+    scenario: "The finance team wants to receive an email alert when monthly Azure spending reaches 80% of their budgeted limit of $10,000. The budget threshold and alert must apply only to the Finance resource group and must not trigger for spending in other resource groups within the same subscription.",
     stem: "Where in the Azure portal should you create the budget?",
     subtopic: "Configure Azure Cost Management and billing",
     referenceTopic: "Azure Cost Management  budget scope and alert thresholds",
@@ -341,7 +341,7 @@ export const finalPrepQuestions = [
     type: "multiple-choice",
     difficulty: "medium",
     company: "Alpine Ski House",
-    scenario: "Your organization wants to use Microsoft Entra Privileged Identity Management (PIM) to manage eligible role assignments for Azure resources. You need to confirm the minimum Microsoft Entra ID license required to use PIM for Azure resource roles.",
+    scenario: "Your organization wants to use Microsoft Entra Privileged Identity Management (PIM) to manage eligible role assignments for Azure resources, including just-in-time activation with time limits and approval workflows. You need to confirm the minimum Microsoft Entra ID license required to enable PIM for both Microsoft Entra directory roles and Azure resource roles.",
     stem: "Which license is required?",
     subtopic: "Manage Microsoft Entra Privileged Identity Management",
     referenceTopic: "Microsoft Entra PIM  licensing requirements",
@@ -368,7 +368,7 @@ export const finalPrepQuestions = [
       },
     ],
     correctOptionId: "C",
-    explanation: "Microsoft Entra Privileged Identity Management is a premium feature that requires Microsoft Entra ID P2 licensing (or the Microsoft Entra ID Governance add-on). P1 licensing covers Conditional Access but stops short of JIT access management via PIM."
+    explanation: "Microsoft Entra Privileged Identity Management (PIM) for both Microsoft Entra directory roles (such as Global Administrator) and Azure resource roles is a premium feature requiring Microsoft Entra ID P2 licensing (or the bundled Microsoft Entra ID Governance add-on). P1 licensing covers Conditional Access and self-service capabilities but does not include PIM's just-in-time, approval-based role activation features."
   }),
 
   choiceQuestion({
@@ -577,7 +577,7 @@ export const finalPrepQuestions = [
     type: "multiple-choice",
     difficulty: "easy",
     company: "Litware",
-    scenario: "A customer has 200 TB of on-premises data in a datacenter with a 1 Gbps internet connection. The team estimates that uploading all data over the internet would take approximately 18 days. The data must be in Azure Blob Storage within 5 days.",
+    scenario: "A customer has 200 TB of on-premises data in a datacenter with a 1 Gbps internet connection and no dedicated Azure ExpressRoute link. The team estimates that uploading all data over the internet would take approximately 18 days of continuous transfer. The data must be in Azure Blob Storage within 5 days, and network provisioning lead time is not available.",
     stem: "Which Azure data transfer option should you recommend?",
     subtopic: "Configure Azure import/export and data movement",
     referenceTopic: "Azure Data Box vs online transfer options",
@@ -585,7 +585,7 @@ export const finalPrepQuestions = [
       {
         id: "A",
         text: "Use AzCopy with the --parallel-level flag to maximize upload throughput over the internet.",
-        rationale: "Incorrect. Even with maximum parallel transfers, the 1 Gbps link is the bottleneck. The network constraint cannot be overcome with software optimization."
+        rationale: "Incorrect. Even with maximum parallel transfers and optimized concurrency, the 1 Gbps link remains the fundamental bottleneck. Software-based optimization cannot overcome the network bandwidth constraint for such large-scale one-time migration."
       },
       {
         id: "B",
@@ -604,7 +604,7 @@ export const finalPrepQuestions = [
       },
     ],
     correctOptionId: "B",
-    explanation: "Azure Data Box is the recommended solution when data volume and deadline make online transfer impractical. For 200 TB within 5 days with a limited internet connection, physical shipment via Data Box is the only reliable option."
+    explanation: "Azure Data Box is purpose-built for large-scale bulk migrations where time constraints or limited bandwidth make online transfer infeasible. For 200 TB within 5 days using a 1 Gbps link (18+ days of continuous transfer needed), physical shipment via Data Box is the only viable option. A standard Data Box unit holds 80 TB; multiple units would be ordered for the full 200 TB."
   }),
 
   choiceQuestion({
@@ -778,7 +778,7 @@ export const finalPrepQuestions = [
     type: "multiple-choice",
     difficulty: "hard",
     company: "Adatum",
-    scenario: "You manage a Virtual Machine Scale Set (VMSS) that processes messages from an Azure Storage Queue. During business hours, queue depth can spike to 50,000 messages within minutes. A custom autoscale rule must scale out when the queue's ApproximateMessageCount exceeds a threshold. You are configuring the scale rule in Azure Monitor autoscale for VMSS.",
+    scenario: "You manage a Virtual Machine Scale Set (VMSS) that processes messages from an Azure Storage Queue. During business hours, queue depth can spike to 50,000 messages within minutes. The VMSS is currently set to scale based on VM CPU utilization but this reactive approach causes unacceptable latency. A custom autoscale rule must scale out preemptively when the queue's ApproximateMessageCount exceeds a threshold, before CPU is impacted. You are configuring this external metric-based custom scale rule in Azure Monitor autoscale.",
     stem: "Which metric source and metric name should you select when configuring the custom autoscale rule?",
     subtopic: "Configure Azure Virtual Machine scale sets",
     referenceTopic: "VMSS autoscale  custom metrics from Azure Storage Queue",
@@ -805,7 +805,7 @@ export const finalPrepQuestions = [
       },
     ],
     correctOptionId: "C",
-    explanation: "VMSS autoscale in Azure Monitor can use metrics from any monitored Azure resource, not just the scale set itself. For an Azure Storage Queue, the ApproximateMessageCount metric is emitted by the Storage Account Queue service. You configure the autoscale rule to trigger when this external metric exceeds the defined threshold."
+    explanation: "VMSS autoscale in Azure Monitor can use metrics from any monitored Azure resource via external metric-based custom rules, not just the scale set itself. For an Azure Storage Queue, the ApproximateMessageCount metric is emitted by the Storage Account Queue service. By configuring autoscale to trigger on this external metric, the VMSS scales preemptively based on queue depth rather than reactively based on CPU, reducing message processing latency."
   }),
 
   choiceQuestion({
@@ -1133,7 +1133,7 @@ export const finalPrepQuestions = [
     type: "multiple-choice",
     difficulty: "medium",
     company: "Contoso",
-    scenario: "Your organization needs to apply operating system patches to a fleet of 200 Azure VMs during a scheduled maintenance window on the second Tuesday of every month. The patching must not proceed automatically outside this window. You are using Azure Update Manager.",
+    scenario: "Your organization needs to apply operating system patches to a fleet of 200 Azure VMs during a scheduled maintenance window: the second Tuesday of every month between 8 PM and 10 PM UTC. The patching must not proceed automatically outside this window, and any patching outside the window must be prevented. You are using Azure Update Manager.",
     stem: "Which Azure Update Manager feature should you configure?",
     subtopic: "Manage virtual machine updates by using Azure Update Manager",
     referenceTopic: "Azure Update Manager  maintenance configurations for scheduled patching",
@@ -1160,7 +1160,7 @@ export const finalPrepQuestions = [
       },
     ],
     correctOptionId: "B",
-    explanation: "Azure Update Manager maintenance configurations define specific recurring schedules for patch deployment. By associating VMs with a maintenance configuration, you ensure patches are only applied during the approved window  in this case, the second Tuesday of each month."
+    explanation: "Azure Update Manager maintenance configurations define specific recurring schedules (including day of week, time range, and timezone) for patch deployment. By associating the 200 VMs with a maintenance configuration set to the second Tuesday 8-10 PM UTC, Azure ensures patches are deployed only during that window. No patches are applied outside the configured window, satisfying the compliance requirement."
   }),
 
   choiceQuestion({
@@ -1626,7 +1626,7 @@ export const finalPrepQuestions = [
     type: "multiple-choice",
     difficulty: "hard",
     company: "Fabrikam",
-    scenario: "A production application uses Application Insights SDK-based telemetry collection. At peak load, the application generates approximately 2,000 telemetry events per second. The development team is concerned about telemetry ingestion costs and wants to reduce the volume of data sent to Application Insights without modifying application code or losing representative samples of all operation types.",
+    scenario: "A production application uses Application Insights SDK-based telemetry collection. At peak load, the application generates approximately 2,000 telemetry events per second, resulting in ingest costs of approximately $10,000 per month. The development team is concerned about rising telemetry ingestion costs and wants to reduce the volume without modifying application code. It is critical that all operation types (successful requests, failed requests, exceptions, dependencies) remain proportionally represented in the sampled data.",
     stem: "Which Application Insights feature should you configure?",
     subtopic: "Configure Application Insights monitoring",
     referenceTopic: "Application Insights  adaptive sampling",
@@ -1653,7 +1653,7 @@ export const finalPrepQuestions = [
       },
     ],
     correctOptionId: "A",
-    explanation: "Adaptive sampling in the Application Insights SDK automatically adjusts the sampling percentage to target a configured maximum telemetry rate. It reduces costs during high-volume periods while ensuring that all operation types (successes, failures, exceptions) are represented proportionally. It does not require code changes beyond initial SDK configuration."
+    explanation: "Adaptive sampling in the Application Insights SDK automatically adjusts the sampling percentage (e.g., from 50% to 10% or lower) to target a configured maximum telemetry rate (e.g., 500 events per second). It reduces costs during high-volume periods while ensuring that all operation types (successes, failures, exceptions, dependencies) are represented proportionally in the sampled set. The sampling rate adapts automatically; no code changes are required beyond initial SDK configuration."
   }),
 
   choiceQuestion({
@@ -1765,7 +1765,7 @@ export const finalPrepQuestions = [
     type: "multiple-choice",
     difficulty: "hard",
     company: "Woodgrove",
-    scenario: "Woodgrove Bank uses Azure Site Recovery to protect production VMs. The current DR configuration has an RPO of 15 minutes. The CTO wants to reduce the RPO to 5 minutes for a tier-1 workload. An engineer proposes that reducing the RPO will also reduce the RTO and may increase storage costs on the recovery side.",
+    scenario: "Woodgrove Bank uses Azure Site Recovery to protect production VMs and their data replicated to a secondary region. The current DR configuration has an RPO of 15 minutes, meaning up to 15 minutes of recent transaction data could be lost in a failover scenario. The CTO wants to reduce the RPO to 5 minutes for a tier-1 workload to minimize potential data loss. An engineer proposes that reducing the RPO from 15 to 5 minutes will also reduce the RTO and may increase storage costs on the recovery side.",
     stem: "Which statements in the engineer's proposal are accurate?",
     subtopic: "Manage site recovery and backups",
     referenceTopic: "Azure Site Recovery  RPO vs RTO and cost implications",
@@ -1778,21 +1778,21 @@ export const finalPrepQuestions = [
       {
         id: "B",
         text: "Reducing the RPO automatically reduces the RTO because failover is initiated more quickly.",
-        rationale: "Incorrect. RTO is determined by the failover and recovery process (VM boot time, application startup, DNS propagation, etc.), not by the frequency of replication checkpoints."
+        rationale: "Incorrect. RTO (time to restore service after disaster) is determined by the failover and recovery process (VM boot time, application startup, DNS propagation, network reconfiguration), not by the frequency of replication checkpoints. Reducing RPO (checkpoint frequency) does not accelerate the recovery process itself."
       },
       {
         id: "C",
         text: "Reducing the RPO has no impact on storage costs because Site Recovery stores only the latest recovery point.",
-        rationale: "Incorrect. Azure Site Recovery stores multiple crash-consistent and app-consistent recovery points. More frequent checkpoints (to meet a lower RPO) result in more recovery point snapshots in storage."
+        rationale: "Incorrect. Lower RPO requires MORE frequent replication checkpoints, not fewer. More frequent checkpoints create additional crash-consistent and app-consistent recovery point snapshots, increasing storage consumption on the recovery site."
       },
       {
         id: "D",
         text: "Reducing the RPO to 5 minutes requires upgrading the Site Recovery replication appliance to a Premium SKU.",
-        rationale: "Incorrect. RPO configuration is a replication frequency setting, not tied to an appliance SKU upgrade."
+        rationale: "Incorrect. RPO is a replication frequency setting (how often checkpoints occur), not tied to a Site Recovery appliance SKU. Appliance SKU determines replication throughput capacity; RPO is configured independently via policy."
       },
     ],
     correctOptionId: "A",
-    explanation: "RPO and RTO are separate SLA dimensions in disaster recovery. RPO (Recovery Point Objective) measures maximum acceptable data loss and is directly tied to replication checkpoint frequency. RTO (Recovery Time Objective) measures time to restore service and depends on the failover process. Lower RPO checkpoints create additional recovery point snapshots, which consume more storage."
+    explanation: "RPO (Recovery Point Objective) and RTO (Recovery Time Objective) are independent SLA dimensions in disaster recovery. RPO measures maximum acceptable data loss and is directly tied to replication checkpoint frequency; lower RPO requires more frequent checkpoints (e.g., every 5 minutes instead of 15), creating more recovery point snapshots and increasing storage. RTO measures time to restore full service after a disaster and depends on failover process, VM boot time, and application startup  not on checkpoint frequency. Therefore, reducing RPO from 15 to 5 minutes will NOT reduce RTO, but it will increase recovery point storage costs."
   }),
 
   dragDropQuestion({
@@ -2159,7 +2159,7 @@ export const finalPrepQuestions = [
     type: "yes-no",
     difficulty: "medium",
     company: "Proseware",
-    scenario: "You are reviewing Azure Container Registry (ACR) features. Evaluate the following statements about ACR capabilities.",
+    scenario: "Your development team is migrating on-premises CI/CD pipelines to Azure DevOps and planning to store container images in Azure Container Registry (ACR). Evaluate the following statements about which ACR capabilities will automate image builds and trigger downstream deployments.",
     stem: "For each statement, select Yes if the statement is true. Otherwise, select No.",
     subtopic: "Configure container registry",
     referenceTopic: "Azure Container Registry  tasks, webhooks, and content trust",
@@ -2719,7 +2719,7 @@ export const finalPrepQuestions = [
   choiceQuestion({
     id: "Q2390", domain: "D5", type: "multiple-choice", difficulty: "medium",
     company: "Litware",
-    scenario: "A Recovery Services vault backs up 50 VMs. The backup policy retains daily recovery points for 30 days and weekly for 12 weeks. Compliance requires extending weekly retention to 52 weeks.",
+    scenario: "A Recovery Services vault backs up 50 VMs with a policy retaining daily recovery points for 30 days and weekly for 12 weeks. A compliance audit mandates extending weekly retention to 52 weeks and requires that all policy modifications be logged and auditable for governance tracking.",
     stem: "Where should you modify the retention period?",
     subtopic: "Manage site recovery and backups",
     referenceTopic: "Azure Backup  backup policies and retention",
@@ -2853,7 +2853,7 @@ export const finalPrepQuestions = [
     type: "yes-no",
     difficulty: "easy",
     company: "Contoso",
-    scenario: "You are reviewing Azure RBAC behaviour for a user who is a member of the Entra ID group Finance-Readers. Evaluate the following statements.",
+    scenario: "You are troubleshooting access issues for the Finance-Readers group, which was granted Reader role on a resource group but members report inability to perform certain expected read operations. Evaluate the following statements about Azure RBAC group membership and permission inheritance to diagnose the issue.",
     stem: "For each statement about Azure RBAC group-based access, select Yes if true or No if false.",
     subtopic: "Manage access to Azure resources",
     referenceTopic: "RBAC inheritance - group membership and scope",
