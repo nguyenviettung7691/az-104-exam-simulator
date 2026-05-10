@@ -59,6 +59,23 @@ npm run test
 npm run audit:quality
 ```
 
+## Deploy To GitHub Pages
+
+This repository includes an automated workflow at `.github/workflows/deploy-pages.yml`.
+It builds the app and deploys `dist/` to GitHub Pages on every push to `main`.
+
+1. Push this project to a GitHub repository.
+2. In GitHub, open **Settings -> Pages**.
+3. Set **Source** to **GitHub Actions**.
+4. Push to `main` (or run the workflow manually from the **Actions** tab).
+
+The workflow automatically sets the Vite base path:
+
+- `/<repo-name>/` for project pages (for example `https://<user>.github.io/az-104-exam-simulator/`)
+- `/` for user/organization pages repos named `<user>.github.io`
+
+After deployment completes, the published URL appears in the workflow run summary.
+
 ## Exam Rules
 
 - Domain quotas: D1=12, D2=9, D3=13, D4=11, D5=8
