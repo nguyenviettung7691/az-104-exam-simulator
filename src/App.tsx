@@ -255,6 +255,39 @@ function App() {
           </section>
         ) : null}
       </main>
+
+      <footer className="app-references" aria-label="Official AZ-104 documents">
+        <h3>Reference Links (Official)</h3>
+        <ul className="reference-links">
+          <li>
+            <a
+              href="https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/az-104"
+              target="_blank"
+              rel="external noopener noreferrer"
+            >
+              Study guide
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://learn.microsoft.com/en-us/credentials/certifications/azure-administrator"
+              target="_blank"
+              rel="external noopener noreferrer"
+            >
+              Exam page
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://learn.microsoft.com/en-us/credentials/support/exam-duration-exam-experience"
+              target="_blank"
+              rel="external noopener noreferrer"
+            >
+              Exam duration and experience
+            </a>
+          </li>
+        </ul>
+      </footer>
     </div>
   );
 }
