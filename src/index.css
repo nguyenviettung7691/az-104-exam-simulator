@@ -87,13 +87,21 @@ button.active {
 }
 
 button.danger {
-  border-color: rgba(194, 52, 40, 0.4);
-  color: var(--red);
+  border-color: rgba(194, 52, 40, 0.45);
+  color: #9d261d;
+  background: linear-gradient(120deg, rgba(194, 52, 40, 0.12), rgba(194, 52, 40, 0.05));
+  font-weight: 700;
 }
 
 button.danger:hover {
   border-color: var(--red);
-  box-shadow: 0 4px 16px rgba(194, 52, 40, 0.2);
+  box-shadow: 0 6px 18px rgba(194, 52, 40, 0.24);
+  background: linear-gradient(120deg, rgba(194, 52, 40, 0.16), rgba(194, 52, 40, 0.07));
+}
+
+button.danger:focus-visible {
+  outline: 2px solid rgba(194, 52, 40, 0.28);
+  outline-offset: 2px;
 }
 
 .app-shell {
@@ -316,6 +324,24 @@ button.danger:hover {
   border-left: 4px solid var(--azure);
   background: rgba(0, 120, 212, 0.08);
   padding: 0.8rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.pause-box-budget {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+}
+
+.run-notice {
+  margin: 0 0 0.9rem 0;
+}
+
+.run-pause-budget {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
 }
 
 .single-question h3,
@@ -602,6 +628,9 @@ th {
   margin: 0;
   display: grid;
   gap: 0.45rem;
+  max-height: 30rem;
+  overflow-y: auto;
+  padding-right: 0.3rem;
 }
 
 .question-list li {
@@ -2431,4 +2460,45 @@ button:disabled {
 
 .question-list li:has(input:not(:checked)) .q-meta-pill {
   opacity: 0.5;
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+
+  .results-report,
+  .results-report * {
+    visibility: visible !important;
+  }
+
+  .results-report {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0.3in;
+    border: 0;
+    box-shadow: none;
+    background: #fff;
+  }
+
+  .results-action-bar {
+    display: none !important;
+  }
+
+  .results-report > * {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .results-section-card,
+  .results-card,
+  .next-steps-card {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
 }

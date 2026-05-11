@@ -37,6 +37,7 @@ const downloadText = (filename: string, content: string): void => {
 
 function App() {
   const [view, setView] = useState<AppView>("simulation");
+  const [isExamActive, setIsExamActive] = useState<boolean>(false);
   const [bank, setBank] = useState<QuestionBank>(loadQuestionBank());
   const [validationReport, setValidationReport] = useState(() =>
     validateQuestionBank(loadQuestionBank()),
@@ -90,6 +91,18 @@ function App() {
   };
 
   const clearBank = (): void => {
+    if (bank.questions.length === 0 && bank.caseStudies.length === 0) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Clear the entire question bank?\n\nThis removes ${bank.questions.length} questions and ${bank.caseStudies.length} case studies.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     onBankChanged(createEmptyQuestionBank());
     setImportFeedback("Question bank cleared.");
   };
@@ -123,8 +136,28 @@ function App() {
   };
 
   const clearHistory = (): void => {
+    if (runHistory.length === 0) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Clear run history?\n\nThis will permanently remove ${runHistory.length} saved run ${runHistory.length === 1 ? "entry" : "entries"}.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     clearRunHistory();
     setRunHistory([]);
+  };
+
+  const onRequestNewRun = (): void => {
+    setView("simulation");
+  };
+
+  const onSimulationRunActiveChange = (active: boolean): void => {
+    setIsExamActive(active);
   };
 
   return (
@@ -167,6 +200,8 @@ function App() {
           type="button"
           className={view === "question-bank" ? "active" : ""}
           onClick={() => setView("question-bank")}
+          disabled={isExamActive}
+          title={isExamActive ? "Finish or stop the current exam to access Question Bank." : undefined}
         >
           Question Bank
         </button>
@@ -174,6 +209,8 @@ function App() {
           type="button"
           className={view === "history" ? "active" : ""}
           onClick={() => setView("history")}
+          disabled={isExamActive}
+          title={isExamActive ? "Finish or stop the current exam to access Results and Trends." : undefined}
         >
           Results and Trends
         </button>
@@ -187,6 +224,8 @@ function App() {
             preferredMode={preferredMode}
             onModeChange={onModeChange}
             onReportReady={onReportReady}
+            onRunActiveChange={onSimulationRunActiveChange}
+            onRequestNewRun={onRequestNewRun}
           />
         ) : null}
 

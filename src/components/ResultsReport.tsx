@@ -242,7 +242,14 @@ export const ResultsReport = ({ report, onNewRun }: ResultsReportProps) => {
           Print / Export PDF
         </button>
         {onNewRun ? (
-          <button type="button" className="btn-primary" onClick={onNewRun}>
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "auto" });
+              onNewRun();
+            }}
+          >
             Start New Run
           </button>
         ) : null}

@@ -24,6 +24,8 @@ interface SimulationRunnerProps {
   preferredMode: PresentationMode | null;
   onModeChange: (mode: PresentationMode) => void;
   onReportReady: (report: SimulationRunReport) => void;
+  onRunActiveChange: (active: boolean) => void;
+  onRequestNewRun: () => void;
 }
 
 interface ActiveSession {
@@ -72,6 +74,7 @@ const createEmptySession = (run: GeneratedRun): ActiveSession => {
 };
 
 const EXAM_DURATION_SECONDS = EXAM_DURATION_MINUTES * 60;
+const MAX_PAUSE_SECONDS = 5 * 60;
 
 const formatTime = (totalSeconds: number): string => {
   const hours = Math.floor(totalSeconds / 3600);
@@ -112,12 +115,61 @@ const getPausedSummary = (
   return `Answered ${answered}/53 · ${domainSummary}`;
 };
 
+const randomFrom = <T,>(items: T[]): T | null => {
+  if (items.length === 0) {
+    return null;
+  }
+
+  const index = Math.floor(Math.random() * items.length);
+  return items[index] ?? null;
+};
+
+const pickReplacementQuestion = (
+  bank: QuestionBank,
+  runQuestions: Question[],
+  currentQuestion: Question,
+): Question | null => {
+  const existingIds = new Set(runQuestions.map((question) => question.id));
+  existingIds.delete(currentQuestion.id);
+
+  const activePool = bank.questions.filter(
+    (question) => question.active !== false && !existingIds.has(question.id),
+  );
+
+  if (activePool.length === 0) {
+    return null;
+  }
+
+  const sameTypeAndDomain = activePool.filter(
+    (question) =>
+      question.domain === currentQuestion.domain &&
+      question.type === currentQuestion.type,
+  );
+
+  const sameDomain = activePool.filter(
+    (question) => question.domain === currentQuestion.domain,
+  );
+
+  const sameType = activePool.filter(
+    (question) => question.type === currentQuestion.type,
+  );
+
+  return (
+    randomFrom(sameTypeAndDomain) ??
+    randomFrom(sameDomain) ??
+    randomFrom(sameType) ??
+    randomFrom(activePool)
+  );
+};
+
 export const SimulationRunner = ({
   bank,
   previousRuns,
   preferredMode,
   onModeChange,
   onReportReady,
+  onRunActiveChange,
+  onRequestNewRun,
 }: SimulationRunnerProps) => {
   const [mode, setMode] = useState<PresentationMode | null>(preferredMode);
   const [session, setSession] = useState<ActiveSession | null>(null);
@@ -128,8 +180,22 @@ export const SimulationRunner = ({
   const [singleRevealId, setSingleRevealId] = useState<string | null>(null);
   const [batchRevealIds, setBatchRevealIds] = useState<string[]>([]);
   const [latestReport, setLatestReport] = useState<SimulationRunReport | null>(null);
+  const [pendingFinalQuestionId, setPendingFinalQuestionId] = useState<string | null>(null);
+  const [pauseUsedSeconds, setPauseUsedSeconds] = useState<number>(0);
+  const [pauseNow, setPauseNow] = useState<number>(Date.now());
+  const [runNotice, setRunNotice] = useState<string>("");
   const [timeLeft, setTimeLeft] = useState<number>(EXAM_DURATION_SECONDS);
   const timeLeftRef = useRef<number>(EXAM_DURATION_SECONDS);
+  const examEndAtRef = useRef<number>(Date.now() + EXAM_DURATION_SECONDS * 1000);
+  const pauseStartedAtRef = useRef<number | null>(null);
+  const pauseLimitTimeoutRef = useRef<number | null>(null);
+
+  const clearPauseLimitTimeout = useCallback((): void => {
+    if (pauseLimitTimeoutRef.current !== null) {
+      window.clearTimeout(pauseLimitTimeoutRef.current);
+      pauseLimitTimeoutRef.current = null;
+    }
+  }, []);
 
   const startRun = (): void => {
     if (!mode) {
@@ -155,8 +221,15 @@ export const SimulationRunner = ({
     setSingleRevealId(null);
     setBatchRevealIds([]);
     setLatestReport(null);
+    setPendingFinalQuestionId(null);
+    setPauseUsedSeconds(0);
+    setPauseNow(Date.now());
+    pauseStartedAtRef.current = null;
+    clearPauseLimitTimeout();
+    setRunNotice("");
     setTimeLeft(EXAM_DURATION_SECONDS);
     timeLeftRef.current = EXAM_DURATION_SECONDS;
+    examEndAtRef.current = Date.now() + EXAM_DURATION_SECONDS * 1000;
     setSession(createEmptySession(generated.run));
   };
 
@@ -182,41 +255,140 @@ export const SimulationRunner = ({
     });
 
     setLatestReport(report);
+    setPendingFinalQuestionId(null);
+    setPaused(false);
+    setPausedSummary("");
+    pauseStartedAtRef.current = null;
+    clearPauseLimitTimeout();
     onReportReady(report);
     return nextSession;
-  }, [onReportReady]);
+  }, [clearPauseLimitTimeout, onReportReady]);
+
+  const forceFinalizeSession = useCallback((current: ActiveSession): ActiveSession => {
+    const nextAnswers = { ...current.answers };
+    const nextEvaluations = { ...current.evaluations };
+
+    for (const question of current.run.questions) {
+      if (!nextEvaluations[question.id]) {
+        nextAnswers[question.id] = { type: "skipped" as const };
+        nextEvaluations[question.id] = evaluateQuestion(question, { type: "skipped" });
+      }
+    }
+
+    return finalizeIfComplete({ ...current, answers: nextAnswers, evaluations: nextEvaluations });
+  }, [finalizeIfComplete]);
+
+  const resetToRunStart = useCallback((): void => {
+    clearPauseLimitTimeout();
+    setSession(null);
+    setPaused(false);
+    setPausedSummary("");
+    setSingleRevealId(null);
+    setBatchRevealIds([]);
+    setLatestReport(null);
+    setPendingFinalQuestionId(null);
+    setPauseUsedSeconds(0);
+    setPauseNow(Date.now());
+    pauseStartedAtRef.current = null;
+    setRunNotice("");
+    setTimeLeft(EXAM_DURATION_SECONDS);
+    timeLeftRef.current = EXAM_DURATION_SECONDS;
+    examEndAtRef.current = Date.now() + EXAM_DURATION_SECONDS * 1000;
+    onRequestNewRun();
+  }, [clearPauseLimitTimeout, onRequestNewRun]);
+
+  const stopRun = (): void => {
+    if (!session) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Stop this exam now?\n\nUnanswered questions will be marked as skipped and the current run will be finalized.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setSession((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return forceFinalizeSession(current);
+    });
+  };
+
+  const finalizeFromFinalReveal = (): void => {
+    setSession((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return finalizeIfComplete(current);
+    });
+  };
 
   // Tick + time-up: use a ref to avoid stale closure; setSession called inside
   // the interval callback (async), not synchronously in the effect body.
   useEffect(() => {
-    if (!session || paused || latestReport) {
+    if (!session || latestReport) {
       return;
     }
 
-    const id = setInterval(() => {
-      const next = Math.max(0, timeLeftRef.current - 1);
+    const tick = (): void => {
+      if (paused) {
+        return;
+      }
+
+      const next = Math.max(0, Math.ceil((examEndAtRef.current - Date.now()) / 1000));
+      if (next === timeLeftRef.current) {
+        return;
+      }
+
       timeLeftRef.current = next;
       setTimeLeft(next);
 
       if (next === 0) {
-        clearInterval(id);
         setSession((current) => {
-          if (!current) return current;
-          const nextAnswers = { ...current.answers };
-          const nextEvaluations = { ...current.evaluations };
-          for (const question of current.run.questions) {
-            if (!nextEvaluations[question.id]) {
-              nextAnswers[question.id] = { type: "skipped" as const };
-              nextEvaluations[question.id] = evaluateQuestion(question, { type: "skipped" });
-            }
+          if (!current) {
+            return current;
           }
-          return finalizeIfComplete({ ...current, answers: nextAnswers, evaluations: nextEvaluations });
+
+          return forceFinalizeSession(current);
         });
       }
+    };
+
+    tick();
+    const id = setInterval(() => {
+      tick();
     }, 1000);
 
     return () => clearInterval(id);
-  }, [session, paused, latestReport, finalizeIfComplete]);
+  }, [session, paused, latestReport, forceFinalizeSession]);
+
+  useEffect(() => {
+    onRunActiveChange(Boolean(session) && !latestReport);
+  }, [session, latestReport, onRunActiveChange]);
+
+  useEffect(() => {
+    if (!paused || !pauseStartedAtRef.current) {
+      return;
+    }
+
+    const id = window.setInterval(() => {
+      setPauseNow(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(id);
+  }, [paused]);
+
+  useEffect(() => {
+    return () => {
+      clearPauseLimitTimeout();
+    };
+  }, [clearPauseLimitTimeout]);
 
   const updateAnswer = (questionId: string, answer: UserAnswer): void => {
     setSession((current) => {
@@ -259,6 +431,7 @@ export const SimulationRunner = ({
       const question = current.run.questions[current.currentIndex];
       const answer = current.answers[question.id];
       const evaluation = evaluateQuestion(question, answer);
+      const isLastQuestion = current.currentIndex >= current.run.questions.length - 1;
       const next = {
         ...current,
         evaluations: {
@@ -268,6 +441,12 @@ export const SimulationRunner = ({
       };
 
       setSingleRevealId(question.id);
+      if (isLastQuestion) {
+        setPendingFinalQuestionId(question.id);
+        return next;
+      }
+
+      setPendingFinalQuestionId(null);
       return finalizeIfComplete(next);
     });
   };
@@ -295,6 +474,7 @@ export const SimulationRunner = ({
       };
 
       setSingleRevealId(null);
+      setPendingFinalQuestionId(null);
       return finalizeIfComplete(next);
     });
   };
@@ -313,6 +493,7 @@ export const SimulationRunner = ({
     });
 
     setSingleRevealId(null);
+    setPendingFinalQuestionId(null);
   };
 
   const submitBatch = (): void => {
@@ -342,6 +523,7 @@ export const SimulationRunner = ({
         evaluations: nextEvaluations,
       };
 
+      setPendingFinalQuestionId(null);
       return finalizeIfComplete(next);
     });
   };
@@ -366,13 +548,94 @@ export const SimulationRunner = ({
       return;
     }
 
+    const remainingPauseBudget = Math.max(0, MAX_PAUSE_SECONDS - pauseUsedSeconds);
+    if (remainingPauseBudget <= 0) {
+      setRunNotice("Pause limit reached (5:00 total). Continue the exam or stop the run.");
+      return;
+    }
+
     setPaused(true);
+    pauseStartedAtRef.current = Date.now();
+    clearPauseLimitTimeout();
+    pauseLimitTimeoutRef.current = window.setTimeout(() => {
+      resumeRun(true);
+    }, remainingPauseBudget * 1000);
     setPausedSummary(getPausedSummary(session.run.questions, session.evaluations));
+    setPauseNow(Date.now());
+    setRunNotice("");
   };
 
-  const resumeRun = (): void => {
+  const resumeRun = (autoTriggered = false): void => {
+    const pauseStartedAt = pauseStartedAtRef.current;
+    const remainingBudget = Math.max(0, MAX_PAUSE_SECONDS - pauseUsedSeconds);
+    const elapsed = pauseStartedAt
+      ? Math.max(0, Math.floor((Date.now() - pauseStartedAt) / 1000))
+      : 0;
+    const consumed = Math.min(remainingBudget, elapsed);
+
+    clearPauseLimitTimeout();
+    pauseStartedAtRef.current = null;
+
+    if (consumed > 0) {
+      setPauseUsedSeconds((value) => Math.min(MAX_PAUSE_SECONDS, value + consumed));
+      examEndAtRef.current += consumed * 1000;
+      const adjustedLeft = Math.max(0, Math.ceil((examEndAtRef.current - Date.now()) / 1000));
+      timeLeftRef.current = adjustedLeft;
+      setTimeLeft(adjustedLeft);
+    }
+
     setPaused(false);
     setPausedSummary("");
+    setPauseNow(Date.now());
+
+    if (remainingBudget - consumed <= 0 || autoTriggered) {
+      setRunNotice("Pause limit reached (5:00 total). Additional pauses are disabled.");
+    }
+
+    setSession((current) => {
+      if (!current) {
+        return current;
+      }
+
+      const replaceIndex =
+        mode === "single"
+          ? current.currentIndex
+          : Math.min(current.batchStart, current.run.questions.length - 1);
+      const currentQuestion = current.run.questions[replaceIndex];
+      const replacement = pickReplacementQuestion(bank, current.run.questions, currentQuestion);
+
+      if (!replacement) {
+        setRunNotice(
+          "Pause resumed, but no unused active replacement question was available. Continuing with the current question.",
+        );
+        return current;
+      }
+
+      const nextQuestions = [...current.run.questions];
+      nextQuestions[replaceIndex] = replacement;
+
+      const nextAnswers = { ...current.answers };
+      const nextEvaluations = { ...current.evaluations };
+      const nextHints = { ...current.hintsShown };
+      delete nextAnswers[currentQuestion.id];
+      delete nextEvaluations[currentQuestion.id];
+      delete nextHints[currentQuestion.id];
+
+      setSingleRevealId(null);
+      setBatchRevealIds([]);
+      setPendingFinalQuestionId(null);
+
+      return {
+        ...current,
+        run: {
+          ...current.run,
+          questions: nextQuestions,
+        },
+        answers: nextAnswers,
+        evaluations: nextEvaluations,
+        hintsShown: nextHints,
+      };
+    });
   };
 
   const onModeSelected = (nextMode: PresentationMode): void => {
@@ -417,8 +680,18 @@ export const SimulationRunner = ({
     );
   }, [session, mode, currentBatch]);
 
+  const pauseInCurrentSession = paused && pauseStartedAtRef.current
+    ? Math.floor((pauseNow - pauseStartedAtRef.current) / 1000)
+    : 0;
+  const remainingPauseSeconds = Math.max(
+    0,
+    MAX_PAUSE_SECONDS - pauseUsedSeconds - Math.max(0, pauseInCurrentSession),
+  );
+
+  const canPause = remainingPauseSeconds > 0;
+
   if (latestReport) {
-    return <ResultsReport report={latestReport} onNewRun={() => setLatestReport(null)} />;
+    return <ResultsReport report={latestReport} onNewRun={resetToRunStart} />;
   }
 
   return (
@@ -494,6 +767,7 @@ export const SimulationRunner = ({
               >
                 {formatTime(timeLeft)}
               </p>
+              <p className="run-pause-budget">Pause left {formatTime(remainingPauseSeconds)}</p>
             </div>
 
             <div className="domain-mini-bars">
@@ -522,11 +796,17 @@ export const SimulationRunner = ({
           {paused ? (
             <div className="pause-box">
               <p>{pausedSummary}</p>
-              <button type="button" onClick={resumeRun}>
+              <p className="pause-box-budget">Pause time remaining: {formatTime(remainingPauseSeconds)}</p>
+              <button type="button" onClick={() => resumeRun()}>
                 Resume Run
+              </button>
+              <button type="button" className="danger" onClick={stopRun}>
+                Stop Exam
               </button>
             </div>
           ) : null}
+
+          {runNotice ? <p className="inline-warning run-notice">{runNotice}</p> : null}
 
           {!paused && mode === "single" && currentSingleQuestion && displayedSingleQuestion ? (
             <article className="single-question">
@@ -603,17 +883,26 @@ export const SimulationRunner = ({
                     <button type="button" onClick={skipSingle}>
                       Skip
                     </button>
-                    <button type="button" onClick={pauseRun}>
+                    <button type="button" onClick={pauseRun} disabled={!canPause}>
                       Pause
                     </button>
                     <button type="button" className="btn-submit" onClick={submitSingle}>
-                      Submit Answer
+                      {session.currentIndex >= session.run.questions.length - 1 ? "Finish Exam" : "Submit Answer"}
+                    </button>
+                    <button type="button" className="danger" onClick={stopRun}>
+                      Stop Exam
                     </button>
                   </>
                 ) : (
-                  <button type="button" className="btn-submit" onClick={nextSingle}>
-                    Next Question →
-                  </button>
+                  pendingFinalQuestionId === singleRevealId ? (
+                    <button type="button" className="btn-submit" onClick={finalizeFromFinalReveal}>
+                      Finish Exam
+                    </button>
+                  ) : (
+                    <button type="button" className="btn-submit" onClick={nextSingle}>
+                      Next Question →
+                    </button>
+                  )
                 )}
               </div>
 
@@ -665,7 +954,7 @@ export const SimulationRunner = ({
               ))}
 
               <div className="question-actions">
-                <button type="button" onClick={pauseRun}>
+                <button type="button" onClick={pauseRun} disabled={!canPause}>
                   Pause
                 </button>
                 {batchRevealIds.length === 0 ? (
@@ -677,6 +966,9 @@ export const SimulationRunner = ({
                     Next Batch →
                   </button>
                 )}
+                <button type="button" className="danger" onClick={stopRun}>
+                  Stop Exam
+                </button>
               </div>
 
               {batchRevealIds.length > 0 ? (

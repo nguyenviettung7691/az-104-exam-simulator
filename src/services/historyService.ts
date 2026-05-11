@@ -33,6 +33,14 @@ export const saveRunHistory = (reports: SimulationRunReport[]): void => {
 
 export const appendRunHistory = (report: SimulationRunReport): SimulationRunReport[] => {
   const history = loadRunHistory();
+  const alreadyExists = history.some(
+    (entry) => entry.runNumber === report.runNumber && entry.startedAt === report.startedAt,
+  );
+
+  if (alreadyExists) {
+    return history;
+  }
+
   const next = [...history, report];
   saveRunHistory(next);
   return next;
