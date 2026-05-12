@@ -41,36 +41,36 @@ export const finalPrepQuestions = [
     type: "multiple-choice",
     difficulty: "hard",
     company: "Adatum Corp",
-    scenario: "A global administrator has enabled Microsoft Entra Privileged Identity Management (PIM) for the subscription. A security architect named User1 currently holds a permanent Owner role assignment on the production subscription. The security team wants User1 to activate the Owner role only when needed, with a maximum activation duration of 4 hours and mandatory approval by a second administrator before access is granted.",
-    stem: "What is the minimum set of changes you must make in PIM to satisfy these requirements?",
+    scenario: "Adatum's production subscription has a permanent Owner assignment for a security architect (User1). A new security policy mandates: (1) Owner must be eligible (not permanent), (2) activations require approval from two independent approvers (no single approver can approve), (3) max activation duration is 4 hours, (4) all activations must be logged for SOX audit compliance with justification required, and (5) if User1 attempts to activate during change-freeze windows (Dec 24-27, Jul 4 weekend), activation must be denied unless emergency override is invoked (which requires CRQ + CISO approval via a separate 24-hour approval chain). The system must prevent approval-delay workarounds by tracking approval request timestamps and blocking repeat requests within 15 minutes.",
+    stem: "Which combination of PIM configurations enforces all five security requirements AND prevents approval-delay exploitation during change-freeze?",
     subtopic: "Manage Microsoft Entra Privileged Identity Management",
-    referenceTopic: "Microsoft Entra PIM eligible assignments and approval workflows",
+    referenceTopic: "Microsoft Entra PIM eligible assignments, multi-stage approvals, time-bound windows, and audit logging",
 
-    hint: "Convert permanent to eligible assignments in PIM; eligible roles require activation, which can be gated behind manager approval. This is the JIT pattern for privileged access.",
+    hint: "PIM supports eligible assignments (requirement 1), approval workflows (requirement 2), max duration (requirement 3), and audit logging (requirement 4). But does PIM have a change-freeze window feature? Can PIM enforce CRQ + CISO approval via separate workflows? How would you layer PIM with Azure Policy or Conditional Access to handle change-freeze denial + emergency override? What prevents an approver from rapidly re-requesting to bypass multi-approver gates?",
     options: [
       {
         id: "A",
-        text: "Remove the permanent Owner assignment, create an eligible Owner assignment for User1, and configure an approval requirement with a designated approver and a 4-hour max activation duration.",
-        rationale: "Correct. Converting from permanent to eligible removes standing access. The approval requirement and max duration directly satisfy both conditions."
+        text: "Remove permanent Owner, make User1 eligible, configure two-approver requirement, set 4-hour max duration, and enable all PIM audit logs. PIM will block activations during change-freeze automatically.",
+        rationale: "Incorrect. PIM does not have built-in change-freeze window enforcement. PIM audit logs satisfy requirement 4, but PIM alone cannot deny activations on specific calendar dates or enforce CRQ approval. You must layer policy or external controls."
       },
       {
         id: "B",
-        text: "Keep the permanent Owner assignment and also add an eligible Owner assignment with a 4-hour max activation duration.",
-        rationale: "Incorrect. Keeping the permanent assignment means User1 always has Owner access regardless of PIM settings, defeating the purpose of the eligible role."
+        text: "Remove permanent Owner, create eligible assignment, configure two-approver requirement, 4-hour max duration, PIM audit logs enabled, AND layer an Azure Policy with Deny effect that triggers during change-freeze dates (Dec 24-27, Jul 4 weekend). Create a separate CRQ workflow in ServiceNow (outside PIM) for emergency overrides; integrate CRQ approval as a prerequisite before PIM emergency-override flag is set.",
+        rationale: "Correct. This layers PIM for multi-approver eligible activation (1, 2, 3, 4) with Azure Policy to enforce time-bound denial (5 partial). PIM audit logs + justification fields cover audit trails. CRQ + CISO approval via external workflow prevents single-gating and ensures change governance integrity. However, this does NOT fully prevent approval-delay exploitation within PIM."
       },
       {
         id: "C",
-        text: "Remove the permanent Owner assignment, create an eligible Owner assignment for User1, and configure a 4-hour max activation duration with MFA required but no approval step.",
-        rationale: "Incorrect. Requiring MFA satisfies authentication hardening but the scenario explicitly requires approval by a second administrator."
+        text: "Create a Conditional Access policy blocking Owner role activation during change-freeze dates, configure PIM two-approver requirement, 4-hour max duration, PIM audit logs, and set a 15-minute re-request throttle in PIM settings.",
+        rationale: "Incorrect. Conditional Access blocks sign-in; it does not prevent role ACTIVATION within PIM. Conditional Access and PIM operate at different control planes (sign-in vs. role activation). There is no PIM 're-request throttle' setting; throttling must be implemented in code or policy if required."
       },
       {
         id: "D",
-        text: "Enable the PIM access review for the Owner role and configure the review frequency to weekly.",
-        rationale: "Incorrect. Access reviews are a separate governance feature for periodically validating existing assignments; they do not convert permanent to eligible or enforce approval."
+        text: "Remove permanent Owner, make eligible, enable one-approver workflow (not two), 4-hour max duration, PIM audit logs, and Azure Policy blocks activations during change-freeze.",
+        rationale: "Incorrect. One-approver workflow violates requirement 2 (must be two independent approvers). A single approver can become a bottleneck and introduces a single point of failure for approval decisions."
       },
     ],
-    correctOptionId: "A",
-    explanation: "PIM eligible assignments require activation, and activation can be gated behind an approval workflow with a configurable maximum duration. The permanent assignment must first be removed so User1 cannot bypass PIM. Only option A removes the permanent assignment, makes the role eligible, and configures both requirements simultaneously."
+    correctOptionId: "B",
+    explanation: "Option B correctly layers PIM (eligible role + two-approver requirement + audit logging + 4-hour max duration) with Azure Policy to enforce time-bound denial. The separate CRQ + CISO approval workflow (outside PIM) satisfies the change-freeze emergency override requirement. This multi-layer approach recognizes that PIM alone cannot enforce calendar-based change-freeze windows or CRQ integration; those must come from policy or external processes. Option A assumes PIM has built-in change-freeze support (it doesn't). Option C conflates Conditional Access (sign-in) with PIM (activation). Option D violates the two-approver requirement. This tests understanding of PIM's boundaries and how to layer it with policy and external systems to achieve end-to-end governance."
   }),
 
   choiceQuestion({
@@ -79,36 +79,36 @@ export const finalPrepQuestions = [
     type: "multiple-choice",
     difficulty: "hard",
     company: "Tailwind Traders",
-    scenario: "Tailwind Traders enforces a Conditional Access policy that blocks access to the Azure portal unless the user's device is marked compliant in Microsoft Intune. A developer named User2 works from a corporate-managed Windows 11 device that is enrolled in Intune and marked compliant. After a Windows feature update, the device compliance status temporarily shows 'Not compliant' for approximately 30 minutes. During this window, User2 cannot access the Azure portal. You must allow User2 to continue working with minimal policy relaxation.",
-    stem: "Which action should you take?",
-    subtopic: "Manage Conditional Access policies",
-    referenceTopic: "Conditional Access  device compliance and grace period",
+    scenario: "Tailwind Traders enforces multiple Conditional Access policies: (1) Device must be compliant to access Azure portal (enforced for all users), (2) MFA required to access Azure Storage (enforced for all users), (3) High-risk sign-ins must re-authenticate with MFA (Risk-Based Conditional Access enabled). Developer User2 works on a corporate Windows 11 device enrolled in Intune. After a Windows feature update, Intune temporarily marks the device 'Not compliant' for ~30 minutes, blocking portal access. Simultaneously, the update triggers a transient network anomaly, causing Conditional Access to flag the sign-in as 'medium risk' (requiring MFA re-auth). User2 must continue working during this 30-minute window, but any relaxation must NOT bypass MFA (which is mandatory for Storage access) and must NOT disable the high-risk check permanently. Additionally, the compliance grace period must NOT apply to User3 (a contractor) who should NEVER have grace period exemptions per security policy. How do you allow User2 through the transient compliance gap while maintaining MFA enforcement and contractor protection?",
+    stem: "Which combination of Intune and Conditional Access configurations satisfy: grace period for User2 (not User3), transient compliance gap handling, MFA preservation, and risk-based re-auth continuation?",
+    subtopic: "Manage Conditional Access policies and Intune device compliance",
+    referenceTopic: "Intune compliance grace periods, Conditional Access policy layering, user/group exclusions, MFA enforcement, risk-based CA",
 
-    hint: "Intune compliance grace periods allow devices to re-evaluate compliance after transient disruptions (like OS updates) without immediately blocking access. Check settings on the device configuration policy.",
+    hint: "Intune grace periods are device-config settings (apply to ALL devices in that config profile). How do you selectively apply grace period to User2's device but NOT User3's? Can you assign different Intune compliance profiles per user group? If User2 has grace period and User3 doesn't, both must still satisfy MFA (Storage policy). Can Conditional Access policies be ranked or layered so grace-period mitigation doesn't disable risk-based checks? What's the minimal policy relaxation?",
     options: [
       {
         id: "A",
-        text: "Assign User2 to a named location that is excluded from the Conditional Access policy.",
-        rationale: "Incorrect. Named locations are IP-based exclusions; they bypass the policy entirely, which is a broader security relaxation than needed."
+        text: "Configure a compliance grace period in Intune (applies to all devices globally) so User2's device remains compliant for 60 minutes during update. This allows portal access. Exclude User3 from the Conditional Access portal-access policy to prevent grace period from affecting contractor security.",
+        rationale: "Incorrect. Globally enabling grace period affects ALL devices, including User3's contractor device. Excluding User3 from the portal-access policy removes ALL access controls for contractors, which is overly permissive. User3 should remain subject to compliance checks, just without grace period exemption."
       },
       {
         id: "B",
-        text: "Configure a compliance grace period in Intune so devices remain considered compliant for a defined period after a policy violation is detected.",
-        rationale: "Correct. Intune compliance grace periods allow a defined period before non-compliance is enforced, preventing transient update-related status changes from blocking legitimate users."
+        text: "Assign User2 to a named location excluded from the Conditional Access portal-access policy. This bypasses device compliance check for User2 during update.",
+        rationale: "Incorrect. Named-location exclusion disables the portal-access policy entirely for User2 (including device compliance, even after the 30-minute window). This is over-relaxation. Also, it does not address the simultaneous medium-risk sign-in flag."
       },
       {
         id: "C",
-        text: "Create a second Conditional Access policy that grants access to all users unconditionally and set it to a higher priority than the existing policy.",
-        rationale: "Incorrect. Conditional Access does not support numeric priorities; policies are evaluated cumulatively. A grant-all policy would also broadly reduce security."
+        text: "Create a device-configuration profile targeting User2's device group that enables a 60-minute compliance grace period. Assign User3 to a separate profile WITHOUT grace period. Keep all three CA policies active (device compliance, MFA for Storage, risk-based re-auth). Grace period applies only to User2's device; User3 remains unaffected. MFA policies and risk-based CA remain in effect for all users.",
+        rationale: "Correct. Group-based device profiles allow selective grace period assignment: User2's profile has grace (60 min), User3's profile does not. Conditional Access policies remain layered and active. MFA for Storage is still enforced. Risk-based re-auth evaluates transient risk flags; the grace period handles only the compliance check. This achieves minimal relaxation with maximum protection."
       },
       {
         id: "D",
-        text: "Add User2 to the exclusion list of the existing Conditional Access policy permanently.",
-        rationale: "Incorrect. Permanently excluding a user removes Conditional Access protection for that identity, which violates the principle of minimal policy relaxation."
+        text: "Add User2 to the Intune device-compliance policy's exclusion list so User2's device is not evaluated for compliance. Remove User3 from all Conditional Access policies during the 30-minute window.",
+        rationale: "Incorrect. Excluding User2 from compliance checks removes accountability for security. Removing User3 from CA policies during the incident window disables all controls for a contractor, violating security baseline."
       },
     ],
-    correctOptionId: "B",
-    explanation: "Intune compliance grace periods are the correct mechanism for handling transient compliance failures caused by routine device updates. They let the device re-evaluate compliance without immediately triggering access blocks, without any change to the Conditional Access policy itself."
+    correctOptionId: "C",
+    explanation: "This tests understanding of Intune device profiles (group-based, selective grace period) vs Conditional Access policies (layered, all remain active). The key insight is that grace period is a device-CONFIG setting (scoped to device groups), not a policy-level blanket exemption. By assigning User2 and User3 to different compliance profiles, you grant selective grace period WITHOUT affecting other policies. MFA remains mandatory. Risk-based re-auth continues to evaluate transient signs of compromise. This demonstrates minimal-relaxation thinking: unblock the legitimate user for transient issues while maintaining all other security controls and protecting contractors from exemptions.",
   }),
 
   choiceQuestion({
@@ -155,36 +155,36 @@ export const finalPrepQuestions = [
     type: "multiple-choice",
     difficulty: "hard",
     company: "Fabrikam Inc",
-    scenario: "Fabrikam has a management group hierarchy: Root > Corp > Prod. An Azure Policy with effect 'Deny' is assigned at the Corp management group scope to block creation of public IP addresses. The networking team needs to create a public IP address in a production subscription that is under the Prod management group for a specific approved project. The Deny policy must remain active for all other resources.",
-    stem: "What is the correct approach to allow this specific resource creation while keeping the Deny policy active for all other resources?",
+    scenario: "Fabrikam has Root > Corp > Prod hierarchy. A Deny policy at Corp blocks public IP creation. One production project has a formally approved exception to deploy exactly one public IP in a dedicated resource group for 21 days during a migration. Governance requires that: all other resources remain blocked, exemption scope is minimal, and auditors can see that this was intentional and time-bounded.",
+    stem: "Which approach allows this one approved deployment while keeping enforcement intact everywhere else?",
     subtopic: "Manage Azure Policy",
     referenceTopic: "Azure Policy exemptions and exclusions",
 
-    hint: "Policy exemptions (Waiver category) allow specific resources to deviate from a Deny policy while keeping the policy active for all others. Exemptions are scoped to specific resources or RGs.",
+    hint: "Changing policy effect or assignment scope is broad and risky. Look for a targeted, auditable exception mechanism tied to the existing assignment and scoped to the smallest necessary boundary.",
     options: [
       {
         id: "A",
-        text: "Create a policy exemption of category 'Waiver' scoped to the specific resource group or resource, referencing the Deny policy assignment.",
-        rationale: "Correct. A Waiver exemption acknowledges that the resource intentionally deviates from the policy and scopes the exclusion precisely to a resource group or resource rather than removing the policy."
+        text: "Create a policy exemption (Waiver) referencing the Deny assignment and scope it only to the approved resource group (or specific resource), with an expiration date.",
+        rationale: "Correct. This is a surgical, auditable exception. It preserves Deny enforcement for all other scopes and supports time-bounded governance."
       },
       {
         id: "B",
-        text: "Move the production subscription out of the Prod management group, create the public IP address, then move it back.",
-        rationale: "Incorrect. Moving subscriptions between management groups is a significant operational action and would briefly remove all governance controls from the subscription."
+        text: "Temporarily move the subscription outside Corp, deploy the public IP, then move it back.",
+        rationale: "Incorrect. This bypasses all inherited governance controls temporarily and introduces major operational and compliance risk."
       },
       {
         id: "C",
-        text: "Change the Deny policy effect to Audit temporarily, create the resource, then change it back to Deny.",
-        rationale: "Incorrect. Changing the effect to Audit removes enforcement for ALL resources under Corp management group during that window, not just the approved resource."
+        text: "Switch the policy effect from Deny to Audit during deployment and revert afterward.",
+        rationale: "Incorrect. This disables enforcement broadly across scope during the change window, not just for the approved exception."
       },
       {
         id: "D",
-        text: "Assign a second policy with effect 'Append' for public IP addresses at the Prod management group scope to override the Deny policy.",
-        rationale: "Incorrect. A Deny effect always takes precedence in Azure Policy conflict resolution; an Append policy cannot override a Deny."
+        text: "Assign an Append policy at Prod to override the Deny behavior for that project.",
+        rationale: "Incorrect. Append does not override Deny in policy evaluation; Deny still blocks creation."
       },
     ],
     correctOptionId: "A",
-    explanation: "Azure Policy exemptions let you exclude a specific scope (resource, resource group, or subscription) from a policy assignment without changing the assignment itself. The 'Waiver' category is appropriate when a resource is intentionally allowed to deviate from policy. This is the only mechanism that achieves surgical exclusion while keeping the Deny policy active for all other resources."
+    explanation: "A policy exemption is the intended mechanism for intentional, narrow deviations from a policy assignment. By using Waiver with minimal scope and expiration, you preserve enterprise Deny enforcement while allowing only the approved migration exception. Broad alternatives (scope moves, effect changes) undermine governance and create audit risk."
   }),
 
   choiceQuestion({
@@ -346,68 +346,73 @@ export const finalPrepQuestions = [
     type: "multiple-choice",
     difficulty: "hard",
     company: "Woodgrove Bank",
-    scenario: "Woodgrove Bank requires that all new virtual machines created in Azure subscriptions must automatically have diagnostic settings enabled that send platform metrics to a designated Log Analytics workspace. Currently, the policy must also remediate existing VMs that lack diagnostic settings. A new policy initiative is being designed.",
-    stem: "Which Azure Policy effect should you use for the policy definition that enables diagnostic settings on virtual machines?",
+    scenario: "Woodgrove Bank mandates that every VM must stream platform logs and metrics to a central Log Analytics workspace. New VMs must be configured automatically, and existing noncompliant VMs must be remediated at scale. The policy should not just report drift; it must create missing diagnostic settings child resources when absent.",
+    stem: "Which policy effect is required for this design?",
     subtopic: "Manage Azure Policy",
     referenceTopic: "Azure Policy effects  DeployIfNotExists vs Modify vs AuditIfNotExists",
 
-    hint: "DeployIfNotExists is the only policy effect that can create child resources (like diagnostic settings). It also supports remediation to fix existing non-compliant resources.",
+    hint: "Ask which effect can both evaluate existence of related resources and deploy the missing child resource through remediation tasks.",
     options: [
       {
         id: "A",
         text: "AuditIfNotExists",
-        rationale: "Incorrect. AuditIfNotExists reports non-compliance but does not deploy or modify resources to bring them into compliance."
+        rationale: "Incorrect. AuditIfNotExists detects drift but does not deploy missing diagnostic settings."
       },
       {
         id: "B",
         text: "Modify",
-        rationale: "Incorrect. Modify adds or updates tags and properties on a resource but cannot deploy a child resource such as a diagnostic setting. Diagnostic settings are child resources."
+        rationale: "Incorrect. Modify can alter request properties/tags but cannot deploy this child resource pattern."
       },
       {
         id: "C",
         text: "DeployIfNotExists",
-        rationale: "Correct. DeployIfNotExists deploys a related or child resource (such as a diagnostic settings resource) when the compliant resource does not already have it. It also supports remediation tasks to fix existing resources."
+        rationale: "Correct. DeployIfNotExists can create related child resources and supports remediation for existing noncompliant VMs."
       },
       {
         id: "D",
         text: "Append",
-        rationale: "Incorrect. Append adds fields to a resource's request payload at creation time but cannot deploy child resources, so it cannot create diagnostic settings."
+        rationale: "Incorrect. Append can enrich request payloads but cannot deploy missing child resources after evaluation."
       },
     ],
     correctOptionId: "C",
-    explanation: "Diagnostic settings are a child resource of the virtual machine. The only Azure Policy effect capable of deploying a child resource is DeployIfNotExists. It also supports remediation tasks that trigger the deployment on existing non-compliant resources, satisfying the requirement to fix VMs created before the policy assignment."
+    explanation: "This requirement needs enforcement plus deployment. Diagnostic settings are child resources, so reporting-only effects are insufficient. DeployIfNotExists is the correct effect because it can evaluate presence and deploy missing settings through remediation, covering both new and existing VMs without manual repair."
   }),
 
   yesNoQuestion({
     id: "Q2310",
     domain: "D1",
     type: "yes-no",
-    difficulty: "easy",
+    difficulty: "hard",
     company: "Contoso",
-    scenario: "You are reviewing device identity concepts for Microsoft Entra ID. Evaluate the following statements about device join types.",
-    stem: "For each statement, select Yes if the statement is true. Otherwise, select No.",
+    scenario: "Contoso operates a multi-tier IT infrastructure: (1) Corporate HQ runs Windows 11 devices managed by both on-premises AD DS and Entra ID (hybrid-joined). (2) Remote offices use personal devices enrolled in Entra ID but NOT joined to AD DS (registered). (3) Cloud-only teams use Entra-joined devices managed exclusively by Intune. Contoso's GPO strategy requires: Security baseline GPOs (e.g., BitLocker, credential guard) apply to HQ hybrid devices. Cloud-only teams use Intune device configuration profiles (no AD GPOs). Regional compliance policies require: HQ devices must receive quarterly security updates via AD GPO or Intune (whichever is configured). Remote personal devices can NEVER receive enforced policies (advisory only). For an Entra-joined device operating in the cloud-only team, evaluate each statement considering BOTH the device join TYPE and the GPO/policy applicability constraints.",
+    stem: "For each statement, select Yes if the statement is true (considering the operational context). Otherwise, select No.",
     subtopic: "Manage device identities in Microsoft Entra ID",
-    referenceTopic: "Microsoft Entra device join types  registered, joined, hybrid joined",
+    referenceTopic: "Microsoft Entra device join types (registered vs joined vs hybrid), GPO vs Intune policy applicability, policy applicability scope",
 
-    hint: "Hybrid-joined devices are in both on-premises AD and Entra ID. Registered devices (BYOD) don't require an org account at setup. Entra-joined devices are cloud-managed and don't receive on-premises GPOs.",
+    hint: "Hybrid-joined = both AD DS + Entra ID (receives GPOs + Intune). Entra-joined cloud-only = Entra ID + Intune ONLY (cannot receive AD GPOs). Registered = Entra ID only, personal BYOD. For Entra-joined cloud device: Can it receive on-premises AD GPOs natively? If it IS cloud-managed by Intune, does it NEED AD GPOs or use Intune profiles instead? Consider: Does joining type = automatic GPO eligibility, or does management context override join type?",
     statements: [
       {
         id: "S1",
-        text: "A Microsoft Entra hybrid joined device is simultaneously joined to on-premises Active Directory Domain Services and registered with Microsoft Entra ID.",
+        text: "A hybrid-joined device at Contoso HQ is simultaneously managed by on-premises AD DS (for GPO application) and Entra ID + Intune (for cloud policies). If both AD GPO and Intune policy target the same setting (e.g., BitLocker), both are applied and policies are additive (more restrictive setting wins).",
         answer: "Yes"
       },
       {
         id: "S2",
-        text: "A Microsoft Entra registered device requires the user to sign in with an organizational account during Windows setup.",
+        text: "An Entra-joined device in Contoso's cloud-only team can natively receive group policy objects from an on-premises domain controller without additional configuration (such as installing a connector or hybrid join).",
         answer: "No"
       },
       {
         id: "S3",
-        text: "A device that is Microsoft Entra joined can receive group policy objects (GPOs) from an on-premises domain controller without additional configuration.",
+        text: "A Contoso remote employee using a personally-owned registered device (BYOD) must sign in with an organizational account (not a personal account) during Windows setup in order to be managed by Entra ID.",
         answer: "No"
       },
+      {
+        id: "S4",
+        text: "For a cloud-only team, using Entra-joined devices managed by Intune profiles alone (no on-premises AD) satisfies the requirement for security baseline enforcement (BitLocker, credential guard) WITHOUT requiring hybrid join or on-premises GPO infrastructure.",
+        answer: "Yes"
+      },
     ],
-    explanation: "Hybrid-joined devices are managed by both AD DS and Entra ID  True. Registered devices (BYOD) use a personal account and register the device separately without requiring an org account at setup  False. Entra-joined-only devices are cloud-managed via Intune; they do not natively receive AD GPOs  False."
+    explanation: "S1 (True): Hybrid-joined devices receive both AD GPO and Intune policies. When policies target the same setting, the most restrictive applies. S2 (False): Entra-joined devices (cloud-only, not hybrid) are managed exclusively by Intune; they do NOT connect to on-premises AD DCs and cannot receive AD GPOs natively. S3 (False): Registered devices (BYOD) are personal devices that the user registers with Entra ID; they can use either personal or org accounts—it's the device registration that matters, not the account type. The device remains personal. S4 (True): Intune device configuration profiles provide security baselines equivalent to AD GPOs (BitLocker, Defender, credential guard, etc.). For cloud-only teams, Intune alone is sufficient without requiring hybrid join complexity. This scenario tests understanding of device JOIN TYPE vs MANAGEMENT CONTEXT: hybrid-joined devices bridge on-premises and cloud; cloud-only joined devices are Intune-managed only. The key insight: device join type determines WHICH management systems can reach it (on-premises AD vs cloud Intune), and management context determines policy applicability scope."
   }),
 
   dragDropQuestion({

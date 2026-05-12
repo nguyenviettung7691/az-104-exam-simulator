@@ -200,37 +200,37 @@ export const mayExpansionQuestions = [
     difficulty: "hard",
     company: "Alpine Ski House",
     scenario:
-      "Your organization runs a regulated trading platform in Azure. Financial regulations require that transaction logs be recoverable from a secondary region even if the primary region fails. Data must not be recoverable after 7 years. You are designing a backup strategy.",
-    stem: "Which backup vault redundancy and retention configuration satisfies these requirements?",
+      "Alpine Ski House runs a regulated trading platform in Azure managing financial transactions across North America and Europe. Regulatory requirements: (1) Transaction logs MUST be recoverable from a secondary region within 30 minutes if the primary region fails (RTO 30 min). (2) Data must not be recoverable after 7 years (automatic purge). (3) Backups must be immutable—no deletion or modification after creation—to prevent accidental or malicious data destruction. (4) Backups must be accessible via read-only in secondary region immediately after failover (no secondary-region access latency). (5) If the recovery vault itself in the primary region becomes unavailable, secondary-region backups must still be accessible. During a cross-region failover, all three requirements must be satisfied simultaneously: RTO within 30 min, immutable + no modifications, AND immediate read-access in secondary. Which backup vault configuration satisfies all five requirements?",
+    stem: "Which backup vault redundancy, retention, immutability, and access configuration satisfies RTO 30min failover, 7-year immutable retention, no-deletion guarantee, automatic purge, and secondary-region read access?",
     subtopic: "Monitor and maintain Azure resources",
-    referenceTopic: "Azure Backup vault redundancy and retention policies",
+    referenceTopic: "Azure Backup vault redundancy, retention, immutability locks, and geo-failover",
 
-    hint: "Choose geo-redundant backup storage for regional failure recovery, then align retention exactly to the compliance window.",
+    hint: "Geo-redundant storage (GRS) replicates to secondary region but requires primary-vault access to read secondary copies (NOT immediate read-access). Read-access geo-redundant (RA-GRS) provides immediate read access to secondary but adds latency. Immutability requires Backup Vault-level immutability lock. What about RTO? If the primary vault fails, how quickly can you access secondary copies? Can you modify or delete immutable backups? When does the 7-year retention timer start—at backup creation or at deletion time?",
     options: [
       option(
         "A",
-        "LRS with 7-year retention",
-        "LRS (Locally Redundant Storage) keeps copies in a single region. If the primary region fails, the vault itself is unavailable.",
+        "LRS with 7-year retention and immutability enabled",
+        "Incorrect. LRS (Locally Redundant Storage) keeps copies in a single region only. If the primary region fails, the vault itself is unavailable (fails requirement 5: secondary must be accessible when primary fails). LRS cannot satisfy RTO 30min for regional disaster.",
       ),
       option(
         "B",
-        "GRS with 7-year retention",
-        "GRS (Geo-Redundant Storage) replicates backup data to a secondary region. This ensures regional failover. Seven-year retention meets the compliance window.",
+        "GRS with 7-year retention and immutability lock enabled",
+        "Incorrect. GRS replicates to secondary region (requirement 5 OK) but does NOT provide immediate read-access to secondary-region copies. You must access secondary copies via the primary vault; if the primary vault is unavailable, you cannot read secondary copies even though they exist (fails requirement 4: secondary read-access during failover). GRS does NOT meet RTO 30min.",
       ),
       option(
         "C",
-        "ZRS with indefinite retention",
-        "ZRS is zone-redundant within a single region and does not provide regional failover. Indefinite retention violates the 7-year purge requirement.",
+        "RA-GRS with 7-year retention, immutability lock enabled, AND backup vault-level soft-delete disabled to enforce immediate data purge after 7 years",
+        "Incorrect. RA-GRS provides read-access to secondary (requirement 4 OK), but soft-delete MUST remain enabled for regulatory compliance—disabling soft-delete removes the grace period and violates immutability intent (accidental deletion becomes permanent immediately). Also, RA-GRS replication has latency (does not meet RTO 30min guarantee for immediate failover access).",
       ),
       option(
         "D",
-        "RA-GRS with 3-year retention",
-        "RA-GRS provides read access to the secondary region but 3-year retention falls short of the 7-year regulatory requirement.",
+        "RA-GRS with 7-year retention, immutability lock enabled on the vault, soft-delete enabled (with 14-day grace period), and pre-configured failover-to-secondary plan. RTO is met by RA-GRS's synchronous secondary replication and immediate read-access; immutability + soft-delete prevent deletion; 7-year retention + auto-purge after 7 years satisfies purge requirement.",
+        "Correct. RA-GRS provides synchronous replication (RTO ~30 sec replication lag) and immediate read-access to secondary region (requirement 4). Immutability lock prevents deletion/modification (requirement 3). Soft-delete provides a 14-day grace period (allows unintentional deletion recovery within the window, then enforces purge). 7-year retention policy automatically purges after 7 years (requirement 2). Vault-level immutability ensures no backups can be modified or deleted within the retention window. This satisfies all five requirements: RTO, immutability, secondary access, auto-purge, and failover resilience.\n",
       ),
     ],
-    correctOptionId: "B",
+    correctOptionId: "D",
     explanation:
-      "GRS (Geo-Redundant Storage) synchronously replicates backup data to a secondary region, enabling recovery if the primary region becomes unavailable. A 7-year retention policy ensures compliance data is maintained for the regulatory period and automatically purged afterward. LRS is insufficient for regional disasters; RA-GRS offers no advantage over GRS for this scenario; and indefinite retention violates retention policies.",
+      "This question tests deep understanding of Azure Backup's multi-layer resilience strategy. RA-GRS is the ONLY option that provides immediate secondary-region read-access during failover (requirement 4); GRS requires primary-vault access to read secondary copies, which fails if the primary vault is unavailable. LRS and ZRS offer no regional failover. Immutability lock at the vault level prevents deletion/modification (requirement 3). Soft-delete with 7-year retention + auto-purge satisfies both regulatory requirements (immutable for 7 years, then auto-deleted, no human intervention needed). Option B (GRS) is a common misconception—GRS replicates but does NOT enable immediate secondary read-access without the primary vault. Option C disables soft-delete incorrectly. The correct answer demonstrates understanding of the layered defenses: redundancy (RA-GRS) for RTO, immutability (vault lock) for compliance, retention + soft-delete for auto-purge and accidental-deletion recovery, and failover planning for secondary-region access assurance.",
   }),
 
   dragDropQuestion({
@@ -312,12 +312,12 @@ export const mayExpansionQuestions = [
     difficulty: "hard",
     company: "Proseware Research",
     scenario:
-      "Your research platform spans two Azure regions. The primary region (East US) has failed catastrophically. You must recover to the secondary region (West US) while maintaining referential integrity of replicated databases and ensuring users are routed to the secondary.",
-    stem: "Which three actions must you take in the Site Recovery failover orchestration?",
+      "Proseware Research runs a three-tier app in East US with DR in West US. East US fails. The DR runbook must recover services in dependency order, route users to West US, and avoid locking in failover before validation confirms application and database consistency. Operations must preserve the option to re-run or adjust failover if validation fails.",
+    stem: "Which THREE actions are required as part of safe Site Recovery failover orchestration?",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Azure Site Recovery recovery plans and failover",
 
-    hint: "Fail over in dependency order, redirect client traffic to secondary endpoints, then commit after validation.",
+    hint: "Think sequence: orchestrate failover, redirect users, validate service health/integrity, then finalize. Which steps are mandatory for safe execution versus optional business actions?",
     options: [
       option(
         "A",
@@ -332,7 +332,7 @@ export const mayExpansionQuestions = [
       option(
         "C",
         "Commit the failover after validation",
-        "Commit finalizes the failover and prevents back-replication to the failed primary region.",
+        "Commit finalizes failover. Doing it before validation can lock in a bad state, so it is not part of pre-validation safe orchestration.",
       ),
       option(
         "D",
@@ -342,13 +342,13 @@ export const mayExpansionQuestions = [
       option(
         "E",
         "Verify application connectivity and perform smoke tests",
-        "Verification ensures the recovered environment is operational before full user traffic is switched.",
+        "Correct. Validation confirms application/database health before you finalize failover and remove rollback flexibility.",
       ),
     ],
     selectCount: 3,
-    correctOptionIds: ["A", "B", "C"],
+    correctOptionIds: ["A", "B", "E"],
     explanation:
-      "Site Recovery failover orchestration consists of executing recovery plans (which fail over machines in order), updating traffic routing (DNS, load balancers) to the secondary region, and committing the failover. Disabling the primary subscription is a business decision not required for technical failover. Smoke tests are best practice but not mandatory for the failover orchestration itself.",
+      "Safe orchestration before finalization includes: execute recovery plan in dependency order, route users to secondary endpoints, and validate connectivity/data integrity. Commit should happen after successful validation, not as an initial required step. This tests operational sequencing under DR pressure and distinguishes technical necessities from premature finalization.",
   }),
 
   // ============================================================================
@@ -443,37 +443,37 @@ export const mayExpansionQuestions = [
     difficulty: "hard",
     company: "Adatum Corporation",
     scenario:
-      "Your organization requires hybrid connectivity between an on-premises data center and Azure. Data must flow over a private link (not the public internet). Bandwidth requirements are stable at 200 Mbps.",
-    stem: "Which hybrid connectivity solution best meets these requirements?",
+      "Adatum operates a mission-critical trading platform split between on-premises HQ (primary) and Azure (secondary for disaster recovery). Hybrid connectivity requirements: (1) Data MUST flow over private link (NOT public internet). (2) Bandwidth: 200 Mbps sustained, with ability to burst to 400 Mbps during market opens (Mon-Fri 9:30-16:30 EST). (3) Latency SLA: <5ms p99 (sub-millisecond for ultra-low-latency trading). (4) Failover: If HQ datacenter becomes unreachable, Azure secondary MUST auto-activate within 30 seconds. (5) Cost: Trading volume is seasonal; circuit costs must scale with usage (not fixed monthly commitment). (6) Redundancy: Primary and secondary failover paths must be geo-diverse (not both via same provider/region). (7) Compliance: FINRA requires circuit audit logs and unused capacity monitoring. Which hybrid connectivity option ALONE satisfies all seven requirements? If no single option fully satisfies, which COMBINATION with additional Azure services is required?",
+    stem: "Which hybrid connectivity solution (or combination thereof) meets private link, bandwidth flexibility, latency SLA, 30-second failover, seasonal cost scaling, geo-diverse redundancy, and FINRA audit compliance?",
     subtopic: "Implement and manage virtual networking",
-    referenceTopic: "ExpressRoute vs. VPN Gateway for hybrid connectivity",
+    referenceTopic: "ExpressRoute vs. VPN, circuit redundancy, failover orchestration, bandwidth management, compliance logging",
 
-    hint: "If traffic must avoid the public internet entirely, prefer a dedicated private ExpressRoute circuit.",
+    hint: "ExpressRoute = dedicated, high-performance, fixed cost. VPN = flexible, lower cost, internet-based (violates req 1). Circuit failover (req 4) requires orchestration layer (Azure Site Recovery or Traffic Manager), not just ExpressRoute. Bandwidth scaling (req 5) needs dynamic management. Geo-diverse redundancy (req 6) requires TWO circuits or ExpressRoute + VPN backup. FINRA audit (req 7) requires Diagnostic Settings. Which single solution covers all 7, or which do you layer?",
     options: [
       option(
         "A",
-        "Site-to-Site VPN over the public internet",
-        "VPN encrypts traffic over the public internet but does not provide a private circuit; it is still internet-based.",
+        "ExpressRoute private peering with a dedicated 400 Mbps circuit from Tier-1 provider. This covers private link (req 1), bandwidth (req 2), latency (req 3), and complies with FINRA (req 7).",
+        "Incorrect. ExpressRoute satisfies private link, bandwidth, latency, and audit requirements. But it does NOT inherently support: (4) 30-sec auto-failover (requires failover orchestration layer), (5) seasonal cost scaling (ExpressRoute is fixed-cost; you need dynamic capacity management or backup circuit), (6) geo-diverse redundancy (single circuit is single point of failure; you need a second circuit or VPN backup via different provider/path).",
       ),
       option(
         "B",
-        "ExpressRoute private peering with a dedicated circuit",
-        "ExpressRoute provides a private circuit between on-premises and Azure, guaranteeing bandwidth and latency without traversing the public internet.",
+        "Site-to-Site VPN for primary connectivity plus ExpressRoute private peering for backup. Route traffic primarily over VPN (cost-effective for seasonal peaks), failover to ExpressRoute on VPN unavailability.",
+        "Incorrect. Primary VPN violates requirement 1 (data must NOT traverse public internet). Even though ExpressRoute backup is available, using VPN as primary means trading data regularly crosses the public internet, which violates compliance.",
       ),
       option(
         "C",
-        "Azure Virtual WAN with IPsec tunnels",
-        "Virtual WAN is designed for branch-to-cloud connectivity at scale but uses internet-based IPsec, not private circuits.",
+        "ExpressRoute private peering with TWO geo-diverse circuits (primary via Provider-A in US-East, secondary via Provider-B in US-West). Configure Traffic Manager to health-probe both circuits and auto-failover in 30 seconds if primary fails. Use ExpressRoute Direct (5 Gbps) for bandwidth flexibility and cost scaling. Enable Diagnostic Settings on both circuits to capture audit logs (FINRA requirement). Implement Application Gateway or Azure Load Balancer failover via Traffic Manager to ensure secondary Azure resources activate on primary failure.",
+        "Correct. This layers ExpressRoute (private, low-latency, fixed high-capacity) with Traffic Manager (30-sec failover orchestration), geo-diverse circuits (redundancy), ExpressRoute Direct (bandwidth/cost flexibility), and Diagnostic Settings (audit logging). Requirements: (1) private link via ExpressRoute ✓, (2) bandwidth 200-400 Mbps via circuit capacity ✓, (3) <5ms latency via dedicated circuit ✓, (4) 30-sec failover via Traffic Manager health probes ✓, (5) seasonal scaling via ExpressRoute Direct's flexible pricing ✓, (6) geo-diverse redundancy via dual providers ✓, (7) FINRA audit via Diagnostic Settings ✓.",
       ),
       option(
         "D",
-        "Private Link service with custom IP",
-        "Private Link exposes Azure resources privately to on-premises clients; it does not provide hybrid connectivity from on-premises to Azure.",
+        "Azure Virtual WAN with ExpressRoute integration for enterprise connectivity at scale.",
+        "Incorrect. Virtual WAN is a management plane for multi-hub branch connectivity; it does NOT inherently solve: 30-sec failover orchestration (requirement 4), seasonal cost scaling without custom management (requirement 5), or geo-diverse circuit redundancy (requirement 6). Virtual WAN requires layering with Traffic Manager and additional failover logic, similar to Option C.",
       ),
     ],
-    correctOptionId: "B",
+    correctOptionId: "C",
     explanation:
-      "ExpressRoute provides a dedicated private circuit between on-premises and Azure through a service provider. It guarantees bandwidth, low latency, and does not traverse the public internet. Site-to-Site VPN, while encrypted, still uses the public internet. Virtual WAN is branch-focused. Private Link is for accessing Azure resources privately, not hybrid WAN connectivity.",
+      "This tests deep understanding of hybrid connectivity beyond simple 'ExpressRoute vs VPN' choice. A mission-critical trading platform with failover SLA (30 sec), geo-redundancy, seasonal cost optimization, and compliance auditing REQUIRES layering: (1) ExpressRoute for private, low-latency primary path, (2) geo-diverse dual circuits to prevent single-provider failure, (3) Traffic Manager for intelligent failover orchestration (30 seconds), (4) ExpressRoute Direct for bandwidth/cost flexibility during seasonal peaks, (5) Diagnostic Settings for compliance audit logging. Option A assumes ExpressRoute alone is sufficient (it's not for failover, redundancy, cost scaling). Option B violates security by making VPN the primary path. Option D is incomplete without failover orchestration. The correct answer demonstrates that enterprise hybrid connectivity is a multi-layer system: connectivity (ExpressRoute), redundancy (geo-diverse circuits), failover automation (Traffic Manager), cost optimization (ExpressRoute Direct), and compliance (Diagnostic Settings).",
   }),
 
   dragDropQuestion({
@@ -515,21 +515,21 @@ export const mayExpansionQuestions = [
     difficulty: "hard",
     company: "Fabrikam Retail",
     scenario:
-      "Your Application Gateway routes traffic to backend pools based on URL paths and hostnames. Path /api/* should route to an API pool, and hostname api.example.com should route to the same pool even if the path is different.",
-    stem: "Which routing rule configuration takes precedence and how should rules be ordered?",
+      "Fabrikam Retail uses Application Gateway with multiple listeners and path-based rules. Requirements: requests to host api.example.com must route to API backend by host match; requests to shop.example.com/api/* must also route to API backend; all other shop.example.com traffic goes to web backend. Engineers report intermittent misrouting after adding a broad catch-all path rule.",
+    stem: "How should routing precedence and ordering be configured to avoid misrouting?",
     subtopic: "Implement and manage virtual networking",
     referenceTopic: "Application Gateway path-based and host-based routing",
 
-    hint: "Rule evaluation is ordered, so put the most specific matches ahead of broader catch-all patterns.",
+    hint: "Listener selection happens first (host/port), then rules in that listener are evaluated in order. Specific paths should be above generic catch-alls.",
     options: [
-      option("A", "Host-based rules take precedence; order them before path-based rules", "Host-based rules evaluate first via the listener, but both types follow sequential ordering."),
-      option("B", "Path-based rules take precedence; order them before host-based rules", "Path-based rules do not take precedence; both are ordered within the listener."),
-      option("C", "Rules are evaluated sequentially by order; place more specific rules first", "Rules are indeed evaluated sequentially, with more specific patterns evaluated before general ones. This allows /api/v1/* to match before /api/*."),
-      option("D", "Both are evaluated simultaneously; specificity is determined by listener priority", "Rules are sequential, not simultaneous. Listener priority selects the listener, not the rule matching order."),
+      option("A", "Always put host-based listeners last so path rules evaluate first globally", "Incorrect. Listener selection is not global path-first; host/port listener matching happens before path rule evaluation inside that listener."),
+      option("B", "Use one wildcard listener only and rely on backend health probes to resolve precedence conflicts", "Incorrect. Health probes validate backend health; they do not determine URL routing precedence."),
+      option("C", "Keep listener host matching accurate, then evaluate rules sequentially within each listener and place specific path rules before broad catch-all rules", "Correct. Proper host listener selection plus ordered, specific-to-general path rules prevents catch-all patterns from stealing traffic."),
+      option("D", "Path and host rules are evaluated simultaneously, so rule order has no impact", "Incorrect. Rule order directly affects matching within a listener; broad patterns can override intended specific matches if ordered first."),
     ],
     correctOptionId: "C",
     explanation:
-      "Application Gateway rules are evaluated in order. Listener configuration (hostname + port) is evaluated first to select a listener, then path-based or other rules within that listener are evaluated sequentially. More specific rules (e.g., /api/v1/users) should precede general rules (e.g., /api/*). Host-based rules in the listener filter before path-based evaluation occurs.",
+      "Application Gateway first picks the listener using host/port, then evaluates that listener's rules in order. Therefore, specific path matches must appear before broader catch-all patterns. Misrouting often occurs when a generic rule is placed too early. The fix is host-accurate listeners plus specific-to-general rule ordering.",
   }),
 
   // ============================================================================
