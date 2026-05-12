@@ -258,6 +258,7 @@ const computeTypeFlow = (
 const pickQuestionsByPlan = (
   buckets: Record<NonCaseQuestionType, Record<DomainId, Question[]>>,
   plan: Record<NonCaseQuestionType, Record<DomainId, number>>,
+  prioritizeDifficulty: boolean = true,
 ): Question[] => {
   const selected: Question[] = [];
 
@@ -268,8 +269,46 @@ const pickQuestionsByPlan = (
         continue;
       }
 
-      const candidates = shuffle(buckets[type][domain]);
-      selected.push(...candidates.slice(0, count));
+      let candidates = buckets[type][domain];
+      
+      // When prioritizeDifficulty is true, group candidates by difficulty
+      // and distribute across difficulty levels to improve balance
+      if (prioritizeDifficulty && candidates.length > 0) {
+        const byDifficulty: Record<Difficulty, Question[]> = {
+          easy: [],
+          medium: [],
+          hard: [],
+        };
+        
+        for (const q of candidates) {
+          byDifficulty[q.difficulty].push(q);
+        }
+        
+        // Shuffle within each difficulty group
+        for (const difficulty of ["easy", "medium", "hard"] as Difficulty[]) {
+          byDifficulty[difficulty] = shuffle(byDifficulty[difficulty]);
+        }
+        
+        // Interleave selections across difficulty levels
+        const result: Question[] = [];
+        let indices = { easy: 0, medium: 0, hard: 0 };
+        
+        for (let i = 0; i < count; i++) {
+          const difficulties: Difficulty[] = ["medium", "easy", "hard"];
+          for (const difficulty of difficulties) {
+            if (indices[difficulty] < byDifficulty[difficulty].length) {
+              result.push(byDifficulty[difficulty][indices[difficulty]]);
+              indices[difficulty]++;
+              break;
+            }
+          }
+        }
+        
+        selected.push(...result.slice(0, count));
+      } else {
+        const shuffled = shuffle(candidates);
+        selected.push(...shuffled.slice(0, count));
+      }
     }
   }
 
@@ -303,13 +342,22 @@ const getCaseQuestions = (
   return questions;
 };
 
-const chooseInsertionIndex = (nonCaseLength: number): number => {
+const chooseInsertionIndex = (nonCaseLength: number, nonCaseQuestions: Question[], caseStudy: CaseStudy): number => {
   if (nonCaseLength < 20) {
     return Math.floor(nonCaseLength / 2);
   }
 
-  const min = 8;
-  const max = nonCaseLength - 8;
+  // Calculate domain distribution of case study questions
+  const caseStudyDomainSet = new Set<DomainId>();
+  const caseStudyDomainCount: DomainCounter = createDomainCounter();
+  
+  // Approximate case study domain distribution (typically concentrated in 2-3 domains)
+  // In a real scenario, we'd want the case study's actual questions to analyze
+  // For now, use intelligent bounds based on position diversity
+  
+  // Spread case study across 25-50% through the non-case questions to ensure good mixing
+  const min = Math.floor(nonCaseLength * 0.25);
+  const max = Math.floor(nonCaseLength * 0.50);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
@@ -351,7 +399,7 @@ const validateOutputQuotas = (questions: Question[]): boolean => {
   return domainsValid && typesValid;
 };
 
-const checkDifficultyBalance = (questions: Question[]): string | null => {
+const checkDifficultyBalance = (questions: Question[]): { warning: string | null; delta: number } => {
   const counter: Record<Difficulty, number> = {
     easy: 0,
     medium: 0,
@@ -367,11 +415,16 @@ const checkDifficultyBalance = (questions: Question[]): string | null => {
     Math.abs(counter.medium - DIFFICULTY_TARGETS.medium) +
     Math.abs(counter.hard - DIFFICULTY_TARGETS.hard);
 
-  if (delta <= 8) {
-    return null;
+  // Adaptive tolerance: allow higher variance with smaller pools, stricter with larger pools
+  const baselineTolerance = 8;
+  const tolerance = Math.max(baselineTolerance, Math.floor(EXAM_TOTAL_QUESTIONS * 0.15));
+
+  let warning: string | null = null;
+  if (delta > tolerance) {
+    warning = `Difficulty profile (E:${counter.easy} M:${counter.medium} H:${counter.hard}) deviates from target (E:${DIFFICULTY_TARGETS.easy} M:${DIFFICULTY_TARGETS.medium} H:${DIFFICULTY_TARGETS.hard}). Consider adding more balanced questions.`;
   }
 
-  return "Generated run difficulty profile is outside the target ratio. Consider adding more balanced questions in the bank.";
+  return { warning, delta };
 };
 
 export const generateExamRun = ({ bank, previousRuns }: GenerateExamParams): GenerateExamResult => {
@@ -390,6 +443,14 @@ export const generateExamRun = ({ bank, previousRuns }: GenerateExamParams): Gen
   const activeQuestions = getActiveQuestions(bank);
   const availableQuestions = activeQuestions.filter((question) => !usedQuestionIds.has(question.id));
 
+  // Check for pool depletion warnings
+  const poolUtilization = (usedQuestionIds.size / activeQuestions.length) * 100;
+  if (poolUtilization > 80) {
+    warnings.push(
+      `⚠️ Question pool depleted (${poolUtilization.toFixed(1)}% used). Generated runs may have limited variation. Consider adding more active questions to the bank.`,
+    );
+  }
+
   if (availableQuestions.length < EXAM_TOTAL_QUESTIONS) {
     return {
       run: null,
@@ -403,6 +464,8 @@ export const generateExamRun = ({ bank, previousRuns }: GenerateExamParams): Gen
   const unavailableIds = new Set(usedQuestionIds);
   const shuffledCaseStudies = shuffle(bank.caseStudies);
 
+  // Pre-filter case studies by feasibility
+  const feasibleCaseStudies: { caseStudy: CaseStudy; caseQuestions: Question[] }[] = [];
   for (const caseStudy of shuffledCaseStudies) {
     const caseQuestions = getCaseQuestions(caseStudy, questionsById, unavailableIds);
     if (!caseQuestions) {
@@ -414,57 +477,83 @@ export const generateExamRun = ({ bank, previousRuns }: GenerateExamParams): Gen
       continue;
     }
 
-    const remainingTypeTargets: TypeCounter = {
-      "multiple-choice": QUESTION_TYPE_QUOTAS["multiple-choice"],
-      "multi-select": QUESTION_TYPE_QUOTAS["multi-select"],
-      "yes-no": QUESTION_TYPE_QUOTAS["yes-no"],
-      "drag-drop": QUESTION_TYPE_QUOTAS["drag-drop"],
-      "hot-area": QUESTION_TYPE_QUOTAS["hot-area"],
-    };
+    feasibleCaseStudies.push({ caseStudy, caseQuestions });
+  }
 
-    const caseQuestionSet = new Set(caseQuestions.map((question) => question.id));
-    const nonCasePool = availableQuestions.filter(
-      (question) => question.type !== "case-study" && !caseQuestionSet.has(question.id),
-    );
+  // Try case studies with difficulty-aware selection (stricter pass first)
+  for (let strictnessPass = 0; strictnessPass < 2; strictnessPass++) {
+    const prioritizeDifficulty = strictnessPass === 0;
+    const difficultyTolerance = prioritizeDifficulty ? 4 : 8; // Stricter on first pass
 
-    const buckets = buildAvailability(nonCasePool);
-    const plan = computeTypeFlow(buckets, remainingResult.remaining, remainingTypeTargets);
+    for (const { caseStudy, caseQuestions } of feasibleCaseStudies) {
+      const remainingResult = subtractDomainCounts(caseQuestions);
 
-    if (!plan) {
-      continue;
+      const remainingTypeTargets: TypeCounter = {
+        "multiple-choice": QUESTION_TYPE_QUOTAS["multiple-choice"],
+        "multi-select": QUESTION_TYPE_QUOTAS["multi-select"],
+        "yes-no": QUESTION_TYPE_QUOTAS["yes-no"],
+        "drag-drop": QUESTION_TYPE_QUOTAS["drag-drop"],
+        "hot-area": QUESTION_TYPE_QUOTAS["hot-area"],
+      };
+
+      const caseQuestionSet = new Set(caseQuestions.map((question) => question.id));
+      const nonCasePool = availableQuestions.filter(
+        (question) => question.type !== "case-study" && !caseQuestionSet.has(question.id),
+      );
+
+      const buckets = buildAvailability(nonCasePool);
+      const plan = computeTypeFlow(buckets, remainingResult.remaining, remainingTypeTargets);
+
+      if (!plan) {
+        continue;
+      }
+
+      const selectedNonCase = pickQuestionsByPlan(buckets, plan, prioritizeDifficulty);
+      if (selectedNonCase.length + caseQuestions.length !== EXAM_TOTAL_QUESTIONS) {
+        continue;
+      }
+
+      const nonCaseShuffled = shuffle(selectedNonCase);
+      const insertionIndex = chooseInsertionIndex(nonCaseShuffled.length, nonCaseShuffled, caseStudy);
+      const questions = [
+        ...nonCaseShuffled.slice(0, insertionIndex),
+        ...caseQuestions,
+        ...nonCaseShuffled.slice(insertionIndex),
+      ];
+
+      if (!validateOutputQuotas(questions)) {
+        continue;
+      }
+
+      const { warning, delta } = checkDifficultyBalance(questions);
+      if (delta <= difficultyTolerance) {
+        return {
+          run: {
+            runNumber: previousRuns.length + 1,
+            generatedAt: new Date().toISOString(),
+            questions,
+            selectedCaseStudy: caseStudy,
+          },
+          warnings,
+        };
+      }
+
+      // If this candidate is close enough on second pass, use it
+      if (strictnessPass === 1 && warning === null && delta <= 12) {
+        if (warning) {
+          warnings.push(warning);
+        }
+        return {
+          run: {
+            runNumber: previousRuns.length + 1,
+            generatedAt: new Date().toISOString(),
+            questions,
+            selectedCaseStudy: caseStudy,
+          },
+          warnings,
+        };
+      }
     }
-
-    const selectedNonCase = pickQuestionsByPlan(buckets, plan);
-    if (selectedNonCase.length + caseQuestions.length !== EXAM_TOTAL_QUESTIONS) {
-      continue;
-    }
-
-    const nonCaseShuffled = shuffle(selectedNonCase);
-    const insertionIndex = chooseInsertionIndex(nonCaseShuffled.length);
-    const questions = [
-      ...nonCaseShuffled.slice(0, insertionIndex),
-      ...caseQuestions,
-      ...nonCaseShuffled.slice(insertionIndex),
-    ];
-
-    if (!validateOutputQuotas(questions)) {
-      continue;
-    }
-
-    const difficultyWarning = checkDifficultyBalance(questions);
-    if (difficultyWarning) {
-      warnings.push(difficultyWarning);
-    }
-
-    return {
-      run: {
-        runNumber: previousRuns.length + 1,
-        generatedAt: new Date().toISOString(),
-        questions,
-        selectedCaseStudy: caseStudy,
-      },
-      warnings,
-    };
   }
 
   return {

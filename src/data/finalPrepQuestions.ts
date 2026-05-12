@@ -5,55 +5,8 @@
   MultiSelectQuestion,
   YesNoQuestion,
 } from "../types/exam";
+import { ensurePromptComplexity } from "./questionComplexity.ts";
 import { rebalanceChoiceOptionIds } from "./rebalanceChoiceOptionIds.ts";
-
-const complexityTargets = {
-  easy: { minScenarioChars: 110, minStemChars: 28, minConstraintTokens: 1 },
-  medium: { minScenarioChars: 150, minStemChars: 30, minConstraintTokens: 2 },
-  hard: { minScenarioChars: 190, minStemChars: 32, minConstraintTokens: 3 },
-};
-
-const constraintTokenRegex = /must|without|while|only|minimum|minimize|least|cannot|required|ensure|prevent|unless/gi;
-const tradeoffRegex = /while|without|minimize|least|at the same time|trade-?off|however|but/i;
-
-type ComplexPrompt = {
-  scenario: string;
-  stem: string;
-  difficulty: "easy" | "medium" | "hard";
-};
-
-const countConstraintTokens = (text: string): number => {
-  const matches = text.match(constraintTokenRegex);
-  return matches ? matches.length : 0;
-};
-
-const ensurePromptComplexity = <T extends ComplexPrompt>(question: T): T => {
-  const target = complexityTargets[question.difficulty];
-  let scenario = question.scenario.trim();
-  let stem = question.stem.trim();
-
-  if (scenario.length < target.minScenarioChars) {
-    scenario = `${scenario} The implementation must ensure least-privilege access, prevent avoidable downtime, and meet minimum compliance requirements without broad policy exceptions.`;
-  }
-
-  if (countConstraintTokens(`${scenario} ${stem}`) < target.minConstraintTokens) {
-    stem = `${stem} Select the option that must ensure required controls, meet minimum risk tolerance, and prevent service impact while minimizing operational overhead without broad exceptions.`;
-  }
-
-  if (stem.length < target.minStemChars) {
-    stem = `${stem} Consider governance, resiliency, and least-privilege requirements.`;
-  }
-
-  if (question.difficulty === "hard" && !tradeoffRegex.test(`${scenario} ${stem}`)) {
-    stem = `${stem} Choose the best trade-off while minimizing operational overhead and cost impact.`;
-  }
-
-  return {
-    ...question,
-    scenario,
-    stem,
-  };
-};
 
 const choiceQuestion = (question: Omit<ChoiceQuestion, "active">): ChoiceQuestion => ({
   active: true,

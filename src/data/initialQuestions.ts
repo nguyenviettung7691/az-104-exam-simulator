@@ -5,6 +5,7 @@ import {
 } from "./april2026ExpansionQuestions.ts";
 import { finalPrepCaseStudies, finalPrepQuestions } from "./finalPrepQuestions.ts";
 import { mayExpansionQuestions } from "./mayExpansionQuestions.ts";
+import { ensurePromptComplexity } from "./questionComplexity.ts";
 import { rebalanceChoiceOptionIds } from "./rebalanceChoiceOptionIds.ts";
 import type {
   CaseStudy,
@@ -28,26 +29,26 @@ const option = (id: string, text: string, rationale: string): QuestionOption => 
 
 const choiceQuestion = (question: Omit<ChoiceQuestion, "active">): ChoiceQuestion => ({
   active: true,
-  ...rebalanceChoiceOptionIds(question),
+  ...rebalanceChoiceOptionIds(ensurePromptComplexity(question)),
 });
 
 const multiSelectQuestion = (
   question: Omit<MultiSelectQuestion, "active">,
 ): MultiSelectQuestion => ({
   active: true,
-  ...question,
+  ...ensurePromptComplexity(question),
 });
 
 const yesNoQuestion = (question: Omit<YesNoQuestion, "active">): YesNoQuestion => ({
   active: true,
-  ...question,
+  ...ensurePromptComplexity(question),
 });
 
 const dragDropQuestion = (
   question: Omit<DragDropQuestion, "active">,
 ): DragDropQuestion => ({
   active: true,
-  ...question,
+  ...ensurePromptComplexity(question),
 });
 
 export const initialCaseStudies: CaseStudy[] = [
@@ -654,9 +655,9 @@ export const initialQuestions: Question[] = [
       option("C", "Azure Front Door", "Front Door is a global application delivery service, not a subnet-to-storage access control feature."),
       option("D", "A NAT gateway", "NAT gateway controls outbound internet translation, not storage firewall integration."),
     ],
-    correctOptionId: "C",
+    correctOptionId: "A",
     explanation:
-      "Service endpoints are the correct subnet-side feature when the storage account should still be reached through its public endpoint but limited to selected virtual networks.",
+      "Service endpoints are the correct subnet-side feature when the storage account should still be reached through its public endpoint but limited to selected virtual networks. You enable a Microsoft.Storage service endpoint on Subnet-App, then configure the storage account firewall to allow traffic only from that service endpoint. This provides subnet-level access control while keeping the public endpoint active.",
   }),
   choiceQuestion({
     id: "Q2025",

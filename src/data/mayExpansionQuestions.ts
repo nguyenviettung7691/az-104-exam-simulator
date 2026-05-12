@@ -5,55 +5,8 @@ import type {
   QuestionOption,
   YesNoQuestion,
 } from "../types/exam";
+import { ensurePromptComplexity } from "./questionComplexity.ts";
 import { rebalanceChoiceOptionIds } from "./rebalanceChoiceOptionIds.ts";
-
-const complexityTargets = {
-  easy: { minScenarioChars: 110, minStemChars: 28, minConstraintTokens: 1 },
-  medium: { minScenarioChars: 150, minStemChars: 30, minConstraintTokens: 2 },
-  hard: { minScenarioChars: 190, minStemChars: 32, minConstraintTokens: 3 },
-};
-
-const constraintTokenRegex = /must|without|while|only|minimum|minimize|least|cannot|required|ensure|prevent|unless/gi;
-const tradeoffRegex = /while|without|minimize|least|at the same time|trade-?off|however|but/i;
-
-type ComplexPrompt = {
-  scenario: string;
-  stem: string;
-  difficulty: "easy" | "medium" | "hard";
-};
-
-const countConstraintTokens = (text: string): number => {
-  const matches = text.match(constraintTokenRegex);
-  return matches ? matches.length : 0;
-};
-
-const ensurePromptComplexity = <T extends ComplexPrompt>(question: T): T => {
-  const target = complexityTargets[question.difficulty];
-  let scenario = question.scenario.trim();
-  let stem = question.stem.trim();
-
-  if (scenario.length < target.minScenarioChars) {
-    scenario = `${scenario} The architecture must ensure reliable operations, prevent avoidable downtime, and meet minimum compliance controls without broad policy exceptions.`;
-  }
-
-  if (countConstraintTokens(`${scenario} ${stem}`) < target.minConstraintTokens) {
-    stem = `${stem} Select the option that must ensure required controls, satisfy minimum compliance expectations, and prevent service impact while minimizing operational overhead without broad exceptions.`;
-  }
-
-  if (stem.length < target.minStemChars) {
-    stem = `${stem} Consider governance, resiliency, and least-privilege requirements.`;
-  }
-
-  if (question.difficulty === "hard" && !tradeoffRegex.test(`${scenario} ${stem}`)) {
-    stem = `${stem} Choose the best trade-off while minimizing operational complexity and cost impact.`;
-  }
-
-  return {
-    ...question,
-    scenario,
-    stem,
-  };
-};
 
 const option = (id: string, text: string, rationale: string): QuestionOption => ({
   id,
@@ -287,29 +240,29 @@ export const mayExpansionQuestions = [
     difficulty: "medium",
     company: "Contoso Retail Group",
     scenario:
-      "Your organization is planning disaster recovery for a multi-tier web application. Different components have different recovery requirements: web tier (0-hour RTO, 1-hour RPO), database (4-hour RTO, 30-minute RPO), and file storage (24-hour RTO, 8-hour RPO).",
-    stem: "Arrange each component with its appropriate Site Recovery replication strategy.",
+      "Your organization is implementing Azure Site Recovery for a multi-tier web application with these recovery requirements:\n• Web Tier: 0-hour RTO, 1-hour RPO\n• Database: 4-hour RTO, 30-minute RPO\n• File Storage: 24-hour RTO, 8-hour RPO",
+    stem: "Match each component to its appropriate Site Recovery replication strategy that meets requirements while minimizing operational overhead.",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Azure Site Recovery replication and recovery policies",
 
-    hint: "Map the strictest RTO/RPO workloads to continuous replication and lower-criticality data to less frequent snapshot recovery.",
+    hint: "Align replication frequency to RTO/RPO constraints: 0-hour RTO requires continuous replication, 4-hour RTO uses standard replication with defined intervals, and 24-hour RTO can use periodic snapshots.",
     availableItems: [
-      "Web Tier (0-hour RTO, 1-hour RPO) → Continuous replication with frequent failover tests",
-      "Database (4-hour RTO, 30-minute RPO) → Standard replication with 4-hour recovery time objective",
-      "File Storage (24-hour RTO, 8-hour RPO) → Snapshots every 8 hours with manual recovery",
+      "Continuous replication with frequent failover tests",
+      "Standard replication with 4-hour recovery time objective",
+      "Snapshots every 8 hours with manual recovery",
     ],
     answerSlots: [
-      "Component 1 Pairing",
-      "Component 2 Pairing",
-      "Component 3 Pairing",
+      "Web Tier (0-hour RTO, 1-hour RPO)",
+      "Database (4-hour RTO, 30-minute RPO)",
+      "File Storage (24-hour RTO, 8-hour RPO)",
     ],
     correctOrder: [
-      "Web Tier (0-hour RTO, 1-hour RPO) → Continuous replication with frequent failover tests",
-      "Database (4-hour RTO, 30-minute RPO) → Standard replication with 4-hour recovery time objective",
-      "File Storage (24-hour RTO, 8-hour RPO) → Snapshots every 8 hours with manual recovery",
+      "Continuous replication with frequent failover tests",
+      "Standard replication with 4-hour recovery time objective",
+      "Snapshots every 8 hours with manual recovery",
     ],
     explanation:
-      "Web tier with 0-hour RTO requires near-instantaneous failover via continuous replication and frequent failover tests. Database with 4-hour RTO uses standard replication with defined recovery time objectives. File storage with 24-hour RTO can use snapshot-based recovery with longer intervals. Recovery Point Objective (RPO) drives replication frequency; Recovery Time Objective (RTO) drives failover readiness.",
+      "Web tier with 0-hour RTO requires near-instantaneous failover via continuous replication and frequent failover tests to validate readiness. Database with 4-hour RTO uses standard replication with defined recovery intervals aligned to the 4-hour objective. File storage with 24-hour RTO can use snapshot-based recovery with 8-hour intervals, allowing reasonable recovery time while minimizing replication overhead. Recovery Point Objective (RPO) drives replication frequency; Recovery Time Objective (RTO) drives failover strategy.",
   }),
 
   choiceQuestion({
@@ -1038,10 +991,10 @@ export const mayExpansionQuestions = [
       "Premium file shares provide up to 100k IOPS and 100 Gbps throughput, compared to standard shares' lower limits. They are ideal for performance-sensitive workloads like model training. CDN is for content caching. HDInsight is for distributed analytics. Data Lake is for analytics, not real-time training workloads.",
   }),
 
-  choiceQuestion({
+  multiSelectQuestion({
     id: "Q2524",
     domain: "D2",
-    type: "multiple-choice",
+    type: "multi-select",
     difficulty: "hard",
     company: "Alpine Finance Compliance",
     scenario:
@@ -1065,16 +1018,17 @@ export const mayExpansionQuestions = [
       option(
         "C",
         "Legal Hold instead of immutability policy",
-        "Legal Hold is indefinite; it does not auto-delete after 10 years.",
+        "Legal Hold is indefinite; it does not auto-delete after 10 years and violates the 10-year maximum retention requirement.",
       ),
       option(
         "D",
         "Soft Delete with a 10-year retention window",
-        "Soft Delete preserves deleted blobs for recovery but is not immutable; it can be disabled.",
+        "Soft Delete preserves deleted blobs for recovery but is not immutable; it can be disabled and violates the non-recovery requirement.",
       ),
     ],
-    correctOptionId: "A",
+    selectCount: 2,
+    correctOptionIds: ["A", "B"],
     explanation:
-      "Immutability policy with 7-year retention makes blobs non-modifiable and non-deletable. Delete Lock on the policy prevents anyone from shortening the retention period, enforcing regulatory compliance. Lifecycle management automatically deletes after 10 years. Together, they provide immutable retention (7 years) followed by guaranteed deletion (10 years). Legal Hold is indefinite; Soft Delete is reversible and not compliant with non-recovery requirements.",
+      "The solution requires two complementary policies: (1) Immutability policy with 7-year retention and Delete Lock makes blobs non-modifiable and non-deletable during the retention period, preventing accidental deletion and enforcing regulatory compliance. (2) Lifecycle management automatically deletes blobs after 10 years, meeting the automatic deletion requirement. Legal Hold is indefinite and does not support automatic deletion; Soft Delete is reversible and does not prevent recovery, violating compliance requirements.",
   }),
 ];
