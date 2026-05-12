@@ -415,15 +415,15 @@ export const initialQuestions: Question[] = [
     explanation:
       "The correct design is to manage access through a group and assign the minimum required role at the narrowest practical scope, which here is the RG-Finance resource group.",
   }),
-  multiSelectQuestion({
+  choiceQuestion({
     id: "Q2014",
     domain: "D1",
-    type: "multi-select",
+    type: "multiple-choice",
     difficulty: "hard",
     company: "Lucerne Publishing",
     scenario:
       "Across all landing zone subscriptions, Lucerne must enforce a governance model where every new resource is tagged with a Department tag (from a defined list) AND any attempt to deploy a public IP address must fail. Existing resources without the Department tag must be auto-corrected. The governance team wants to avoid manual remediation workflows and ensure that non-compliant deployments are prevented immediately during resource creation.",
-    stem: "Which two Azure Policy effects should you use to satisfy BOTH the enforcement (blocking public IPs) and metadata (tagging all resources) requirements while preserving compliance automation? Each correct answer presents part of the solution.",
+    stem: "Which Azure Policy effects combination should you use to satisfy BOTH the enforcement (blocking public IPs) and metadata (tagging all resources) requirements while preserving compliance automation?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Implement and manage Azure Policy effects and remediation",
 
@@ -434,8 +434,7 @@ export const initialQuestions: Question[] = [
       option("C", "Deny only (applied to public IPs) and Deny only (applied to untagged resources)", "Using Deny for untagged resources would block deployment of all untagged resources, not ADD tags to them. Remediation would not apply because Deny prevents the action; it does not correct it."),
       option("D", "Modify and DeployIfNotExists", "DeployIfNotExists deploys remediation resources based on conditions; it is not designed for tagging existing non-compliant resources or blocking public IPs."),
     ],
-    selectCount: 2,
-    correctOptionIds: ["B"],
+    correctOptionId: "B",
     explanation:
       "Only option B (Deny + Modify) satisfies both requirements without manual intervention. Deny blocks public IP creation (enforcement). Modify adds the Department tag during deployment and applies remediation to existing resources asynchronously (auto-correction). Option A (Audit + Modify) fails because Audit does not block public IPs. Option C fails because Deny on untagged resources prevents creation but does not add tags. Option D fails because DeployIfNotExists is for conditional resource deployment, not tagging. This tests understanding of when to use multiple policy effects together, the nuance between enforcement (Deny) vs. correction (Modify), and why remediation is essential for compliance without manual workflows.",
   }),

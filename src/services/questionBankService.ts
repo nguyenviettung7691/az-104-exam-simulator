@@ -266,6 +266,87 @@ const validateCaseStudies = (
   }
 };
 
+const sanitizeIdToken = (token: string | undefined): string | undefined => {
+  if (!token) {
+    return undefined;
+  }
+
+  return token.replace(/[.'",]$/g, "");
+};
+
+const extractQuestionIdFromError = (error: string): string | undefined => {
+  const patterns = [
+    /Question id '([^']+)'/i,
+    /Question ([^\s.]+)/i,
+    /question id ([^\s.]+)/i,
+    /references missing question ([^\s.]+)/i,
+    /references ([^\s.]+) but/i,
+    /duplicated question id ([^\s.]+)/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = error.match(pattern);
+    if (match) {
+      return sanitizeIdToken(match[1]);
+    }
+  }
+
+  return undefined;
+};
+
+const extractCaseStudyIdFromError = (error: string): string | undefined => {
+  const patterns = [/Case study id '([^']+)'/i, /Case study ([^\s.]+)/i];
+
+  for (const pattern of patterns) {
+    const match = error.match(pattern);
+    if (match) {
+      return sanitizeIdToken(match[1]);
+    }
+  }
+
+  return undefined;
+};
+
+const logValidationErrors = (bank: QuestionBank, errors: string[]): void => {
+  const questionIndexById = new Map(bank.questions.map((question, index) => [question.id, index]));
+  const caseStudyIndexById = new Map(bank.caseStudies.map((caseStudy, index) => [caseStudy.id, index]));
+
+  const details = errors.map((message) => {
+    const questionId = extractQuestionIdFromError(message);
+    const caseStudyId = extractCaseStudyIdFromError(message);
+    const caseStudy = caseStudyId
+      ? bank.caseStudies[caseStudyIndexById.get(caseStudyId) ?? -1]
+      : undefined;
+
+    const questionPosition = questionId ? questionIndexById.get(questionId) : undefined;
+    const caseStudyPosition = caseStudyId ? caseStudyIndexById.get(caseStudyId) : undefined;
+    const caseStudyQuestionPosition =
+      caseStudy && questionId ? caseStudy.questionIds.indexOf(questionId) : undefined;
+
+    return {
+      message,
+      questionId,
+      questionPosition,
+      caseStudyId,
+      caseStudyPosition,
+      caseStudyQuestionPosition:
+        caseStudyQuestionPosition !== undefined && caseStudyQuestionPosition >= 0
+          ? caseStudyQuestionPosition
+          : undefined,
+    };
+  });
+
+  console.error("Question bank/pool validation errors detected.", {
+    totalErrors: errors.length,
+    counts: {
+      questions: bank.questions.length,
+      caseStudies: bank.caseStudies.length,
+      activeQuestions: bank.questions.filter(isQuestionActive).length,
+    },
+    details,
+  });
+};
+
 export const validateQuestionBank = (bank: QuestionBank): QuestionBankValidationReport => {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -311,6 +392,10 @@ export const validateQuestionBank = (bank: QuestionBank): QuestionBankValidation
 
   if (counts.byType["case-study"] > 0 && bank.caseStudies.length === 0) {
     warnings.push("Case-study questions exist but no case study records are linked.");
+  }
+
+  if (errors.length > 0) {
+    logValidationErrors(bank, errors);
   }
 
   return {

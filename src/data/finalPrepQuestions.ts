@@ -402,17 +402,12 @@ export const finalPrepQuestions = [
         answer: "No"
       },
       {
-        id: "S3",
-        text: "A Contoso remote employee using a personally-owned registered device (BYOD) must sign in with an organizational account (not a personal account) during Windows setup in order to be managed by Entra ID.",
-        answer: "No"
-      },
-      {
         id: "S4",
         text: "For a cloud-only team, using Entra-joined devices managed by Intune profiles alone (no on-premises AD) satisfies the requirement for security baseline enforcement (BitLocker, credential guard) WITHOUT requiring hybrid join or on-premises GPO infrastructure.",
         answer: "Yes"
       },
     ],
-    explanation: "S1 (True): Hybrid-joined devices receive both AD GPO and Intune policies. When policies target the same setting, the most restrictive applies. S2 (False): Entra-joined devices (cloud-only, not hybrid) are managed exclusively by Intune; they do NOT connect to on-premises AD DCs and cannot receive AD GPOs natively. S3 (False): Registered devices (BYOD) are personal devices that the user registers with Entra ID; they can use either personal or org accounts—it's the device registration that matters, not the account type. The device remains personal. S4 (True): Intune device configuration profiles provide security baselines equivalent to AD GPOs (BitLocker, Defender, credential guard, etc.). For cloud-only teams, Intune alone is sufficient without requiring hybrid join complexity. This scenario tests understanding of device JOIN TYPE vs MANAGEMENT CONTEXT: hybrid-joined devices bridge on-premises and cloud; cloud-only joined devices are Intune-managed only. The key insight: device join type determines WHICH management systems can reach it (on-premises AD vs cloud Intune), and management context determines policy applicability scope."
+    explanation: "S1 (True): Hybrid-joined devices receive both AD GPO and Intune policies. When policies target the same setting, the most restrictive applies. S2 (False): Entra-joined devices (cloud-only, not hybrid) are managed exclusively by Intune; they do NOT connect to on-premises AD DCs and cannot receive AD GPOs natively. S4 (True): Intune device configuration profiles provide security baselines equivalent to AD GPOs (BitLocker, Defender, credential guard, etc.). For cloud-only teams, Intune alone is sufficient without requiring hybrid join complexity. This scenario tests understanding of device JOIN TYPE vs MANAGEMENT CONTEXT: hybrid-joined devices bridge on-premises and cloud; cloud-only joined devices are Intune-managed only. The key insight: device join type determines WHICH management systems can reach it (on-premises AD vs cloud Intune), and management context determines policy applicability scope."
   }),
 
   dragDropQuestion({
