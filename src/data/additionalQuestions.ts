@@ -160,6 +160,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Microsoft Entra object should you use to scope the delegated administration?",
     subtopic: "Manage Microsoft Entra users and groups",
     referenceTopic: "Administrative units in Microsoft Entra ID",
+
+    hint: "Which Microsoft Entra object scopes delegated administration to a specific geographic boundary without granting full tenant-wide rights?",
     options: [
       option("A", "A Conditional Access policy", "Conditional Access controls sign-in behavior rather than delegated user administration scope."),
       option("B", "An administrative unit", "Administrative units scope directory administration to an organizational boundary (e.g., geographic region), enabling delegated management without tenant-wide access rights."),
@@ -181,6 +183,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which approach should you use?",
     subtopic: "Manage Microsoft Entra users and groups",
     referenceTopic: "Group-based licensing",
+
+    hint: "Which approach automatically assigns the same license package to current and future members while enabling cost tracking by department?",
     options: [
       option("A", "Assign the licenses to a Microsoft Entra group", "Group-based licensing automatically applies licenses to current and future members and groups are typically organized by department for cost tracking."),
       option("B", "Create a budget at the subscription scope", "Budgets track cost and do not assign user licenses."),
@@ -202,6 +206,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which type of group should you create?",
     subtopic: "Manage Microsoft Entra users and groups",
     referenceTopic: "Dynamic membership rules",
+
+    hint: "Which group type uses user attributes in a rule and automatically updates membership as HR changes employee data?",
     options: [
       option("A", "A dynamic user group", "Dynamic user groups evaluate user attributes and update membership automatically."),
       option("B", "A mail-enabled security group", "Mail-enabled security groups do not use attribute-based membership rules by themselves."),
@@ -223,6 +229,8 @@ export const additionalQuestions: Question[] = [
     stem: "At which scope should you create the custom role definition?",
     subtopic: "Manage access to Azure resources",
     referenceTopic: "Create custom Azure RBAC roles",
+
+    hint: "At which scope should you create the custom role so child subscriptions can use it without recreating the definition in each one?",
     options: [
       option("A", "At the Corp-Prod management group", "Creating the role at the management group lets child subscriptions use the role definition."),
       option("B", "At one resource group in each subscription", "A resource-group-scoped role definition cannot be reused subscription-wide."),
@@ -244,6 +252,8 @@ export const additionalQuestions: Question[] = [
     stem: "Where should you assign the Reader role?",
     subtopic: "Manage access to Azure resources",
     referenceTopic: "Scope access assignments",
+
+    hint: "At which scope should you assign a role so the assignment flows down automatically to all child subscriptions, including future ones?",
     options: [
       option("A", "At an administrative unit", "Administrative units do not scope Azure resource access."),
       option("B", "At the Audit management group", "Assignments at a management group are inherited by child subscriptions."),
@@ -265,6 +275,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure Policy object should you create to package multiple policy definitions without assigning them one by one?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Azure Policy initiatives",
+
+    hint: "Which Azure Policy construct groups multiple policy definitions together so they can be assigned as a single package?",
     options: [
       option("A", "An initiative definition", "An initiative groups multiple policy definitions so they can be assigned together."),
       option("B", "A resource lock", "Resource locks protect resources from change or deletion but do not group policies."),
@@ -286,6 +298,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure Policy effect should you use?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Azure Policy effects",
+
+    hint: "Which Azure Policy effect can add or correct tag values on resources during both deployment and remediation?",
     options: [
       option("A", "Modify", "Modify can add or update tags on resources during deployment and remediation."),
       option("B", "Audit", "Audit records noncompliance but does not change resource properties."),
@@ -307,6 +321,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure construct is most likely preventing the deletion?",
     subtopic: "Manage access to Azure resources",
     referenceTopic: "Deny assignments",
+
+    hint: "Which Azure construct can block resource deletion even when RBAC permissions would otherwise allow it, and persists even after locks are removed?",
     options: [
       option("A", "A deny assignment", "Deny assignments can block actions even when RBAC permissions would otherwise allow them."),
       option("B", "A budget alert", "Budget alerts do not block resource operations."),
@@ -328,6 +344,8 @@ export const additionalQuestions: Question[] = [
     stem: "What is the effect on resources inside RG-App?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Resource locks",
+
+    hint: "Does a CanNotDelete lock allow routine updates while only blocking deletion, or does it make resources read-only?",
     options: [
       option("A", "Resources in RG-App cannot be deleted until the lock is removed", "A CanNotDelete lock inherited from the resource group prevents deletion of child resources."),
       option("B", "Resources in RG-App become read-only", "Read-only behavior requires a ReadOnly lock, not CanNotDelete."),
@@ -349,6 +367,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure feature should you configure?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Configure budgets and alerts",
+
+    hint: "Which feature sends threshold-based cost alerts to notify the team without blocking deployments?",
     options: [
       option("A", "Cost analysis with manual approval gates", "Manual approval processes can gate costs but do not provide automatic threshold-based alerting."),
       option("B", "A resource lock", "Locks protect resources but do not monitor spend."),
@@ -370,6 +390,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which identity type should the automation account use?",
     subtopic: "Manage Azure identities and governance",
     referenceTopic: "Managed identities for Azure resources",
+
+    hint: "Which identity type lets Azure workloads authenticate without storing secrets in code, configuration, or a credential store?",
     options: [
       option("A", "A managed identity", "Managed identities let Azure workloads authenticate without storing credentials in code or configuration."),
       option("B", "A shared access key (SAS)", "SAS tokens are account-level secrets that must be stored and rotated, not suitable for workload identity."),
@@ -391,6 +413,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which built-in Azure role should you assign?",
     subtopic: "Manage access to Azure resources",
     referenceTopic: "Built-in Azure RBAC roles",
+
+    hint: "Which built-in Azure role allows managing RBAC role assignments without granting general resource creation or deletion rights?",
     options: [
       option("A", "Reader", "Reader cannot create or remove role assignments."),
       option("B", "Contributor", "Contributor can manage resources, which exceeds the requirement."),
@@ -412,6 +436,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two Azure Policy effects should you use to enforce those requirements?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Azure Policy effects",
+
+    hint: "Which two Azure Policy effects work together to add required tags and block noncompliant deployments simultaneously?",
     options: [
       option("A", "Modify", "Modify can add or correct metadata such as tags during deployment or remediation."),
       option("B", "Deny", "Deny blocks noncompliant deployments such as disallowed locations."),
@@ -434,6 +460,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two Privileged Identity Management configurations meet the requirement while keeping access just-in-time?",
     subtopic: "Manage access to Azure resources",
     referenceTopic: "Microsoft Entra Privileged Identity Management",
+
+    hint: "Which two PIM configurations eliminate standing privilege while requiring approval before elevated access becomes active?",
     options: [
       option("A", "Configure the role assignment as eligible", "Eligible assignments remove standing access and require activation when needed."),
       option("B", "Require approval to activate the role", "Approval can be enforced during PIM activation workflows."),
@@ -456,6 +484,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two Microsoft Entra roles should you assign to keep the delegation narrow?",
     subtopic: "Manage Microsoft Entra users and groups",
     referenceTopic: "Built-in Microsoft Entra roles",
+
+    hint: "Which two Microsoft Entra roles handle guest invitations and group membership management without granting subscription-level Azure admin rights?",
     options: [
       option("A", "Guest Inviter", "Guest Inviter is designed for inviting external users without broader Azure administration rights."),
       option("B", "Groups Administrator", "Groups Administrator can create and manage groups and their membership."),
@@ -478,6 +508,8 @@ export const additionalQuestions: Question[] = [
     stem: "For each statement, answer Yes if the statement is correct. Otherwise, answer No.",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Management groups, locks, and budgets",
+
+    hint: "Test your knowledge: Do management group assignments inherit? Does CanNotDelete block reads? Can budgets trigger alerts?",
     statements: [
       {
         id: "S1",
@@ -509,6 +541,8 @@ export const additionalQuestions: Question[] = [
     stem: "For each statement, answer Yes if the statement is correct. Otherwise, answer No.",
     subtopic: "Manage access to Azure resources",
     referenceTopic: "Deny assignments, initiatives, and PIM",
+
+    hint: "Distinguish between these: Can deny assignments override Contributor? Can initiatives contain multiple policies? Do PIM eligible roles grant permanent access?",
     statements: [
       {
         id: "S1",
@@ -540,6 +574,8 @@ export const additionalQuestions: Question[] = [
     stem: "For each statement, answer Yes if the statement is correct. Otherwise, answer No.",
     subtopic: "Manage Microsoft Entra users and groups",
     referenceTopic: "Dynamic groups and delegated administration",
+
+    hint: "Verify these concepts: Do dynamic groups use attribute rules? Can admin units scope directory admin? Can User Access Administrator create resources?",
     statements: [
       {
         id: "S1",
@@ -571,6 +607,8 @@ export const additionalQuestions: Question[] = [
     stem: "Arrange the actions in the correct order so governance can inherit properly.",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Management groups and policy assignment",
+
+    hint: "For governance to inherit properly, in which order must you: create the management group, place the subscription, and assign policies?",
     availableItems: [
     "Create the management group",
     "Move the subscription into the management group",
@@ -596,6 +634,8 @@ export const additionalQuestions: Question[] = [
     stem: "Arrange the actions in the correct order so the role definition is valid at the management-group scope before assignment.",
     subtopic: "Manage access to Azure resources",
     referenceTopic: "Create custom Azure RBAC roles",
+
+    hint: "For a custom role to be valid at the management group scope before assignment, what is the correct sequence: define actions, set scope, create, assign?",
     availableItems: [
     "Set the management group as an assignable scope",
     "Define the allowed actions in the role JSON",
@@ -623,6 +663,8 @@ export const additionalQuestions: Question[] = [
     stem: "At which scope should you assign the policy if you need inheritance for Prod but not Dev?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Policy scopes",
+
+    hint: "If a policy must affect ONLY production subscriptions under Prod but not Dev, at which scope should you assign it?",
     options: [
       option("A", "The tenant root management group", "This would also affect Dev because both management groups inherit from the root."),
       option("B", "The Prod management group", "Assigning at Prod applies the policy to all child subscriptions in production only."),
@@ -644,6 +686,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which feature should you configure to support approved, time-bound elevation?",
     subtopic: "Manage access to Azure resources",
     referenceTopic: "Microsoft Entra Privileged Identity Management",
+
+    hint: "Which service supports eligible, time-bound, approval-based role activation for Azure resource roles?",
     caseStudyId: "CS-ADATUM-FINANCE",
     options: [
       option("A", "Microsoft Entra Privileged Identity Management for Azure resource roles", "PIM provides eligible, time-bound activation workflows for Azure roles."),
@@ -666,6 +710,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Microsoft Entra role should you assign to the helpdesk leads?",
     subtopic: "Manage Microsoft Entra users and groups",
     referenceTopic: "Built-in Microsoft Entra roles",
+
+    hint: "Which Microsoft Entra role allows managing guest users and groups without granting subscription-level Azure resource access?",
     caseStudyId: "CS-PROSEWARE-RESEARCH",
     options: [
       option("A", "User Administrator", "User Administrator can manage users, including guests, and groups without granting Azure resource administration."),
@@ -689,6 +735,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which type of shared access signature should you generate?",
     subtopic: "Configure access to storage",
     referenceTopic: "User delegation SAS",
+
+    hint: "When SAS access must use Microsoft Entra credentials instead of storage account keys, which SAS type should you generate?",
     options: [
       option("A", "A user delegation SAS", "A user delegation SAS is signed by a user delegation key and uses Microsoft Entra credentials."),
       option("B", "An account SAS signed with the storage key", "Account SAS uses account keys rather than Microsoft Entra authorization."),
@@ -710,6 +758,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure Storage feature should you use?",
     subtopic: "Configure and manage storage accounts",
     referenceTopic: "Lifecycle management",
+
+    hint: "Which Azure Storage feature automatically transitions blobs between tiers based on access patterns and time?",
     options: [
       option("A", "Lifecycle management rules", "Lifecycle management moves blobs between tiers automatically based on age or other criteria."),
       option("B", "A resource lock", "Locks do not change blob access tiers."),
@@ -731,6 +781,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which storage feature should you enable?",
     subtopic: "Configure data protection for storage",
     referenceTopic: "Blob versioning",
+
+    hint: "Which Azure Storage feature preserves earlier blob versions automatically when a blob is updated or overwritten?",
     options: [
       option("A", "Blob versioning", "Blob versioning preserves earlier versions when a blob is changed or overwritten."),
       option("B", "A public endpoint", "A public endpoint affects connectivity and does not preserve previous blob contents."),
@@ -752,6 +804,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which storage account setting should you configure?",
     subtopic: "Configure and manage storage accounts",
     referenceTopic: "Secure transfer required",
+
+    hint: "Which storage account setting forces clients to use HTTPS instead of HTTP and allows gradual migration from existing integrations?",
     options: [
       option("A", "Blob versioning", "Versioning preserves prior blob states but does not enforce transport encryption."),
       option("B", "Secure transfer required", "This setting forces clients to use HTTPS instead of HTTP; works gradually as clients update their connections."),
@@ -773,6 +827,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which redundancy option should you choose if you need both zone resiliency and secondary-region read access?",
     subtopic: "Configure and manage storage accounts",
     referenceTopic: "Storage redundancy options",
+
+    hint: "Which storage redundancy option combines zone resilience in the primary region with read access in the secondary region?",
     options: [
       option("A", "RA-GZRS", "RA-GZRS combines zone redundancy in the primary region with read access to the geo-replicated secondary region."),
       option("B", "ZRS", "ZRS provides zone resilience only within the primary region and no secondary-region read access."),
@@ -794,6 +850,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which feature should you configure?",
     subtopic: "Configure data protection for storage",
     referenceTopic: "Immutable blob storage",
+
+    hint: "Which Azure Storage feature enforces write-once, read-many retention for regulatory compliance periods?",
     options: [
       option("A", "A time-based immutability policy", "Time-based immutability enforces WORM retention for a defined retention period."),
       option("B", "A virtual network gateway", "Gateways provide connectivity and do not enforce WORM retention."),
@@ -815,6 +873,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure Storage feature should you use?",
     subtopic: "Configure data protection for storage",
     referenceTopic: "Object replication",
+
+    hint: "Which Azure Storage feature asynchronously replicates block blobs from a source container to a destination storage account?",
     options: [
       option("A", "A backup vault", "Backup vaults are not used for block-blob replication between storage accounts."),
       option("B", "A resource lock", "Locks do not replicate blob data."),
@@ -836,6 +896,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which storage account setting should you disable?",
     subtopic: "Configure access to storage",
     referenceTopic: "Anonymous blob access",
+
+    hint: "Which account-level setting, when disabled, prevents anonymous public browsing while still allowing SAS-based container access?",
     options: [
       option("A", "Object replication", "Object replication asynchronously copies blobs between accounts for disaster recovery."),
       option("B", "Secure transfer required", "This setting enforces HTTPS but does not specifically disable anonymous access."),
@@ -857,6 +919,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which storage account capability must you enable?",
     subtopic: "Configure access to storage",
     referenceTopic: "SFTP support for Azure Blob Storage",
+
+    hint: "Which storage account feature, when enabled, allows SFTP protocol access on port 22 for Azure Blob Storage?",
     options: [
       option("A", "Hierarchical namespace", "SFTP support for Azure Blob Storage requires a storage account with hierarchical namespace enabled."),
       option("B", "Shared key access only", "Shared key usage is not the enabling capability for SFTP support."),
@@ -878,6 +942,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two storage features should you enable?",
     subtopic: "Configure data protection for storage",
     referenceTopic: "Blob soft delete and versioning",
+
+    hint: "Which two features together protect against accidental deletion and overwrite: one recovers deleted blobs, the other restores earlier versions?",
     options: [
       option("A", "Blob soft delete", "Blob soft delete protects against accidental deletion of blobs."),
       option("B", "Blob versioning", "Blob versioning preserves earlier blob contents when blobs are updated or overwritten."),
@@ -900,6 +966,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two actions should you take to keep SMB access working with on-premises identities?",
     subtopic: "Configure access to storage",
     referenceTopic: "Identity-based authentication for Azure Files",
+
+    hint: "For SMB over on-premises AD DS, what two configurations are needed: identity method and permission level?",
     options: [
       option("A", "Enable Active Directory Domain Services authentication for Azure Files on the storage account", "Azure Files must be configured for AD DS authentication to accept existing domain credentials over SMB."),
       option("B", "Assign share-level permissions to the required users or groups", "Azure Files still requires share-level authorization in addition to NTFS permissions."),
@@ -922,6 +990,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two actions are required to issue the SAS tokens safely?",
     subtopic: "Configure access to storage",
     referenceTopic: "Create a user delegation SAS",
+
+    hint: "For user delegation SAS tokens, what two steps are needed: authentication method and what to request from Azure Storage?",
     options: [
       option("A", "Authenticate by using Microsoft Entra credentials", "A user delegation SAS is based on Microsoft Entra authentication rather than account keys."),
       option("B", "Request a user delegation key from Azure Storage", "The application must first obtain a user delegation key to sign the SAS."),
@@ -944,6 +1014,8 @@ export const additionalQuestions: Question[] = [
     stem: "For each statement, answer Yes if the statement is correct. Otherwise, answer No.",
     subtopic: "Configure and manage storage accounts",
     referenceTopic: "Storage redundancy and replication",
+
+    hint: "Verify: Does ZRS span zones in one region? Does RA-GRS support secondary read? Can object replication use append blobs?",
     statements: [
       {
         id: "S1",
@@ -975,6 +1047,8 @@ export const additionalQuestions: Question[] = [
     stem: "Arrange the actions in the correct order so the sync topology is created safely.",
     subtopic: "Configure access to storage",
     referenceTopic: "Deploy Azure File Sync",
+
+    hint: "For File Sync setup, what sequence: deploy service, install agent, register server, create sync group, create endpoint?",
     availableItems: [
     "Create the server endpoint",
     "Deploy the Storage Sync Service",
@@ -1004,6 +1078,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which redundancy option should you choose to keep both zone resilience and secondary-region read access?",
     subtopic: "Configure and manage storage accounts",
     referenceTopic: "Storage redundancy options",
+
+    hint: "Which redundancy option provides zone resilience in the primary region AND read access in the secondary region?",
     options: [
       option("A", "ZRS", "ZRS provides zone resilience in the primary region only and does not expose a readable secondary region endpoint."),
       option("B", "GRS", "GRS replicates to a secondary region but does not provide read access there."),
@@ -1025,6 +1101,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which storage redundancy option should you use to satisfy both availability goals?",
     subtopic: "Configure and manage storage accounts",
     referenceTopic: "Storage redundancy options",
+
+    hint: "For both zone resilience in the primary region and readable secondary region, which redundancy option covers both needs?",
     caseStudyId: "CS-ADATUM-FINANCE",
     options: [
       option("A", "ZRS", "ZRS protects data within the primary region only and provides no secondary-region copy."),
@@ -1047,6 +1125,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you deploy to keep the branch cache and the Azure copy synchronized?",
     subtopic: "Configure access to storage",
     referenceTopic: "Deploy Azure File Sync",
+
+    hint: "Which Azure service keeps the authoritative namespace in Azure while allowing branch servers to cache frequently accessed files locally?",
     caseStudyId: "CS-PROSEWARE-RESEARCH",
     options: [
       option("A", "Azure File Sync", "Azure File Sync keeps authoritative data in Azure Files while branch servers cache frequently used content locally."),
@@ -1070,6 +1150,8 @@ export const additionalQuestions: Question[] = [
     stem: "What should you enable on the virtual machine to support that access pattern?",
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Managed identities for Azure resources",
+
+    hint: "Which VM identity type lets the workload authenticate to Azure services without stored credentials or a separate credential store?",
     options: [
       option("A", "A budget", "Budgets are unrelated to authentication from a VM."),
       option("B", "A public IP address", "A public IP affects connectivity and does not provide authenticated access to Azure services."),
@@ -1091,6 +1173,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which App Service feature should you use to stage and validate the build safely?",
     subtopic: "Create and configure Azure App Service",
     referenceTopic: "Deployment slots",
+
+    hint: "Which App Service feature isolates a staging environment from production while allowing safe validation before a traffic swap?",
     options: [
       option("A", "A deployment slot", "Deployment slots let you stage and validate a new version before swapping it into production."),
       option("B", "A NAT gateway", "A NAT gateway controls outbound connectivity and does not provide release staging."),
@@ -1112,6 +1196,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which feature should you configure to scale the plan based on CPU metrics?",
     subtopic: "Create and configure Azure App Service",
     referenceTopic: "Scale an App Service plan",
+
+    hint: "Which App Service feature automatically adds or removes instances based on metrics such as CPU percentage?",
     options: [
       option("A", "Autoscale rules", "Autoscale rules can add or remove instances automatically based on metrics such as CPU usage."),
       option("B", "A management group", "Management groups organize subscriptions and do not scale App Service instances."),
@@ -1133,6 +1219,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which feature should you use to run the script inside each VM?",
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Virtual machine extensions",
+
+    hint: "Which VM extension executes a PowerShell script inside the guest OS after VM deployment without RDP login?",
     options: [
       option("A", "The Custom Script Extension", "The Custom Script Extension runs post-deployment scripts inside the VM guest."),
       option("B", "A load balancer", "Load balancers distribute traffic and do not run scripts inside VMs."),
@@ -1154,6 +1242,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you use?",
     subtopic: "Provision and manage containers",
     referenceTopic: "Azure Container Instances",
+
+    hint: "Which Azure service runs containers quickly without requiring VM or container orchestrator cluster management?",
     options: [
       option("A", "A Recovery Services vault", "A Recovery Services vault is not a container execution platform."),
       option("B", "Azure Container Instances", "ACI runs containers directly without requiring VM or cluster management."),
@@ -1175,6 +1265,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure resource should store the image so it can be versioned and replicated safely?",
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Azure Compute Gallery",
+
+    hint: "Which Azure resource stores versioned VM images and replicates them to multiple regions for consistent deployments?",
     options: [
       option("A", "Azure Compute Gallery", "Azure Compute Gallery is designed to version and replicate VM images across regions."),
       option("B", "A Standard Load Balancer", "Load balancers distribute traffic and do not store VM images."),
@@ -1196,6 +1288,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure compute resource should you deploy for identical VMs with automatic scale-out?",
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Virtual machine scale sets",
+
+    hint: "Which Azure compute resource provides identical VM instances with native autoscale and scale-out capabilities?",
     options: [
       option("A", "A virtual machine scale set", "VM scale sets provide identical VM instances with native scale operations and autoscale integration."),
       option("B", "An availability set", "Availability sets improve availability for a fixed set of VMs but do not autoscale."),
@@ -1217,6 +1311,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which availability option should you use?",
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Availability zones",
+
+    hint: "Which availability option protects VMs against failure of a single datacenter within one Azure region?",
     options: [
       option("A", "Availability zones", "Availability zones protect against datacenter-level failure inside a region."),
       option("B", "A local network gateway", "Local network gateways describe on-premises networks and do not improve VM resilience."),
@@ -1238,6 +1334,8 @@ export const additionalQuestions: Question[] = [
     stem: "How should you configure the connection string while preserving slot isolation?",
     subtopic: "Create and configure Azure App Service",
     referenceTopic: "Deployment slot settings",
+
+    hint: "Which App Service configuration type stays bound to the slot and is NOT swapped to the target slot?",
     options: [
       option("A", "Assign it as a route table property", "Route tables manage network routes and do not hold application configuration."),
       option("B", "Store it in an NSG", "NSGs do not store App Service connection strings."),
@@ -1259,6 +1357,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which feature should you use?",
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Run command",
+
+    hint: "Which Azure feature executes troubleshooting scripts inside an unreachable VM without requiring interactive inbound network connectivity?",
     options: [
       option("A", "Run command", "Run command executes scripts inside the guest from Azure without requiring interactive inbound connectivity."),
       option("B", "A public load balancer", "A load balancer cannot execute scripts inside the guest OS."),
@@ -1280,6 +1380,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you use?",
     subtopic: "Create and configure Azure App Service",
     referenceTopic: "Web App for Containers",
+
+    hint: "Which Azure service runs web containers with built-in custom domains, TLS, and autoscaling while avoiding VM management?",
     options: [
       option("A", "Azure App Service Web App for Containers", "App Service can run containerized web apps with managed scaling, custom domains, and TLS."),
       option("B", "A dedicated host", "Dedicated hosts provide isolated hardware for VMs, not a managed web container platform."),
@@ -1301,6 +1403,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure feature should you use for that boot troubleshooting workflow?",
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Boot diagnostics",
+
+    hint: "Which VM troubleshooting feature shows startup screenshots and serial console output even before guest network access works?",
     options: [
       option("A", "Boot diagnostics", "Boot diagnostics captures the console screenshot and serial output during VM startup."),
       option("B", "A Standard Load Balancer", "Load balancers do not capture VM boot output."),
@@ -1322,6 +1426,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which type of virtual machine should you use to minimize cost under those constraints?",
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Spot virtual machines",
+
+    hint: "If the workload can be interrupted and restarted, which VM pricing model trades availability guarantees for the lowest cost?",
     options: [
       option("A", "A Spot virtual machine", "Spot VMs provide discounted compute for interruptible workloads that can tolerate eviction."),
       option("B", "A dedicated host", "Dedicated hosts increase isolation and cost rather than minimizing cost."),
@@ -1343,6 +1449,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two actions should you take?",
     subtopic: "Create and configure Azure App Service",
     referenceTopic: "Managed identities and Key Vault access",
+
+    hint: "What two things are needed for Key Vault secret retrieval without stored credentials: identity creation and secret-read authorization?",
     options: [
       option("A", "Enable a managed identity for the app", "The app needs a managed identity to request tokens from Microsoft Entra ID."),
       option("B", "Grant the app identity access to the required secrets in Key Vault", "The managed identity must be authorized to read the secrets it needs."),
@@ -1365,6 +1473,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two features should you configure?",
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Scale sets and availability zones",
+
+    hint: "Which pair covers both goals: resilience to a datacenter failure and automatic instance growth under CPU pressure?",
     options: [
       option("A", "Availability zones", "Availability zones protect instances against a single-datacenter failure inside a region."),
       option("B", "Autoscale rules", "Autoscale rules add or remove instances automatically based on metrics."),
@@ -1387,6 +1497,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two Azure services meet the requirement?",
     subtopic: "Provision and manage containers",
     referenceTopic: "Container hosting options",
+
+    hint: "Which managed container services avoid guest OS administration, unlike VM-based hosting models?",
     options: [
       option("A", "Azure Container Instances", "ACI runs containers without requiring guest OS management."),
       option("B", "Azure Container Apps", "Container Apps provide managed container hosting with no guest OS administration."),
@@ -1409,6 +1521,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two gallery objects must you create next?",
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Azure Compute Gallery image publishing",
+
+    hint: "After the gallery exists, which object defines the image family and which object represents the publishable build artifact?",
     options: [
       option("A", "An image definition", "An image definition describes the image family, OS, and metadata within the gallery."),
       option("B", "An image version", "An image version holds the actual published image build used for deployments."),
@@ -1431,6 +1545,8 @@ export const additionalQuestions: Question[] = [
     stem: "For each statement, answer Yes if the statement is correct. Otherwise, answer No.",
     subtopic: "Deploy and manage Azure compute resources",
     referenceTopic: "Managed identities, resizing, and container instances",
+
+    hint: "Check lifecycle and platform facts: system-assigned identity lifecycle, resize/deallocate behavior, and whether ACI requires a Kubernetes cluster.",
     statements: [
       {
         id: "S1",
@@ -1462,6 +1578,8 @@ export const additionalQuestions: Question[] = [
     stem: "For each statement, answer Yes if the statement is correct. Otherwise, answer No.",
     subtopic: "Deploy and manage Azure compute resources",
     referenceTopic: "Deployment slots, Spot VMs, and availability",
+
+    hint: "Validate each statement against core behavior: slot swap purpose, Spot eviction guarantees, and what availability sets do not protect against.",
     statements: [
       {
         id: "S1",
@@ -1493,6 +1611,8 @@ export const additionalQuestions: Question[] = [
     stem: "Arrange the actions in the correct order so validation happens before production swap.",
     subtopic: "Create and configure Azure App Service",
     referenceTopic: "Deployment slots",
+
+    hint: "What deployment-slot sequence ensures safety: create slot, deploy build, validate in slot, then swap to production?",
     availableItems: [
     "Deploy the new build to the staging slot",
     "Create the staging slot",
@@ -1520,6 +1640,8 @@ export const additionalQuestions: Question[] = [
     stem: "Arrange the actions in the correct order so gallery governance is preserved before VM deployment.",
     subtopic: "Create and configure virtual machines",
     referenceTopic: "Azure Compute Gallery image publishing",
+
+    hint: "In Compute Gallery workflows, what must exist before VM deployment: gallery, definition, version, then deployment?",
     availableItems: [
     "Create the Azure Compute Gallery",
     "Create the image version",
@@ -1547,6 +1669,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you choose?",
     subtopic: "Provision and manage containers",
     referenceTopic: "Azure Container Apps",
+
+    hint: "Which container platform provides managed ingress, revisions, and scale-to-zero without running cluster infrastructure?",
     options: [
       option("A", "Azure Virtual Machine Scale Sets", "VM scale sets manage VMs and do not provide managed container revisions or scale-to-zero."),
       option("B", "Azure Container Apps", "Container Apps supports managed ingress, revisions, and scale-to-zero for containerized HTTP workloads."),
@@ -1568,6 +1692,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which App Service feature should you use?",
     subtopic: "Create and configure Azure App Service",
     referenceTopic: "Deployment slots",
+
+    hint: "Which App Service feature allows pre-production validation and controlled cutover with quick rollback?",
     caseStudyId: "CS-ADATUM-FINANCE",
     options: [
       option("A", "Deployment slots", "Deployment slots support staged validation and controlled swaps into production."),
@@ -1590,6 +1716,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you use while balancing managed operations and release agility?",
     subtopic: "Provision and manage containers",
     referenceTopic: "Azure Container Apps",
+
+    hint: "For managed container releases with revisions and scale-to-zero, which service fits better than VM-centric options?",
     caseStudyId: "CS-PROSEWARE-RESEARCH",
     options: [
       option("A", "Azure Container Apps", "Container Apps is designed for managed containerized applications with revisions and scale-to-zero."),
@@ -1613,6 +1741,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which networking feature should you configure?",
     subtopic: "Configure virtual networks",
     referenceTopic: "Virtual network peering",
+
+    hint: "Which feature privately connects two VNets over the Microsoft backbone without VPN gateways?",
     options: [
       option("A", "Virtual network peering", "VNet peering connects virtual networks privately over the Microsoft backbone."),
       option("B", "A resource lock", "A resource lock does not connect networks."),
@@ -1634,6 +1764,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you use?",
     subtopic: "Configure load balancing",
     referenceTopic: "Application Gateway WAF",
+
+    hint: "Which service combines layer-7 HTTP routing with integrated WAF protection in a managed offering?",
     options: [
       option("A", "Azure Application Gateway with WAF", "Application Gateway provides layer-7 routing and integrated WAF capabilities."),
       option("B", "A Standard Load Balancer", "Standard Load Balancer works at layer 4 and does not provide WAF features."),
@@ -1655,6 +1787,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure resource should you associate with the subnet?",
     subtopic: "Configure virtual networks",
     referenceTopic: "NAT Gateway",
+
+    hint: "Which subnet-level resource provides fixed outbound public IP egress for all VMs without per-VM public IPs?",
     options: [
       option("A", "A NAT gateway", "A NAT gateway provides predictable outbound public IP addresses for a subnet."),
       option("B", "A private DNS zone", "Private DNS zones provide name resolution and do not manage outbound internet translation."),
@@ -1676,6 +1810,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you deploy?",
     subtopic: "Configure secure access to virtual networks",
     referenceTopic: "Azure Bastion",
+
+    hint: "Which service enables RDP/SSH to VMs through the portal without exposing public IP addresses on the VMs?",
     options: [
       option("A", "Azure Bastion", "Azure Bastion provides browser-based RDP and SSH connectivity without public IPs on the target VMs."),
       option("B", "A budget alert", "Budgets do not provide administrative connectivity."),
@@ -1697,6 +1833,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure connectivity option should you choose for that private hybrid design?",
     subtopic: "Configure connectivity from on-premises networks",
     referenceTopic: "ExpressRoute",
+
+    hint: "Which hybrid connectivity option uses a private dedicated circuit instead of internet-based VPN transport?",
     options: [
       option("A", "ExpressRoute", "ExpressRoute provides private connectivity to Azure over a dedicated circuit."),
       option("B", "A public load balancer", "A public load balancer does not create private on-premises connectivity."),
@@ -1718,6 +1856,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you use?",
     subtopic: "Configure secure access to virtual networks",
     referenceTopic: "Azure Firewall",
+
+    hint: "Which centralized network security service supports FQDN filtering plus DNAT/SNAT across multiple subnets?",
     options: [
       option("A", "Azure Firewall", "Azure Firewall provides centralized network and application filtering plus DNAT and SNAT."),
       option("B", "A private DNS zone", "Private DNS zones resolve names but do not filter traffic."),
@@ -1739,6 +1879,8 @@ export const additionalQuestions: Question[] = [
     stem: "What should you deploy to provide consistent private endpoint DNS resolution?",
     subtopic: "Configure secure access to virtual networks",
     referenceTopic: "Private DNS for private endpoints",
+
+    hint: "Which DNS approach resolves private endpoint names to private IPs across multiple VNets through linking?",
     options: [
       option("A", "A private DNS zone linked to the virtual networks", "Private DNS zones linked to the VNets resolve private endpoint names to private IP addresses."),
       option("B", "A public DNS zone only", "A public DNS zone does not resolve private endpoint names to private IPs inside VNets."),
@@ -1760,6 +1902,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which networking feature should you configure?",
     subtopic: "Configure secure access to virtual networks",
     referenceTopic: "Service endpoints",
+
+    hint: "If the service must keep its public endpoint but only allow selected subnets over the backbone, which feature fits better than private endpoints?",
     options: [
       option("A", "A service endpoint", "Service endpoints extend the selected subnet identity to the public service endpoint over the Microsoft backbone."),
       option("B", "A private endpoint", "A private endpoint assigns a private IP in the VNet, which the scenario explicitly does not require."),
@@ -1781,6 +1925,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure load-balancing service should you use?",
     subtopic: "Configure load balancing",
     referenceTopic: "Azure Load Balancer",
+
+    hint: "Which native Azure service handles layer-4 TCP/UDP distribution across backend VMs?",
     options: [
       option("A", "A Standard Load Balancer", "Azure Load Balancer distributes layer-4 TCP and UDP traffic across backend instances."),
       option("B", "A private DNS zone", "Private DNS zones resolve names and do not distribute traffic."),
@@ -1802,6 +1948,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure resource should you associate with the subnet?",
     subtopic: "Configure virtual networks",
     referenceTopic: "User-defined routes",
+
+    hint: "What subnet association forces all 0.0.0.0/0 traffic to an Azure Firewall private IP before internet egress?",
     options: [
       option("A", "A route table with a default route to the firewall private IP", "A user-defined route can send 0.0.0.0/0 traffic to the firewall as a virtual appliance next hop."),
       option("B", "An action group", "Action groups are alert targets and do not change traffic flow."),
@@ -1823,6 +1971,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure gateway configuration should you use to balance resiliency and operational continuity?",
     subtopic: "Configure connectivity from on-premises networks",
     referenceTopic: "VPN Gateway",
+
+    hint: "Which VPN Gateway mode uses two active Azure gateway instances to support resilient dual tunnels?",
     options: [
       option("A", "An active-active VPN gateway", "Active-active VPN gateways use two active instances and can provide resilient dual tunnels."),
       option("B", "A local network gateway", "A local network gateway describes the on-premises endpoint and is not the Azure gateway itself."),
@@ -1844,6 +1994,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two Azure resources can be associated directly with an NSG?",
     subtopic: "Configure network security groups",
     referenceTopic: "NSG association scopes",
+
+    hint: "Think about the two network topology levels where NSG policy is enforced — the subnet boundary that protects all resources behind it, and the individual NIC that provides per-VM control.",
     options: [
       option("A", "A subnet", "NSGs can be associated directly with a subnet."),
       option("B", "A network interface", "NSGs can also be associated directly with an individual NIC."),
@@ -1866,6 +2018,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two Azure resources should you deploy?",
     subtopic: "Configure secure access to virtual networks",
     referenceTopic: "Azure Private DNS Resolver and private DNS zones",
+
+    hint: "On-premises DNS needs two things from Azure: a place to hold the private endpoint DNS records, and a target IP address it can forward queries to using conditional forwarding.",
     options: [
       option("A", "A private DNS zone for the private endpoint namespace", "The private DNS zone stores the private endpoint DNS records."),
       option("B", "An Azure Private DNS Resolver inbound endpoint", "The inbound endpoint lets on-premises DNS servers forward private queries into Azure."),
@@ -1888,6 +2042,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two statements about VNet peering are correct?",
     subtopic: "Configure virtual networks",
     referenceTopic: "Virtual network peering",
+
+    hint: "Recall what path traffic takes between two peered VNets, then consider what does NOT happen automatically when VNet A peers with B and B peers with C — does A reach C without extra configuration?",
     options: [
       option("A", "Peered virtual networks communicate over the Microsoft backbone", "Peering traffic uses the Microsoft private network rather than the public internet."),
       option("B", "VNet peering is nontransitive", "Transitive connectivity is not provided automatically through peered VNets."),
@@ -1910,6 +2066,8 @@ export const additionalQuestions: Question[] = [
     stem: "For each statement, answer Yes if the statement is correct. Otherwise, answer No.",
     subtopic: "Configure secure access to virtual networks",
     referenceTopic: "Private endpoints and service endpoints",
+
+    hint: "One endpoint type creates a NIC with a private IP inside your VNet for the service; the other adds VNet-level access control to the service's existing public endpoint — the public address is unchanged.",
     statements: [
       {
         id: "S1",
@@ -1941,6 +2099,8 @@ export const additionalQuestions: Question[] = [
     stem: "For each statement, answer Yes if the statement is correct. Otherwise, answer No.",
     subtopic: "Configure network security groups",
     referenceTopic: "NSG rules and defaults",
+
+    hint: "In NSG rule processing, lower priority numbers win. Remember also that every new NSG starts with built-in default rules, and that both a subnet and a NIC are valid attachment points.",
     statements: [
       {
         id: "S1",
@@ -1972,6 +2132,8 @@ export const additionalQuestions: Question[] = [
     stem: "Arrange the actions in the correct order so gateway components are configured safely.",
     subtopic: "Configure load balancing",
     referenceTopic: "Application Gateway configuration",
+
+    hint: "Work backward from the routing rule: it must reference both a listener and a backend pool, so both must exist first. The gateway itself must exist before any component can be added to it.",
     availableItems: [
     "Add the backend pool",
     "Create the routing rule",
@@ -1999,6 +2161,8 @@ export const additionalQuestions: Question[] = [
     stem: "Arrange the actions in the correct order so resilient VPN connectivity can be established.",
     subtopic: "Configure connectivity from on-premises networks",
     referenceTopic: "Configure a site-to-site VPN",
+
+    hint: "The VPN gateway requires a GatewaySubnet to deploy into. The site-to-site connection requires both the VPN gateway and the local network gateway. Build each resource in strict dependency order.",
     availableItems: [
     "Deploy the virtual network gateway",
     "Create the local network gateway",
@@ -2026,6 +2190,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you choose?",
     subtopic: "Configure load balancing",
     referenceTopic: "Application Gateway WAF",
+
+    hint: "Two requirements narrow the field: layer-7 routing (rules out Azure Load Balancer at layer 4) and integrated WAF (distinguishes Application Gateway with WAF from all other options).",
     options: [
       option("A", "Azure Application Gateway with WAF", "Application Gateway is the Azure layer-7 load balancer with integrated WAF capability."),
       option("B", "Azure Load Balancer", "Azure Load Balancer works at layer 4 and does not provide WAF features."),
@@ -2047,6 +2213,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you deploy to meet these access constraints?",
     subtopic: "Configure secure access to virtual networks",
     referenceTopic: "Azure Bastion",
+
+    hint: "The requirement bans public IPs on VMs and open inbound NSG ports, and requires portal-initiated sessions. There is one Azure service purpose-built for this browser-based RDP/SSH pattern.",
     caseStudyId: "CS-ADATUM-FINANCE",
     options: [
       option("A", "Azure Bastion", "Azure Bastion provides secure browser-based RDP and SSH access without public IPs on the VMs."),
@@ -2069,6 +2237,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure resource should you associate with the subnet to satisfy those outbound requirements?",
     subtopic: "Configure virtual networks",
     referenceTopic: "NAT Gateway",
+
+    hint: "When multiple VMs in one subnet need a stable, shared set of outbound public IPs, one Azure resource is associated with the subnet to centralize SNAT — no public IPs on individual VMs needed.",
     caseStudyId: "CS-PROSEWARE-RESEARCH",
     options: [
       option("A", "A NAT gateway", "NAT Gateway provides fixed outbound public IP addresses for subnet egress."),
@@ -2092,6 +2262,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure resource should you use for that centralized log analysis?",
     subtopic: "Monitor resources in Azure",
     referenceTopic: "Log Analytics workspaces",
+
+    hint: "KQL queries require a log store, not just a stream. Application Insights is application-performance focused; the answer is the platform-level Azure Monitor data store for cross-resource log retention and querying.",
     options: [
       option("A", "A Log Analytics workspace", "Log Analytics workspaces are the Azure Monitor log data platform for KQL queries and analysis."),
       option("B", "An Application Insights workspace", "Application Insights is app-focused telemetry (APM), whereas Log Analytics is platform-focused logging and events."),
@@ -2113,6 +2285,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure Monitor component should you create as the reusable notification target?",
     subtopic: "Monitor resources in Azure",
     referenceTopic: "Action groups",
+
+    hint: "Alert rules and notification targets are separate objects in Azure Monitor. The reusable container for email addresses, webhooks, and automation targets is designed to be shared across many alert rules.",
     options: [
       option("A", "An action group", "Action groups hold reusable notification and automation targets for alert rules."),
       option("B", "A route table", "Route tables control packet flow and do not store alert targets."),
@@ -2134,6 +2308,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure Monitor feature should you enable for those VM diagnostics?",
     subtopic: "Monitor resources in Azure",
     referenceTopic: "VM insights",
+
+    hint: "Azure Monitor has a feature specifically named for VMs that provides curated built-in views for guest performance counters, process dependency maps, and health criteria — no manual dashboard assembly required.",
     options: [
       option("A", "VM insights", "VM insights provides curated performance, dependency, and health views for Azure and Arc-enabled machines."),
       option("B", "A site-to-site VPN", "VPN gateways do not provide compute monitoring dashboards."),
@@ -2155,6 +2331,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure resource should you use to manage the protection while meeting those blob-backup constraints?",
     subtopic: "Implement backup and recovery",
     referenceTopic: "Backup vault and operational backup for blobs",
+
+    hint: "Azure Backup has two vault types: Recovery Services vault (VMs, on-premises, SQL, SAP) and Backup vault (newer workloads including Azure Blobs, managed disks, PostgreSQL). Match the vault to the workload type.",
     options: [
       option("A", "A Backup vault", "Operational backup for Azure Blobs is managed through a Backup vault."),
       option("B", "A Recovery Services vault", "Recovery Services vaults are used for VM/on-premises backup, not Azure Blob operational backup."),
@@ -2176,6 +2354,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which feature should you configure on the storage account to send that telemetry?",
     subtopic: "Monitor resources in Azure",
     referenceTopic: "Diagnostic settings",
+
+    hint: "Diagnostic settings are configured per-resource and control where that resource's own platform logs and metrics flow. The Activity Log and Log Analytics agents are different data sources, not export configurations.",
     options: [
       option("A", "Diagnostic settings", "Diagnostic settings route platform logs and metrics to destinations such as Log Analytics workspaces."),
       option("B", "Activity Log", "Activity Log captures subscription-level events, but diagnostic settings are the resource-level configuration for telemetry export."),
@@ -2197,6 +2377,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you use for that platform health visibility?",
     subtopic: "Monitor resources in Azure",
     referenceTopic: "Service Health",
+
+    hint: "Azure Monitor surfaces your own resource telemetry and alert conditions. Service Health is a separate portal blade showing Microsoft's view of the Azure platform — incidents, planned maintenance, and health advisories.",
     options: [
       option("A", "Service Health", "Service Health reports Azure service incidents, planned maintenance, and health advisories that affect your subscriptions."),
       option("B", "Azure Monitor", "Azure Monitor provides alerts and metrics, but Service Health specifically shows service incidents and planned maintenance."),
@@ -2218,6 +2400,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service and operation should you use to balance recovery validation with uninterrupted protection?",
     subtopic: "Implement backup and recovery",
     referenceTopic: "Azure Site Recovery test failover",
+
+    hint: "ASR test failover spins up recovery VMs in an isolated test network, validating your recovery plan without pausing active replication or affecting the live protected source environment.",
     options: [
       option("A", "Azure Site Recovery test failover", "ASR test failover validates recovery without interrupting ongoing replication."),
       option("B", "A resource lock", "Locks do not provide disaster recovery or test failover."),
@@ -2239,6 +2423,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two action types can you add to one action group to satisfy that response pattern?",
     subtopic: "Monitor resources in Azure",
     referenceTopic: "Action groups",
+
+    hint: "Action groups support both human notification channels (email, SMS, voice) and automation targets (Azure Function, Logic App, runbook). Identify the two types that directly match the scenario's stated requirements.",
     options: [
       option("A", "Email", "Action groups can send email notifications to operators."),
       option("B", "Azure Function", "Action groups can invoke an Azure Function as an automation target."),
@@ -2261,6 +2447,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which two items are required to configure that VM protection correctly?",
     subtopic: "Implement backup and recovery",
     referenceTopic: "Azure VM backup",
+
+    hint: "Azure VM backup needs a container for recovery points and a schedule-and-retention definition. These map to two distinct Azure Backup resource types that must both exist before the first backup can run.",
     options: [
       option("A", "A Recovery Services vault", "Azure VM backup uses a Recovery Services vault as the protection container."),
       option("B", "A backup policy", "The backup policy defines the schedule and retention settings for the protected VM."),
@@ -2283,6 +2471,8 @@ export const additionalQuestions: Question[] = [
     stem: "For each statement, answer Yes if the statement is correct. Otherwise, answer No.",
     subtopic: "Monitor resources in Azure",
     referenceTopic: "Activity Log, Log Analytics, and Service Health",
+
+    hint: "Activity Log = control-plane events; Log Analytics = queryable data store; Service Health = Azure platform health. S3 tests whether you confuse Service Health (platform alerts) with Azure Monitor VM diagnostics (guest OS).",
     statements: [
       {
         id: "S1",
@@ -2314,6 +2504,8 @@ export const additionalQuestions: Question[] = [
     stem: "For each statement, answer Yes if the statement is correct. Otherwise, answer No.",
     subtopic: "Monitor resources in Azure",
     referenceTopic: "Alert processing rules and metric alerts",
+
+    hint: "Three distinct Azure Monitor concepts: alert processing rules suppress or route alerts (S1), metric alerts support ML-based dynamic thresholds (S2), action groups define actions — they are not data stores (S3).",
     statements: [
       {
         id: "S1",
@@ -2345,6 +2537,8 @@ export const additionalQuestions: Question[] = [
     stem: "For each statement, answer Yes if the statement is correct. Otherwise, answer No.",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Update Manager and Site Recovery",
+
+    hint: "Azure Update Manager is a standalone native service with no Automation account dependency (unlike the retired Automation-based Update Management). ASR test failover is non-destructive — replication continues throughout.",
     statements: [
       {
         id: "S1",
@@ -2376,6 +2570,8 @@ export const additionalQuestions: Question[] = [
     stem: "Arrange the actions in the correct order so recovery validation happens without breaking protection.",
     subtopic: "Implement backup and recovery",
     referenceTopic: "Azure Site Recovery",
+
+    hint: "The vault must exist before replication can be configured. Replication must be active before a test failover is possible. After any test failover, always clean up the test environment to avoid cost and state confusion.",
     availableItems: [
     "Enable replication for the virtual machine",
     "Create the Recovery Services vault",
@@ -2403,6 +2599,8 @@ export const additionalQuestions: Question[] = [
     stem: "Which Azure service should you configure for that centralized patch workflow?",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Azure Update Manager",
+
+    hint: "Update Manager both assesses and deploys patches on a schedule. Azure Policy enforces configuration compliance but does not push patches. Azure Advisor provides recommendations only — it neither plans nor executes deployments.",
     caseStudyId: "CS-ADATUM-FINANCE",
     options: [
       option("A", "Azure Update Manager", "Update Manager centrally orchestrates patch assessment and deployment for Azure and Arc-enabled machines."),
@@ -2425,6 +2623,8 @@ export const additionalQuestions: Question[] = [
     stem: "What should you create to standardize those reusable alert responses?",
     subtopic: "Monitor resources in Azure",
     referenceTopic: "Action groups",
+
+    hint: "In Azure Monitor, alert rules detect conditions, but response actions live in a separate named object. That object is designed to be created once and referenced by many rules — a 'define once, reuse everywhere' pattern.",
     caseStudyId: "CS-PROSEWARE-RESEARCH",
     options: [
       option("A", "An action group", "Action groups are reusable containers for alert notifications and automation endpoints."),

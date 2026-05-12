@@ -101,6 +101,8 @@ export const mayExpansionQuestions = [
     stem: "Which Application Insights instrumentation method should you use?",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Application Insights auto-instrumentation",
+
+    hint: "Use codeless auto-instrumentation when telemetry is required without touching application code.",
     options: [
       option(
         "A",
@@ -139,6 +141,8 @@ export const mayExpansionQuestions = [
     stem: "Which alert rule configuration prevents false positives from brief spikes?",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Azure Monitor metric alerts with dynamic thresholds",
+
+    hint: "Dynamic thresholds learn baseline behavior and the Medium operator needs sustained violations before alerting.",
     options: [
       option(
         "A",
@@ -177,6 +181,8 @@ export const mayExpansionQuestions = [
     stem: "Which two Azure Monitor components should you configure?",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Action Groups and Alert Rules",
+
+    hint: "Use an Action Group for routing notifications and combine it with suppression to reduce duplicate alert noise.",
     options: [
       option(
         "A",
@@ -216,6 +222,8 @@ export const mayExpansionQuestions = [
     stem: "Will a Diagnostic Setting capture storage account deletion events?",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Azure Monitor Diagnostic Settings and resource logs",
+
+    hint: "Resource Diagnostic Settings capture data-plane logs, while resource deletion is a control-plane event in Activity Log.",
     statements: [
       {
         id: "A",
@@ -243,6 +251,8 @@ export const mayExpansionQuestions = [
     stem: "Which backup vault redundancy and retention configuration satisfies these requirements?",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Azure Backup vault redundancy and retention policies",
+
+    hint: "Choose geo-redundant backup storage for regional failure recovery, then align retention exactly to the compliance window.",
     options: [
       option(
         "A",
@@ -281,6 +291,8 @@ export const mayExpansionQuestions = [
     stem: "Arrange each component with its appropriate Site Recovery replication strategy.",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Azure Site Recovery replication and recovery policies",
+
+    hint: "Map the strictest RTO/RPO workloads to continuous replication and lower-criticality data to less frequent snapshot recovery.",
     availableItems: [
       "Web Tier (0-hour RTO, 1-hour RPO) → Continuous replication with frequent failover tests",
       "Database (4-hour RTO, 30-minute RPO) → Standard replication with 4-hour recovery time objective",
@@ -311,6 +323,8 @@ export const mayExpansionQuestions = [
     stem: "Which Azure service should you use to orchestrate this at scale?",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Azure Update Manager maintenance windows",
+
+    hint: "For patching at scale with recurring schedules and compliance visibility, use Azure Update Manager.",
     options: [
       option(
         "A",
@@ -349,6 +363,8 @@ export const mayExpansionQuestions = [
     stem: "Which three actions must you take in the Site Recovery failover orchestration?",
     subtopic: "Monitor and maintain Azure resources",
     referenceTopic: "Azure Site Recovery recovery plans and failover",
+
+    hint: "Fail over in dependency order, redirect client traffic to secondary endpoints, then commit after validation.",
     options: [
       option(
         "A",
@@ -397,6 +413,8 @@ export const mayExpansionQuestions = [
     stem: "Which routing component should you configure in the spoke subnets?",
     subtopic: "Implement and manage virtual networking",
     referenceTopic: "User-defined routes and network virtual appliances",
+
+    hint: "To force internet-bound traffic through an NVA, set a default UDR (0.0.0.0/0) to the appliance next hop.",
     options: [
       option(
         "A",
@@ -435,6 +453,8 @@ export const mayExpansionQuestions = [
     stem: "Which two diagnostic approaches should you use in troubleshooting?",
     subtopic: "Implement and manage virtual networking",
     referenceTopic: "NSG Effective Security Rules and Network Watcher",
+
+    hint: "Check Effective Security Rules for merged NSG behavior, then validate a specific flow with IP Flow Verify.",
     options: [
       option(
         "A",
@@ -474,6 +494,8 @@ export const mayExpansionQuestions = [
     stem: "Which hybrid connectivity solution best meets these requirements?",
     subtopic: "Implement and manage virtual networking",
     referenceTopic: "ExpressRoute vs. VPN Gateway for hybrid connectivity",
+
+    hint: "If traffic must avoid the public internet entirely, prefer a dedicated private ExpressRoute circuit.",
     options: [
       option(
         "A",
@@ -512,6 +534,8 @@ export const mayExpansionQuestions = [
     stem: "Arrange each scenario with the appropriate load balancer SKU.",
     subtopic: "Implement and manage virtual networking",
     referenceTopic: "Azure Load Balancer SKUs (Basic, Standard, Gateway)",
+
+    hint: "Use Standard Load Balancer for modern HA workloads; Basic is legacy and suitable only for low-demand scenarios.",
     availableItems: [
       "High-availability internal API → Standard Load Balancer",
       "Low-traffic legacy application → Basic Load Balancer",
@@ -542,6 +566,8 @@ export const mayExpansionQuestions = [
     stem: "Which routing rule configuration takes precedence and how should rules be ordered?",
     subtopic: "Implement and manage virtual networking",
     referenceTopic: "Application Gateway path-based and host-based routing",
+
+    hint: "Rule evaluation is ordered, so put the most specific matches ahead of broader catch-all patterns.",
     options: [
       option("A", "Host-based rules take precedence; order them before path-based rules", "Host-based rules evaluate first via the listener, but both types follow sequential ordering."),
       option("B", "Path-based rules take precedence; order them before host-based rules", "Path-based rules do not take precedence; both are ordered within the listener."),
@@ -568,6 +594,8 @@ export const mayExpansionQuestions = [
     stem: "Which Azure governance construct should you use for this organization-wide policy?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Azure Policy initiatives vs. individual policies",
+
+    hint: "For consistent controls across many subscriptions, assign a policy initiative at the management group scope.",
     options: [
       option(
         "A",
@@ -606,6 +634,8 @@ export const mayExpansionQuestions = [
     stem: "At which scope should you assign the Contributor role to business unit teams?",
     subtopic: "Manage access to Azure resources",
     referenceTopic: "RBAC scopes and inheritance",
+
+    hint: "Assign RBAC at the narrowest scalable parent scope so existing and future child subscriptions inherit automatically.",
     options: [
       option(
         "A",
@@ -644,6 +674,8 @@ export const mayExpansionQuestions = [
     stem: "Which two RBAC features should you combine to enforce this?",
     subtopic: "Manage access to Azure resources",
     referenceTopic: "RBAC with conditions",
+
+    hint: "RBAC conditions can constrain both who acts (principal attributes) and what resources they can act on (resource attributes).",
     options: [
       option(
         "A",
@@ -683,6 +715,8 @@ export const mayExpansionQuestions = [
     stem: "Which action minimizes privilege while meeting the temporary exception?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Azure Policy exemptions vs. modifications",
+
+    hint: "Use a time-bound policy exemption for temporary exceptions instead of weakening the policy definition.",
     options: [
       option(
         "A",
@@ -721,6 +755,8 @@ export const mayExpansionQuestions = [
     stem: "Which two Azure services should you combine for cost governance?",
     subtopic: "Manage Azure subscriptions and governance",
     referenceTopic: "Azure Cost Management and Budgets",
+
+    hint: "Pair cost analytics for visibility with budgets and action-group alerts for proactive cost governance.",
     options: [
       option(
         "A",
@@ -763,6 +799,8 @@ export const mayExpansionQuestions = [
     stem: "Which VMSS upgrade policy and health probe configuration should you use?",
     subtopic: "Deploy and manage Azure compute resources",
     referenceTopic: "VMSS rolling upgrade policies and health probes",
+
+    hint: "Rolling upgrades plus health checks let instances update in batches while preserving service availability.",
     options: [
       option(
         "A",
@@ -801,6 +839,8 @@ export const mayExpansionQuestions = [
     stem: "Which Container Apps feature should you use to manage secrets?",
     subtopic: "Deploy and manage Azure compute resources",
     referenceTopic: "Azure Container Apps secrets and environment variables",
+
+    hint: "Store sensitive values in Container Apps secrets and reference them securely instead of embedding in images or plain env vars.",
     options: [
       option(
         "A",
@@ -839,6 +879,8 @@ export const mayExpansionQuestions = [
     stem: "Which Azure service enables this hybrid management at scale?",
     subtopic: "Deploy and manage Azure compute resources",
     referenceTopic: "Azure Arc for hybrid server management",
+
+    hint: "Azure Arc extends Azure management to on-prem servers so Update Manager and policy controls apply consistently.",
     options: [
       option(
         "A",
@@ -877,6 +919,8 @@ export const mayExpansionQuestions = [
     stem: "Which three diagnostic tools can help troubleshoot the VM status?",
     subtopic: "Deploy and manage Azure compute resources",
     referenceTopic: "VM diagnostics (boot diagnostics, Run Command, serial console)",
+
+    hint: "Use Boot diagnostics, Serial console, and Run Command together when RDP is unavailable or the OS appears hung.",
     options: [
       option(
         "A",
@@ -925,6 +969,8 @@ export const mayExpansionQuestions = [
     stem: "Which data migration method is most appropriate?",
     subtopic: "Implement and manage storage",
     referenceTopic: "Azure data migration strategies (Data Box, AzCopy, Storage Migration Service)",
+
+    hint: "For very large data with low bandwidth and tight timelines, choose offline migration with Azure Data Box.",
     options: [
       option(
         "A",
@@ -963,6 +1009,8 @@ export const mayExpansionQuestions = [
     stem: "Which specialized storage configuration should you use?",
     subtopic: "Implement and manage storage",
     referenceTopic: "Premium file shares and NFS 3.0 storage",
+
+    hint: "When standard Azure Files cannot meet throughput/IOPS targets, move to Premium file shares for high-performance workloads.",
     options: [
       option(
         "A",
@@ -1001,6 +1049,8 @@ export const mayExpansionQuestions = [
     stem: "Which two storage protection policies should you configure?",
     subtopic: "Implement and manage storage",
     referenceTopic: "Immutability policies and lifecycle management",
+
+    hint: "Combine a time-based immutability policy for the mandatory retention period with lifecycle deletion for end-of-life cleanup.",
     options: [
       option(
         "A",
