@@ -182,13 +182,18 @@ export const SimulationRunner = ({
   const [latestReport, setLatestReport] = useState<SimulationRunReport | null>(null);
   const [pendingFinalQuestionId, setPendingFinalQuestionId] = useState<string | null>(null);
   const [pauseUsedSeconds, setPauseUsedSeconds] = useState<number>(0);
-  const [pauseNow, setPauseNow] = useState<number>(Date.now());
+  const [pauseNow, setPauseNow] = useState<number>(() => Date.now());
+  const [pauseStartedAt, setPauseStartedAt] = useState<number | null>(null);
   const [runNotice, setRunNotice] = useState<string>("");
   const [timeLeft, setTimeLeft] = useState<number>(EXAM_DURATION_SECONDS);
   const timeLeftRef = useRef<number>(EXAM_DURATION_SECONDS);
-  const examEndAtRef = useRef<number>(Date.now() + EXAM_DURATION_SECONDS * 1000);
-  const pauseStartedAtRef = useRef<number | null>(null);
+  const examEndAtRef = useRef<number>(0);
   const pauseLimitTimeoutRef = useRef<number | null>(null);
+
+  // Initialize examEndAtRef safely on mount
+  useEffect(() => {
+    examEndAtRef.current = Date.now() + EXAM_DURATION_SECONDS * 1000;
+  }, []);
 
   const clearPauseLimitTimeout = useCallback((): void => {
     if (pauseLimitTimeoutRef.current !== null) {
@@ -224,7 +229,7 @@ export const SimulationRunner = ({
     setPendingFinalQuestionId(null);
     setPauseUsedSeconds(0);
     setPauseNow(Date.now());
-    pauseStartedAtRef.current = null;
+    setPauseStartedAt(null);
     clearPauseLimitTimeout();
     setRunNotice("");
     setTimeLeft(EXAM_DURATION_SECONDS);
@@ -258,7 +263,7 @@ export const SimulationRunner = ({
     setPendingFinalQuestionId(null);
     setPaused(false);
     setPausedSummary("");
-    pauseStartedAtRef.current = null;
+    setPauseStartedAt(null);
     clearPauseLimitTimeout();
     onReportReady(report);
     return nextSession;
@@ -289,7 +294,7 @@ export const SimulationRunner = ({
     setPendingFinalQuestionId(null);
     setPauseUsedSeconds(0);
     setPauseNow(Date.now());
-    pauseStartedAtRef.current = null;
+    setPauseStartedAt(null);
     setRunNotice("");
     setTimeLeft(EXAM_DURATION_SECONDS);
     timeLeftRef.current = EXAM_DURATION_SECONDS;
@@ -373,7 +378,7 @@ export const SimulationRunner = ({
   }, [session, latestReport, onRunActiveChange]);
 
   useEffect(() => {
-    if (!paused || !pauseStartedAtRef.current) {
+    if (!paused || !pauseStartedAt) {
       return;
     }
 
@@ -382,7 +387,7 @@ export const SimulationRunner = ({
     }, 1000);
 
     return () => window.clearInterval(id);
-  }, [paused]);
+  }, [paused, pauseStartedAt]);
 
   useEffect(() => {
     return () => {
@@ -543,30 +548,8 @@ export const SimulationRunner = ({
     setBatchRevealIds([]);
   };
 
-  const pauseRun = (): void => {
-    if (!session) {
-      return;
-    }
-
-    const remainingPauseBudget = Math.max(0, MAX_PAUSE_SECONDS - pauseUsedSeconds);
-    if (remainingPauseBudget <= 0) {
-      setRunNotice("Pause limit reached (5:00 total). Continue the exam or stop the run.");
-      return;
-    }
-
-    setPaused(true);
-    pauseStartedAtRef.current = Date.now();
-    clearPauseLimitTimeout();
-    pauseLimitTimeoutRef.current = window.setTimeout(() => {
-      resumeRun(true);
-    }, remainingPauseBudget * 1000);
-    setPausedSummary(getPausedSummary(session.run.questions, session.evaluations));
-    setPauseNow(Date.now());
-    setRunNotice("");
-  };
-
+  // Define resumeRun before pauseRun to avoid temporal dead zone
   const resumeRun = (autoTriggered = false): void => {
-    const pauseStartedAt = pauseStartedAtRef.current;
     const remainingBudget = Math.max(0, MAX_PAUSE_SECONDS - pauseUsedSeconds);
     const elapsed = pauseStartedAt
       ? Math.max(0, Math.floor((Date.now() - pauseStartedAt) / 1000))
@@ -574,7 +557,7 @@ export const SimulationRunner = ({
     const consumed = Math.min(remainingBudget, elapsed);
 
     clearPauseLimitTimeout();
-    pauseStartedAtRef.current = null;
+    setPauseStartedAt(null);
 
     if (consumed > 0) {
       setPauseUsedSeconds((value) => Math.min(MAX_PAUSE_SECONDS, value + consumed));
@@ -638,6 +621,28 @@ export const SimulationRunner = ({
     });
   };
 
+  const pauseRun = (): void => {
+    if (!session) {
+      return;
+    }
+
+    const remainingPauseBudget = Math.max(0, MAX_PAUSE_SECONDS - pauseUsedSeconds);
+    if (remainingPauseBudget <= 0) {
+      setRunNotice("Pause limit reached (5:00 total). Continue the exam or stop the run.");
+      return;
+    }
+
+    setPaused(true);
+    setPauseStartedAt(Date.now());
+    clearPauseLimitTimeout();
+    pauseLimitTimeoutRef.current = window.setTimeout(() => {
+      resumeRun(true);
+    }, remainingPauseBudget * 1000);
+    setPausedSummary(getPausedSummary(session.run.questions, session.evaluations));
+    setPauseNow(Date.now());
+    setRunNotice("");
+  };
+
   const onModeSelected = (nextMode: PresentationMode): void => {
     setMode(nextMode);
     onModeChange(nextMode);
@@ -680,13 +685,18 @@ export const SimulationRunner = ({
     );
   }, [session, mode, currentBatch]);
 
-  const pauseInCurrentSession = paused && pauseStartedAtRef.current
-    ? Math.floor((pauseNow - pauseStartedAtRef.current) / 1000)
-    : 0;
-  const remainingPauseSeconds = Math.max(
-    0,
-    MAX_PAUSE_SECONDS - pauseUsedSeconds - Math.max(0, pauseInCurrentSession),
-  );
+  const pauseInCurrentSession = useMemo(() => {
+    return paused && pauseStartedAt
+      ? Math.floor((pauseNow - pauseStartedAt) / 1000)
+      : 0;
+  }, [paused, pauseNow, pauseStartedAt]);
+
+  const remainingPauseSeconds = useMemo(() => {
+    return Math.max(
+      0,
+      MAX_PAUSE_SECONDS - pauseUsedSeconds - Math.max(0, pauseInCurrentSession),
+    );
+  }, [pauseUsedSeconds, pauseInCurrentSession]);
 
   const canPause = remainingPauseSeconds > 0;
 

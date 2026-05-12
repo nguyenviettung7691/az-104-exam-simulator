@@ -269,7 +269,7 @@ const pickQuestionsByPlan = (
         continue;
       }
 
-      let candidates = buckets[type][domain];
+      const candidates = buckets[type][domain];
       
       // When prioritizeDifficulty is true, group candidates by difficulty
       // and distribute across difficulty levels to improve balance
@@ -291,7 +291,7 @@ const pickQuestionsByPlan = (
         
         // Interleave selections across difficulty levels
         const result: Question[] = [];
-        let indices = { easy: 0, medium: 0, hard: 0 };
+        const indices = { easy: 0, medium: 0, hard: 0 };
         
         for (let i = 0; i < count; i++) {
           const difficulties: Difficulty[] = ["medium", "easy", "hard"];
@@ -342,15 +342,11 @@ const getCaseQuestions = (
   return questions;
 };
 
-const chooseInsertionIndex = (nonCaseLength: number, nonCaseQuestions: Question[], caseStudy: CaseStudy): number => {
+const chooseInsertionIndex = (nonCaseLength: number): number => {
   if (nonCaseLength < 20) {
     return Math.floor(nonCaseLength / 2);
   }
 
-  // Calculate domain distribution of case study questions
-  const caseStudyDomainSet = new Set<DomainId>();
-  const caseStudyDomainCount: DomainCounter = createDomainCounter();
-  
   // Approximate case study domain distribution (typically concentrated in 2-3 domains)
   // In a real scenario, we'd want the case study's actual questions to analyze
   // For now, use intelligent bounds based on position diversity
@@ -514,7 +510,7 @@ export const generateExamRun = ({ bank, previousRuns }: GenerateExamParams): Gen
       }
 
       const nonCaseShuffled = shuffle(selectedNonCase);
-      const insertionIndex = chooseInsertionIndex(nonCaseShuffled.length, nonCaseShuffled, caseStudy);
+      const insertionIndex = chooseInsertionIndex(nonCaseShuffled.length);
       const questions = [
         ...nonCaseShuffled.slice(0, insertionIndex),
         ...caseQuestions,
