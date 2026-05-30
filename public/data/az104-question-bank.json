@@ -1,6 +1,6 @@
 {
-  "version": "2026.04.17",
-  "updatedAt": "2026-05-09T18:00:00.000Z",
+  "version": "2026.05.30",
+  "updatedAt": "2026-05-30T12:23:13.300Z",
   "questions": [
     {
       "active": true,
@@ -13735,6 +13735,1313 @@
         "B"
       ],
       "explanation": "The solution requires two complementary policies: (1) Immutability policy with 7-year retention and Delete Lock makes blobs non-modifiable and non-deletable during the retention period, preventing accidental deletion and enforcing regulatory compliance. (2) Lifecycle management automatically deletes blobs after 10 years, meeting the automatic deletion requirement. Legal Hold is indefinite and does not support automatic deletion; Soft Delete is reversible and does not prevent recovery, violating compliance requirements."
+    },
+    {
+      "id": "Q2525",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has serval departments. Each department has a number of virtual machines (VMs). The company has an Azure subscription that contains a resource group named RG1. All VMs are located in RG1. You want to associate each VM with its respective department. What should you do?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Reference:\nhttps://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-using-tags",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has serval departments. Each department has a number of virtual machines (VMs). The company has an Azure subscription that c...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Create Azure Management Groups for each department."
+        },
+        {
+          "id": "B",
+          "text": "Create a resource group for each department."
+        },
+        {
+          "id": "C",
+          "text": "Assign tags to the virtual machines."
+        },
+        {
+          "id": "D",
+          "text": "Modify the settings of the virtual machines."
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "C"
+    },
+    {
+      "id": "Q2526",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has an Azure Active Directory (Azure AD) subscription. You want to implement an Azure AD conditional access policy. The policy must be configured to require members of the Global Administrators group to use Multi-Factor Authentication and an Azure AD-joined device when they connect to Azure AD from untrusted locations. Solution: You access the multi-factor authentication page to alter the user settings. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Auto-imported. Review recommended before production use.",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2527",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has an Azure Active Directory (Azure AD) subscription. You want to implement an Azure AD conditional access policy. The policy must be configured to require members of the Global Administrators group to use Multi-Factor Authentication and an Azure AD-joined device when they connect to Azure AD from untrusted locations. Solution: You access the Azure portal to alter the session control of the Azure AD conditional access policy. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Auto-imported. Review recommended before production use.",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2528",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has an Azure Active Directory (Azure AD) subscription. You want to implement an Azure AD conditional access policy. The policy must be configured to require members of the Global Administrators group to use Multi-Factor Authentication and an Azure AD-joined device when they connect to Azure AD from untrusted locations. Solution: You access the Azure portal to alter the grant control of the Azure AD conditional access policy. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Auto-imported. Review recommended before production use.",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "Q2529",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "You are planning to deploy an Ubuntu Server virtual machine to your company's Azure subscription. You are required to implement a custom deployment that includes adding a particular trusted root certification authority (CA). Which of the following should you use to create the virtual machine?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Once Cloud-init.txt has been created, you can deploy the VM with az vm create cmdlet, using the --custom-data parameter to provide the full path to the cloud- init.txt file.\nReference:\nhttps://docs.microsoft.com/en-us/azure/virtual-machines/linux/tutorial-automate-vm-deployment",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: You are planning to deploy an Ubuntu Server virtual machine to your company's Azure subscription. You are required to implement a custom ...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "The New-AzureRmVm cmdlet."
+        },
+        {
+          "id": "B",
+          "text": "The New-AzVM cmdlet."
+        },
+        {
+          "id": "C",
+          "text": "The Create-AzVM cmdlet."
+        },
+        {
+          "id": "D",
+          "text": "The az vm create command."
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "C"
+    },
+    {
+      "id": "Q2530",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company makes use of Multi-Factor Authentication for when users are not in the office. The Per Authentication option has been configured as the usage model. After the acquisition of a smaller business and the addition of the new staff to Azure Active Directory (Azure AD) obtains a different company and adding the new employees to Azure Active Directory (Azure AD), you are informed that these employees should also make use of Multi-Factor Authentication. To achieve this, the Per Enabled User setting must be set for the usage model. Solution: You reconfigure the existing usage model via the Azure portal. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Since it is not possible to change the usage model of an existing provider as it is right now, you have to create a new one and reactivate your existing server with activation credentials from the new provider.\nReference:\nhttps://365lab.net/2015/04/11/switch-usage-model-in-azure-multi-factor-authentication-server/",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2531",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company's Azure solution makes use of Multi-Factor Authentication for when users are not in the office. The Per Authentication option has been configured as the usage model. After the acquisition of a smaller business and the addition of the new staff to Azure Active Directory (Azure AD) obtains a different company and adding the new employees to Azure Active Directory (Azure AD), you are informed that these employees should also make use of Multi-Factor Authentication. To achieve this, the Per Enabled User setting must be set for the usage model. Solution: You reconfigure the existing usage model via the Azure CLI. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Since it is not possible to change the usage model of an existing provider as it is right now, you have to create a new one and reactivate your existing server with activation credentials from the new provider.\nReference:\nhttps://365lab.net/2015/04/11/switch-usage-model-in-azure-multi-factor-authentication-server/",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2532",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company's Azure solution makes use of Multi-Factor Authentication for when users are not in the office. The Per Authentication option has been configured as the usage model. After the acquisition of a smaller business and the addition of the new staff to Azure Active Directory (Azure AD) obtains a different company and adding the new employees to Azure Active Directory (Azure AD), you are informed that these employees should also make use of Multi-Factor Authentication. To achieve this, the Per Enabled User setting must be set for the usage model. Solution: You create a new Multi-Factor Authentication provider with a backup from the existing Multi-Factor Authentication provider data. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Since it is not possible to change the usage model of an existing provider as it is right now, you have to create a new one and reactivate your existing server with activation credentials from the new provider.\nReference:\nhttps://365lab.net/2015/04/11/switch-usage-model-in-azure-multi-factor-authentication-server/",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "Q2533",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has an Azure Active Directory (Azure AD) tenant named weyland.com that is configured for hybrid coexistence with the on-premises Active Directory domain. You have a server named DirSync1 that is configured as a DirSync server. You create a new user account in the on-premise Active Directory. You now need to replicate the user information to Azure AD immediately. Solution: You run the Start-ADSyncSyncCycle -PolicyType Initial PowerShell cmdlet. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Reference:\nhttps://blog.kloud.com.au/2016/03/08/azure-ad-connect-manual-sync-cycle-with-powershell-start-adsyncsynccycle/",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "Q2534",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has an Azure Active Directory (Azure AD) tenant named weyland.com that is configured for hybrid coexistence with the on-premises Active Directory domain. You have a server named DirSync1 that is configured as a DirSync server. You create a new user account in the on-premise Active Directory. You now need to replicate the user information to Azure AD immediately. Solution: You use Active Directory Sites and Services to force replication of the Global Catalog on a domain controller. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Auto-imported. Review recommended before production use.",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2535",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has an Azure Active Directory (Azure AD) tenant named weyland.com that is configured for hybrid coexistence with the on-premises Active Directory domain. You have a server named DirSync1 that is configured as a DirSync server. You create a new user account in the on-premise Active Directory. You now need to replicate the user information to Azure AD immediately. Solution: You restart the NetLogon service on a domain controller. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Auto-imported. Review recommended before production use.",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2536",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has a Microsoft Azure subscription. The company has datacenters in Los Angeles and New York. You are configuring the two datacenters as geo-clustered sites for site resiliency. You need to recommend an Azure storage redundancy option. You have the following data storage requirements: ✑ Data must be stored on multiple nodes. ✑ Data must be stored on nodes in separate geographic locations. ✑ Data can be read from the secondary location as well as from the primary location. Which of the following Azure stored redundancy options should you recommend?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "RA-GRS allows you to have higher read availability for your storage account by providing ג€read onlyג€ access to the data replicated to the secondary location. Once you enable this feature, the secondary location may be used to achieve higher availability in the event the data is not available in the primary region. This is an\nג€opt-inג€ feature which requires the storage account be geo-replicated.\nReference:\nhttps://docs.microsoft.com/en-us/azure/storage/common/storage-redundancy",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has a Microsoft Azure subscription. The company has datacenters in Los Angeles and New York. You are configuring the two dat...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Geo-redundant storage"
+        },
+        {
+          "id": "B",
+          "text": "Read-only geo-redundant storage"
+        },
+        {
+          "id": "C",
+          "text": "Zone-redundant storage"
+        },
+        {
+          "id": "D",
+          "text": "Locally redundant storage"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2537",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has an azure subscription that includes a storage account, a resource group, a blob container and a file share. A colleague named Jon Ross makes use of a solitary Azure Resource Manager (ARM) template to deploy a virtual machine and an additional Azure Storage account. You want to review the ARM template that was used by Jon Ross. Solution: You access the Virtual Machine blade. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "You should use the Resource Group blade\nReference:\nhttps://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-manager-export-template",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2538",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has an azure subscription that includes a storage account, a resource group, a blob container and a file share. A colleague named Jon Ross makes use of a solitary Azure Resource Manager (ARM) template to deploy a virtual machine and an additional Azure Storage account. You want to review the ARM template that was used by Jon Ross. Solution: You access the Resource Group blade. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "To view a template from deployment history:\n1. Go to the resource group for your new resource group. Notice that the portal shows the result of the last deployment. Select this link.\n2. You see a history of deployments for the group. In your case, the portal probably lists only one deployment. Select this deployment.\n3. The portal displays a summary of the deployment. The summary includes the status of the deployment and its operations and the values that you provided for parameters. To see the template that you used for the deployment, select View template.\nReference:\nhttps://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-manager-export-template",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "Q2539",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has an azure subscription that includes a storage account, a resource group, a blob container and a file share. A colleague named Jon Ross makes use of a solitary Azure Resource Manager (ARM) template to deploy a virtual machine and an additional Azure Storage account. You want to review the ARM template that was used by Jon Ross. Solution: You access the Container blade. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "You should use the Resource Group blade\nReference:\nhttps://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-manager-export-template",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2540",
+      "domain": "D3",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has three virtual machines (VMs) that are included in an availability set. You try to resize one of the VMs, which returns an allocation failure message. It is imperative that the VM is resized. Which of the following actions should you take?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "If the VM you wish to resize is part of an availability set, then you must stop all VMs in the availability set before changing the size of any VM in the availability set.\nThe reason all VMs in the availability set must be stopped before performing the resize operation to a size that requires different hardware is that all running VMs in the availability set must be using the same physical hardware cluster. Therefore, if a change of physical hardware cluster is required to change the VM size then all VMs must be first stopped and then restarted one-by-one to a different physical hardware clusters.\nReference:\nhttps://azure.microsoft.com/es-es/blog/resize-virtual-machines/",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has three virtual machines (VMs) that are included in an availability set. You try to resize one of the VMs, which returns a...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "You should only stop one of the VMs."
+        },
+        {
+          "id": "B",
+          "text": "You should stop two of the VMs."
+        },
+        {
+          "id": "C",
+          "text": "You should stop all three VMs."
+        },
+        {
+          "id": "D",
+          "text": "You should remove the necessary VM from the availability set."
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "C"
+    },
+    {
+      "id": "Q2541",
+      "domain": "D2",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "You have an Azure virtual machine (VM) that has a single data disk. You have been tasked with attaching this data disk to another Azure VM. You need to make sure that your strategy allows for the virtual machines to be offline for the least amount of time possible. Which of the following is the action you should take FIRST?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Reference:\nhttps://docs.microsoft.com/en-us/azure/virtual-machines/windows/detach-disk https://docs.microsoft.com/en-us/azure/lab-services/devtest-lab-attach-detach-data-disk",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: You have an Azure virtual machine (VM) that has a single data disk. You have been tasked with attaching this data disk to another Azure V...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Stop the VM that includes the data disk."
+        },
+        {
+          "id": "B",
+          "text": "Stop the VM that the data disk must be attached to."
+        },
+        {
+          "id": "C",
+          "text": "Detach the data disk."
+        },
+        {
+          "id": "D",
+          "text": "Delete the VM that includes the data disk."
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "Q2542",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has an Azure subscription. You need to deploy a number of Azure virtual machines (VMs) using Azure Resource Manager (ARM) templates. You have been informed that the VMs will be included in a single availability set. You are required to make sure that the ARM template you configure allows for as many VMs as possible to remain accessible in the event of fabric failure or maintenance. Which of the following is the value that you should configure for the platformFaultDomainCount property?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "The number of fault domains for managed availability sets varies by region - either two or three per region.\nReference:\nhttps://docs.microsoft.com/en-us/azure/virtual-machines/windows/manage-availability",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has an Azure subscription. You need to deploy a number of Azure virtual machines (VMs) using Azure Resource Manager (ARM) te...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "10"
+        },
+        {
+          "id": "B",
+          "text": "30"
+        },
+        {
+          "id": "C",
+          "text": "Min Value"
+        },
+        {
+          "id": "D",
+          "text": "Max Value"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "D"
+    },
+    {
+      "id": "Q2543",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has an Azure subscription. You need to deploy a number of Azure virtual machines (VMs) using Azure Resource Manager (ARM) templates. You have been informed that the VMs will be included in a single availability set. You are required to make sure that the ARM template you configure allows for as many VMs as possible to remain accessible in the event of fabric failure or maintenance. Which of the following is the value that you should configure for the platformUpdateDomainCount property?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Each virtual machine in your availability set is assigned an update domain and a fault domain by the underlying Azure platform. For a given availability set, five non-user-configurable update domains are assigned by default (Resource Manager deployments can then be increased to provide up to 20 update domains) to indicate groups of virtual machines and underlying physical hardware that can be rebooted at the same time.\nReference:\nhttps://docs.microsoft.com/en-us/azure/virtual-machines/availability-set-overview",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has an Azure subscription. You need to deploy a number of Azure virtual machines (VMs) using Azure Resource Manager (ARM) te...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "10"
+        },
+        {
+          "id": "B",
+          "text": "20"
+        },
+        {
+          "id": "C",
+          "text": "30"
+        },
+        {
+          "id": "D",
+          "text": "40"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2544",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has an Azure Active Directory (Azure AD) tenant that is configured for hybrid coexistence with the on-premises Active Directory domain. The on-premise virtual environment consists of virtual machines (VMs) running on Windows Server 2012 R2 Hyper-V host servers. You have created some PowerShell scripts to automate the configuration of newly created VMs. You plan to create several new VMs. You need a solution that ensures the scripts are run on the new VMs. Which of the following is the best solution?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "After you deploy a Virtual Machine you typically need to make some changes before it's ready to use. This is something you can do manually or you could use\nRemote PowerShell to automate the configuration of your VM after deployment for example.\nBut now there's a third alternative available allowing you customize your VM: the CustomScriptextension.\nThis CustomScript extension is executed by the VM Agent and it's very straightforward: you specify which files it needs to download from your storage account and which file it needs to execute. You can even specify arguments that need to be passed to the script. The only requirement is that you execute a .ps1 file.\nReference:\nhttps://docs.microsoft.com/en-us/windows-hardware/manufacture/desktop/add-a-custom-script-to-windows-setup https://azure.microsoft.com/en-us/blog/automating-vm-customization-tasks-using-custom-script-extension/",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has an Azure Active Directory (Azure AD) tenant that is configured for hybrid coexistence with the on-premises Active Direct...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Configure a SetupComplete.cmd batch file in the %windir%\\setup\\scripts directory."
+        },
+        {
+          "id": "B",
+          "text": "Configure a Group Policy Object (GPO) to run the scripts as logon scripts."
+        },
+        {
+          "id": "C",
+          "text": "Configure a Group Policy Object (GPO) to run the scripts as startup scripts."
+        },
+        {
+          "id": "D",
+          "text": "Place the scripts in a new virtual hard disk (VHD)."
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "Q2545",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has an Azure Active Directory (Azure AD) tenant that is configured for hybrid coexistence with the on-premises Active Directory domain. You plan to deploy several new virtual machines (VMs) in Azure. The VMs will have the same operating system and custom software requirements. You configure a reference VM in the on-premise virtual environment. You then generalize the VM to create an image. You need to upload the image to Azure to ensure that it is available for selection when you create the new Azure VMs. Which PowerShell cmdlets should you use?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "The Add-AzVhd cmdlet uploads on-premises virtual hard disks, in .vhd file format, to a blob storage account as fixed virtual hard disks.\nReference:\nhttps://docs.microsoft.com/en-us/azure/virtual-machines/windows/upload-generalized-managed",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has an Azure Active Directory (Azure AD) tenant that is configured for hybrid coexistence with the on-premises Active Direct...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Add-AzVM"
+        },
+        {
+          "id": "B",
+          "text": "Add-AzVhd"
+        },
+        {
+          "id": "C",
+          "text": "Add-AzImage"
+        },
+        {
+          "id": "D",
+          "text": "Add-AzImageDataDisk"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2546",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company's Azure subscription includes two Azure networks named VirtualNetworkA and VirtualNetworkB. VirtualNetworkA includes a VPN gateway that is configured to make use of static routing. Also, a site-to-site VPN connection exists between your company's on- premises network and VirtualNetworkA. You have configured a point-to-site VPN connection to VirtualNetworkA from a workstation running Windows 10. After configuring virtual network peering between VirtualNetworkA and VirtualNetworkB, you confirm that you are able to access VirtualNetworkB from the company's on-premises network. However, you find that you cannot establish a connection to VirtualNetworkB from the Windows 10 workstation. You have to make sure that a connection to VirtualNetworkB can be established from the Windows 10 workstation. Solution: You choose the Allow gateway transit setting on VirtualNetworkA. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Reference:\nhttps://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-point-to-site-routing",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2547",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company's Azure subscription includes two Azure networks named VirtualNetworkA and VirtualNetworkB. VirtualNetworkA includes a VPN gateway that is configured to make use of static routing. Also, a site-to-site VPN connection exists between your company's on- premises network and VirtualNetworkA. You have configured a point-to-site VPN connection to VirtualNetworkA from a workstation running Windows 10. After configuring virtual network peering between VirtualNetworkA and VirtualNetworkB, you confirm that you are able to access VirtualNetworkB from the company's on-premises network. However, you find that you cannot establish a connection to VirtualNetworkB from the Windows 10 workstation. You have to make sure that a connection to VirtualNetworkB can be established from the Windows 10 workstation. Solution: You choose the Allow gateway transit setting on VirtualNetworkB. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Reference:\nhttps://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-point-to-site-routing",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2548",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company's Azure subscription includes two Azure networks named VirtualNetworkA and VirtualNetworkB. VirtualNetworkA includes a VPN gateway that is configured to make use of static routing. Also, a site-to-site VPN connection exists between your company's on- premises network and VirtualNetworkA. You have configured a point-to-site VPN connection to VirtualNetworkA from a workstation running Windows 10. After configuring virtual network peering between VirtualNetworkA and VirtualNetworkB, you confirm that you are able to access VirtualNetworkB from the company's on-premises network. However, you find that you cannot establish a connection to VirtualNetworkB from the Windows 10 workstation. You have to make sure that a connection to VirtualNetworkB can be established from the Windows 10 workstation. Solution: You download and re-install the VPN client configuration package on the Windows 10 workstation. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Reference:\nhttps://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-point-to-site-routing",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "Q2549",
+      "domain": "D3",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has virtual machines (VMs) hosted in Microsoft Azure. The VMs are located in a single Azure virtual network named VNet1. The company has users that work remotely. The remote workers require access to the VMs on VNet1. You need to provide access for the remote workers. What should you do?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "A Point-to-Site (P2S) VPN gateway connection lets you create a secure connection to your virtual network from an individual client computer.\nReference:\nhttps://docs.microsoft.com/en-us/azure/vpn-gateway/vpn-gateway-about-vpngateways",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has virtual machines (VMs) hosted in Microsoft Azure. The VMs are located in a single Azure virtual network named VNet1. The...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Configure a Site-to-Site (S2S) VPN."
+        },
+        {
+          "id": "B",
+          "text": "Configure a VNet-toVNet VPN."
+        },
+        {
+          "id": "C",
+          "text": "Configure a Point-to-Site (P2S) VPN."
+        },
+        {
+          "id": "D",
+          "text": "Configure DirectAccess on a Windows Server 2012 server VM."
+        },
+        {
+          "id": "E",
+          "text": "Configure a Multi-Site VPN"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "C"
+    },
+    {
+      "id": "Q2550",
+      "domain": "D3",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has a Microsoft SQL Server Always On availability group configured on their Azure virtual machines (VMs). You need to configure an Azure internal load balancer as a listener for the availability group. Solution: You create an HTTP health probe on port 1433. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Auto-imported. Review recommended before production use.",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2551",
+      "domain": "D3",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has a Microsoft SQL Server Always On availability group configured on their Azure virtual machines (VMs). You need to configure an Azure internal load balancer as a listener for the availability group. Solution: You set Session persistence to Client IP. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Reference:\nhttps://docs.microsoft.com/en-us/azure/virtual-machines/windows/sql/virtual-machines-windows-portal-sql-alwayson-int-listener",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2552",
+      "domain": "D3",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive result. Establish if the solution satisfies the requirements. Your company has a Microsoft SQL Server Always On availability group configured on their Azure virtual machines (VMs). You need to configure an Azure internal load balancer as a listener for the availability group. Solution: You enable Floating IP. Does the solution meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Auto-imported. Review recommended before production use.",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: The question is included in a number of questions that depicts the identical set-up. However, every question has a distinctive resu...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "Q2553",
+      "domain": "D3",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has two on-premises servers named SRV01 and SRV02. Developers have created an application that runs on SRV01. The application calls a service on SRV02 by IP address. You plan to migrate the application on Azure virtual machines (VMs). You have configured two VMs on a single subnet in an Azure virtual network. You need to configure the two VMs with static internal IP addresses. What should you do?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Specify a static internal IP for a previously created VM\nIf you want to set a static IP address for a VM that you previously created, you can do so by using the following cmdlets. If you already set an IP address for the\nVM and you want to change it to a different IP address, you'll need to remove the existing static IP address before running these cmdlets. See the instructions below to remove a static IP.\nFor this procedure, you'll use the Update-AzureVM cmdlet. The Update-AzureVM cmdlet restarts the VM as part of the update process. The DIP that you specify will be assigned after the VM restarts. In this example, we set the IP address for VM2, which is located in cloud service StaticDemo.\nGet-AzureVM -ServiceName StaticDemo -Name VM2 | Set-AzureStaticVNetIP -IPAddress 192.168.4.7 | Update-AzureVM",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has two on-premises servers named SRV01 and SRV02. Developers have created an application that runs on SRV01. The applicatio...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Run the New-AzureRMVMConfig PowerShell cmdlet."
+        },
+        {
+          "id": "B",
+          "text": "Run the Set-AzureSubnet PowerShell cmdlet."
+        },
+        {
+          "id": "C",
+          "text": "Modify the VM properties in the Azure Management Portal."
+        },
+        {
+          "id": "D",
+          "text": "Modify the IP properties in Windows Network and Sharing Center."
+        },
+        {
+          "id": "E",
+          "text": "Run the Set-AzureStaticVNetIP PowerShell cmdlet."
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "E"
+    },
+    {
+      "id": "Q2554",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has an Azure Active Directory (Azure AD) subscription. You need to deploy five virtual machines (VMs) to your company's virtual network subnet. The VMs will each have both a public and private IP address. Inbound and outbound security rules for all of these virtual machines must be identical. Which of the following is the least amount of network interfaces needed for this configuration?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Auto-imported. Review recommended before production use.",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has an Azure Active Directory (Azure AD) subscription. You need to deploy five virtual machines (VMs) to your company's virt...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "5"
+        },
+        {
+          "id": "B",
+          "text": "10"
+        },
+        {
+          "id": "C",
+          "text": "20"
+        },
+        {
+          "id": "D",
+          "text": "40"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "Q2555",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has an Azure Active Directory (Azure AD) subscription. You need to deploy five virtual machines (VMs) to your company's virtual network subnet. The VMs will each have both a public and private IP address. Inbound and outbound security rules for all of these virtual machines must be identical. Which of the following is the least amount of security groups needed for this configuration?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Auto-imported. Review recommended before production use.",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has an Azure Active Directory (Azure AD) subscription. You need to deploy five virtual machines (VMs) to your company's virt...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "4"
+        },
+        {
+          "id": "B",
+          "text": "3"
+        },
+        {
+          "id": "C",
+          "text": "2"
+        },
+        {
+          "id": "D",
+          "text": "1"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "D"
+    },
+    {
+      "id": "Q2556",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company's Azure subscription includes Azure virtual machines (VMs) that run Windows Server 2016. One of the VMs is backed up every day using Azure Backup Instant Restore. When the VM becomes infected with data encrypting ransomware, you decide to recover the VM's files. Which of the following is TRUE in this scenario?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Auto-imported. Review recommended before production use.",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company's Azure subscription includes Azure virtual machines (VMs) that run Windows Server 2016. One of the VMs is backed up every d...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "You can only recover the files to the infected VM."
+        },
+        {
+          "id": "B",
+          "text": "You can recover the files to any VM within the company's subscription."
+        },
+        {
+          "id": "C",
+          "text": "You can only recover the files to a new VM."
+        },
+        {
+          "id": "D",
+          "text": "You will not be able to recover the files."
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "Q2557",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company's Azure subscription includes Azure virtual machines (VMs) that run Windows Server 2016. One of the VMs is backed up every day using Azure Backup Instant Restore. When the VM becomes infected with data encrypting ransomware, you are required to restore the VM. Which of the following actions should you take?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Auto-imported. Review recommended before production use.",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company's Azure subscription includes Azure virtual machines (VMs) that run Windows Server 2016. One of the VMs is backed up every d...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "You should restore the VM after deleting the infected VM."
+        },
+        {
+          "id": "B",
+          "text": "You should restore the VM to any VM within the company's subscription."
+        },
+        {
+          "id": "C",
+          "text": "You should restore the VM to a new Azure VM."
+        },
+        {
+          "id": "D",
+          "text": "You should restore the VM to an on-premise Windows device."
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2558",
+      "domain": "D3",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "You administer a solution in Azure that is currently having performance issues. You need to find the cause of the performance issues pertaining to metrics on the Azure infrastructure. Which of the following is the tool you should use?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Metrics in Azure Monitor are stored in a time-series database which is optimized for analyzing time-stamped data. This makes metrics particularly suited for alerting and fast detection of issues.\nReference:\nhttps://docs.microsoft.com/en-us/azure/azure-monitor/platform/data-platform",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: You administer a solution in Azure that is currently having performance issues. You need to find the cause of the performance issues pert...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Azure Traffic Analytics"
+        },
+        {
+          "id": "B",
+          "text": "Azure Monitor"
+        },
+        {
+          "id": "C",
+          "text": "Azure Activity Log"
+        },
+        {
+          "id": "D",
+          "text": "Azure Advisor"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2559",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Your company has an Azure subscription that includes a Recovery Services vault. You want to use Azure Backup to schedule a backup of your company's virtual machines (VMs) to the Recovery Services vault. Which of the following VMs can you back up?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Azure Backup supports backup of 64-bit Windows server operating system from Windows Server 2008.\nAzure Backup supports backup of 64-bit Windows 10 operating system.\nAzure Backup supports backup of 64-bit Debian operating system from Debian 7.9+.\nAzure Backup supports backup of VM that are shutdown or offline.\nReference:\nhttps://docs.microsoft.com/en-us/azure/backup/backup-support-matrix-iaas https://docs.microsoft.com/en-us/azure/virtual-machines/linux/endorsed-distros",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Your company has an Azure subscription that includes a Recovery Services vault. You want to use Azure Backup to schedule a backup of your...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "VMs that run Windows 10."
+        },
+        {
+          "id": "B",
+          "text": "VMs that run Windows Server 2012 or higher."
+        },
+        {
+          "id": "C",
+          "text": "VMs that have NOT been shut down."
+        },
+        {
+          "id": "D",
+          "text": "VMs that run Debian 8.2+."
+        },
+        {
+          "id": "E",
+          "text": "VMs that have been shut down."
+        }
+      ],
+      "type": "multi-select",
+      "selectCount": 5,
+      "correctOptionIds": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ]
+    },
+    {
+      "id": "Q2560",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: This question is part of a series of questions that present the same scenario. Each question in the series contains a unique solution that might meet the stated goals. Some question sets might have more than one correct solution, while others might not have a correct solution. After you answer a question in this section, you will NOT be able to return to it. As a result, these questions will not appear in the review screen. You have an Azure Active Directory (Azure AD) tenant named contoso.com. You have a CSV file that contains the names and email addresses of 500 external users. You need to create a guest user account in contoso.com for each of the 500 external users. Solution: You create a PowerShell script that runs the New-AzureADUser cmdlet for each user. Does this meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "The New-AzureADUser cmdlet creates a user in Azure Active Directory (Azure AD).\nInstead use the New-AzureADMSInvitation cmdlet which is used to invite a new external user to your directory.\nReference:\nhttps://docs.microsoft.com/en-us/powershell/module/azuread/new-azureadmsinvitation",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: This question is part of a series of questions that present the same scenario. Each question in the series contains a unique soluti...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2561",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: This question is part of a series of questions that present the same scenario. Each question in the series contains a unique solution that might meet the stated goals. Some question sets might have more than one correct solution, while others might not have a correct solution. After you answer a question in this section, you will NOT be able to return to it. As a result, these questions will not appear in the review screen. You have an Azure Active Directory (Azure AD) tenant named contoso.com. You have a CSV file that contains the names and email addresses of 500 external users. You need to create a guest user account in contoso.com for each of the 500 external users. Solution: From Azure AD in the Azure portal, you use the Bulk create user operation. Does this meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Instead use the New-AzureADMSInvitation cmdlet which is used to invite a new external user to your directory.\nReference:\nhttps://docs.microsoft.com/en-us/powershell/module/azuread/new-azureadmsinvitation",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: This question is part of a series of questions that present the same scenario. Each question in the series contains a unique soluti...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2562",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "Note: This question is part of a series of questions that present the same scenario. Each question in the series contains a unique solution that might meet the stated goals. Some question sets might have more than one correct solution, while others might not have a correct solution. After you answer a question in this section, you will NOT be able to return to it. As a result, these questions will not appear in the review screen. You have an Azure Active Directory (Azure AD) tenant named contoso.com. You have a CSV file that contains the names and email addresses of 500 external users. You need to create a guest user account in contoso.com for each of the 500 external users. Solution: You create a PowerShell script that runs the New-AzureADMSInvitation cmdlet for each external user. Does this meet the goal?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Use the New-AzureADMSInvitation cmdlet which is used to invite a new external user to your directory.\nReference:\nhttps://docs.microsoft.com/en-us/powershell/module/azuread/new-azureadmsinvitation",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: Note: This question is part of a series of questions that present the same scenario. Each question in the series contains a unique soluti...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "Yes"
+        },
+        {
+          "id": "B",
+          "text": "No"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "A"
+    },
+    {
+      "id": "Q2563",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "You have an Azure subscription that contains an Azure Active Directory (Azure AD) tenant named contoso.com and an Azure Kubernetes Service (AKS) cluster named AKS1. An administrator reports that she is unable to grant access to AKS1 to the users in contoso.com. You need to ensure that access to AKS1 can be granted to the contoso.com users. What should you do first?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Reference:\nhttps://kubernetes.io/docs/reference/access-authn-authz/authentication/",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: You have an Azure subscription that contains an Azure Active Directory (Azure AD) tenant named contoso.com and an Azure Kubernetes Servic...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "From contoso.com, modify the Organization relationships settings."
+        },
+        {
+          "id": "B",
+          "text": "From contoso.com, create an OAuth 2.0 authorization endpoint."
+        },
+        {
+          "id": "C",
+          "text": "Recreate AKS1."
+        },
+        {
+          "id": "D",
+          "text": "From AKS1, create a namespace."
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2564",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "You have a Microsoft 365 tenant and an Azure Active Directory (Azure AD) tenant named contoso.com. You plan to grant three users named User1, User2, and User3 access to a temporary Microsoft SharePoint document library named Library1. You need to create groups for the users. The solution must ensure that the groups are deleted automatically after 180 days. Which two groups should you create?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "You can set expiration policy only for Office 365 groups in Azure Active Directory (Azure AD).\nNote: With the increase in usage of Office 365 Groups, administrators and users need a way to clean up unused groups. Expiration policies can help remove inactive groups from the system and make things cleaner.\nWhen a group expires, all of its associated services (the mailbox, Planner, SharePoint site, etc.) are also deleted.\nYou can set up a rule for dynamic membership on security groups or Office 365 groups.\nIncorrect Answers:\nB, D, E: You can set expiration policy only for Office 365 groups in Azure Active Directory (Azure AD).\nReference:\nhttps://docs.microsoft.com/en-us/office365/admin/create-groups/office-365-groups-expiration-policy?view=o365-worldwide",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: You have a Microsoft 365 tenant and an Azure Active Directory (Azure AD) tenant named contoso.com. You plan to grant three users named Us...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "a Microsoft 365 group that uses the Assigned membership type"
+        },
+        {
+          "id": "B",
+          "text": "a Security group that uses the Assigned membership type"
+        },
+        {
+          "id": "C",
+          "text": "a Microsoft 365 group that uses the Dynamic User membership type"
+        },
+        {
+          "id": "D",
+          "text": "a Security group that uses the Dynamic User membership type"
+        },
+        {
+          "id": "E",
+          "text": "a Security group that uses the Dynamic Device membership type"
+        }
+      ],
+      "type": "multi-select",
+      "selectCount": 2,
+      "correctOptionIds": [
+        "A",
+        "C"
+      ]
+    },
+    {
+      "id": "Q2565",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "You have an Azure policy as shown in the following exhibit: What is the effect of the policy?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "You are prevented from creating Azure SQL servers anywhere in Subscription 1 with the exception of ContosoRG1",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: You have an Azure policy as shown in the following exhibit: What is the effect of the policy?",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "You are prevented from creating Azure SQL servers anywhere in Subscription 1."
+        },
+        {
+          "id": "B",
+          "text": "You can create Azure SQL servers in ContosoRG1 only."
+        },
+        {
+          "id": "C",
+          "text": "You are prevented from creating Azure SQL Servers in ContosoRG1 only."
+        },
+        {
+          "id": "D",
+          "text": "You can create Azure SQL servers in any resource group within Subscription 1."
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
+    },
+    {
+      "id": "Q2566",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "You have an Azure subscription named AZPT1 that contains the resources shown in the following table: You create a new Azure subscription named AZPT2. You need to identify which resources can be moved to AZPT2. Which resources should you identify?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "You can move a VM and its associated resources to a different subscription by using the Azure portal.\nYou can now move an Azure Recovery Service (ASR) Vault to either a new resource group within the current subscription or to a new subscription.\nReference:\nhttps://docs.microsoft.com/en-us/azure/azure-resource-manager/management/move-resource-group-and-subscription",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: You have an Azure subscription named AZPT1 that contains the resources shown in the following table: You create a new Azure subscription ...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "VM1, storage1, VNET1, and VM1Managed only"
+        },
+        {
+          "id": "B",
+          "text": "VM1 and VM1Managed only"
+        },
+        {
+          "id": "C",
+          "text": "VM1, storage1, VNET1, VM1Managed, and RVAULT1"
+        },
+        {
+          "id": "D",
+          "text": "RVAULT1 only"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "C"
+    },
+    {
+      "id": "Q2567",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "You recently created a new Azure subscription that contains a user named Admin1. Admin1 attempts to deploy an Azure Marketplace resource by using an Azure Resource Manager template. Admin1 deploys the template by using Azure PowerShell and receives the following error message: `User failed validation to purchase resources. Error message: `Legal terms have not been accepted for this item on this subscription. To accept legal terms, please go to the Azure portal (http://go.microsoft.com/fwlink/?",
+      "stem": "LinkId=534873) and configure programmatic deployment for the Marketplace item or create it there for the first time.` You need to ensure that Admin1 can deploy the Marketplace resource successfully. What should you do?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Reference:\nhttps://docs.microsoft.com/en-us/powershell/module/az.marketplaceordering/set-azmarketplaceterms?view=azps-4.1.0",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: LinkId=534873) and configure programmatic deployment for the Marketplace item or create it there for the first time.` You need to ensure ...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "From Azure PowerShell, run the Set-AzApiManagementSubscription cmdlet"
+        },
+        {
+          "id": "B",
+          "text": "From the Azure portal, register the Microsoft.Marketplace resource provider"
+        },
+        {
+          "id": "C",
+          "text": "From Azure PowerShell, run the Set-AzMarketplaceTerms cmdlet"
+        },
+        {
+          "id": "D",
+          "text": "From the Azure portal, assign the Billing administrator role to Admin1"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "C"
+    },
+    {
+      "id": "Q2568",
+      "domain": "D1",
+      "difficulty": "medium",
+      "company": "SecExams Imported",
+      "scenario": "Imported from SecExams.",
+      "stem": "You have an Azure Active Directory (Azure AD) tenant that contains 5,000 user accounts. You create a new user account named AdminUser1. You need to assign the User administrator administrative role to AdminUser1. What should you do from the user account properties?",
+      "subtopic": "SecExams Imported",
+      "referenceTopic": "Imported from SecExams AZ-104 dump",
+      "explanation": "Assign a role to a user -\n1. Sign in to the Azure portal with an account that's a global admin or privileged role admin for the directory.\n2. Select Azure Active Directory, select Users, and then select a specific user from the list.\n3. For the selected user, select Directory role, select Add role, and then pick the appropriate admin roles from the Directory roles list, such as Conditional access administrator.\n4. Press Select to save.\nReference:\nhttps://docs.microsoft.com/en-us/azure/active-directory/fundamentals/active-directory-users-assign-role-azure-portal",
+      "hint": "Focus on Azure-native best practices that directly satisfy this requirement: You have an Azure Active Directory (Azure AD) tenant that contains 5,000 user accounts. You create a new user account named AdminUser1. Y...",
+      "active": true,
+      "options": [
+        {
+          "id": "A",
+          "text": "From the Licenses blade, assign a new license"
+        },
+        {
+          "id": "B",
+          "text": "From the Directory role blade, modify the directory role"
+        },
+        {
+          "id": "C",
+          "text": "From the Groups blade, invite the user account to a new group"
+        }
+      ],
+      "type": "multiple-choice",
+      "correctOptionId": "B"
     }
   ],
   "caseStudies": [
