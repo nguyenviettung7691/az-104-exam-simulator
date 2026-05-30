@@ -40,7 +40,7 @@ interface QuestionBankAdminProps {
   report: QuestionBankValidationReport;
   onImportText: (rawText: string) => void;
   onExport: () => void;
-  onLoadBundledBank: () => void;
+  onLoadBundledBank: () => Promise<void>;
   onClear: () => void;
   onToggleQuestion: (questionId: string, nextActive: boolean) => void;
 }
@@ -66,6 +66,7 @@ export const QuestionBankAdmin = ({
   const [filterDomain, setFilterDomain] = useState<string>("all");
   const [filterType, setFilterType] = useState<string>("all");
   const [filterActive, setFilterActive] = useState<string>("all");
+  const [visibleCount, setVisibleCount] = useState<number>(200);
 
   const isEmpty = bank.questions.length === 0;
 
@@ -88,6 +89,10 @@ export const QuestionBankAdmin = ({
       return true;
     });
   }, [sortedQuestions, search, filterDomain, filterType, filterActive]);
+  const visibleQuestions = useMemo(
+    () => filteredQuestions.slice(0, visibleCount),
+    [filteredQuestions, visibleCount],
+  );
 
   const minRunsAvailable = useMemo(() => {
     if (isEmpty) return 0;
@@ -135,14 +140,14 @@ export const QuestionBankAdmin = ({
     <section className="admin-panel">
       <h2>Question Bank</h2>
       <p>
-        Load the bundled 375-question AZ-104 bank with 7 case studies, or import your
+        Load the bundled AZ-104 bank from JSON, or import your
         own validated bank JSON to generate runs.
       </p>
 
       {/* ── Action row */}
       <div className="bank-action-row">
-        <button type="button" className="btn-generate" onClick={onLoadBundledBank}>
-          Load Bundled 375-Question Bank
+        <button type="button" className="btn-generate" onClick={() => void onLoadBundledBank()}>
+          Load Bundled Question Bank (JSON)
         </button>
         <button type="button" onClick={copyTemplate}>
           Copy Empty Template
@@ -374,11 +379,17 @@ export const QuestionBankAdmin = ({
                 type="search"
                 placeholder="Search by ID, topic, or question text…"
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setVisibleCount(200);
+                }}
               />
               <select
                 value={filterDomain}
-                onChange={(e) => setFilterDomain(e.target.value)}
+                onChange={(e) => {
+                  setFilterDomain(e.target.value);
+                  setVisibleCount(200);
+                }}
               >
                 <option value="all">All Domains</option>
                 {DOMAIN_IDS.map((d) => (
@@ -389,7 +400,10 @@ export const QuestionBankAdmin = ({
               </select>
               <select
                 value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
+                onChange={(e) => {
+                  setFilterType(e.target.value);
+                  setVisibleCount(200);
+                }}
               >
                 <option value="all">All Types</option>
                 {QUESTION_TYPES.map((t) => (
@@ -400,7 +414,10 @@ export const QuestionBankAdmin = ({
               </select>
               <select
                 value={filterActive}
-                onChange={(e) => setFilterActive(e.target.value)}
+                onChange={(e) => {
+                  setFilterActive(e.target.value);
+                  setVisibleCount(200);
+                }}
               >
                 <option value="all">All Status</option>
                 <option value="active">Active only</option>
@@ -420,7 +437,7 @@ export const QuestionBankAdmin = ({
               </div>
             ) : (
               <ul>
-                {filteredQuestions.map((question) => (
+                {visibleQuestions.map((question) => (
                   <li key={question.id}>
                     <label>
                       <input
@@ -452,6 +469,18 @@ export const QuestionBankAdmin = ({
                 ))}
               </ul>
             )}
+            {filteredQuestions.length > visibleQuestions.length ? (
+              <div className="qbank-show-more">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setVisibleCount((count) => Math.min(count + 200, filteredQuestions.length))
+                  }
+                >
+                  Show more ({visibleQuestions.length}/{filteredQuestions.length})
+                </button>
+              </div>
+            ) : null}
           </div>
         </>
       )}

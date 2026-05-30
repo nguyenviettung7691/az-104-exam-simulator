@@ -445,6 +445,50 @@ export const importQuestionBankFromText = (
   };
 };
 
+interface LoadBundledQuestionBankResult {
+  bank: QuestionBank | null;
+  report: QuestionBankValidationReport;
+  errorMessage: string | null;
+}
+
+export const loadBundledQuestionBankFromJson = async (): Promise<LoadBundledQuestionBankResult> => {
+  const invalidReport = validateQuestionBank(createEmptyQuestionBank());
+
+  try {
+    const response = await fetch("/data/az104-question-bank.json");
+    if (!response.ok) {
+      return {
+        bank: null,
+        report: invalidReport,
+        errorMessage: `Bundled bank load failed (HTTP ${response.status}).`,
+      };
+    }
+
+    const rawText = await response.text();
+    const result = importQuestionBankFromText(rawText);
+
+    if (!result.bank) {
+      return {
+        bank: null,
+        report: result.report,
+        errorMessage: "Bundled bank JSON failed validation. Resolve file issues and retry.",
+      };
+    }
+
+    return {
+      bank: result.bank,
+      report: result.report,
+      errorMessage: null,
+    };
+  } catch {
+    return {
+      bank: null,
+      report: invalidReport,
+      errorMessage: "Bundled bank load failed. Check that /data/az104-question-bank.json is reachable.",
+    };
+  }
+};
+
 export const exportQuestionBankText = (bank: QuestionBank): string => {
   return JSON.stringify(bank, null, 2);
 };

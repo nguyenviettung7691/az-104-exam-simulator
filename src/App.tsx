@@ -1,9 +1,8 @@
-import { useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 import { CumulativeAssessment } from "./components/CumulativeAssessment";
 import { QuestionBankAdmin } from "./components/QuestionBankAdmin";
 import { SimulationRunner } from "./components/SimulationRunner";
 import { validateBlueprint } from "./config/examBlueprint";
-import { createBundledQuestionBank } from "./data/initialQuestions";
 import {
   appendRunHistory,
   buildCumulativeAssessment,
@@ -16,6 +15,7 @@ import {
   createEmptyQuestionBank,
   exportQuestionBankText,
   importQuestionBankFromText,
+  loadBundledQuestionBankFromJson,
   loadQuestionBank,
   saveQuestionBank,
   validateQuestionBank,
@@ -36,11 +36,12 @@ const downloadText = (filename: string, content: string): void => {
 };
 
 function App() {
+  const initialBank = useMemo(() => loadQuestionBank(), []);
   const [view, setView] = useState<AppView>("simulation");
   const [isExamActive, setIsExamActive] = useState<boolean>(false);
-  const [bank, setBank] = useState<QuestionBank>(loadQuestionBank());
+  const [bank, setBank] = useState<QuestionBank>(initialBank);
   const [validationReport, setValidationReport] = useState(() =>
-    validateQuestionBank(loadQuestionBank()),
+    validateQuestionBank(initialBank),
   );
   const [runHistory, setRunHistory] = useState<SimulationRunReport[]>(
     loadRunHistory(),
@@ -57,10 +58,19 @@ function App() {
 
   const blueprintErrors = useMemo(() => validateBlueprint(), []);
 
-  const onBankChanged = (nextBank: QuestionBank): void => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [view]);
+
+  const onBankChanged = (
+    nextBank: QuestionBank,
+    nextReport: ReturnType<typeof validateQuestionBank> | null = null,
+  ): void => {
     setBank(nextBank);
-    saveQuestionBank(nextBank);
-    setValidationReport(validateQuestionBank(nextBank));
+    setValidationReport(nextReport ?? validateQuestionBank(nextBank));
+    window.setTimeout(() => {
+      saveQuestionBank(nextBank);
+    }, 0);
   };
 
   const importBank = (rawText: string): void => {
@@ -82,11 +92,17 @@ function App() {
     downloadText("az104-question-bank.json", exportQuestionBankText(bank));
   };
 
-  const loadBundledBank = (): void => {
-    const starterBank = createBundledQuestionBank();
-    onBankChanged(starterBank);
+  const loadBundledBank = async (): Promise<void> => {
+    const result = await loadBundledQuestionBankFromJson();
+
+    if (!result.bank) {
+      setImportFeedback(result.errorMessage ?? "Bundled bank load failed.");
+      return;
+    }
+
+    onBankChanged(result.bank, result.report);
     setImportFeedback(
-      `Bundled starter bank loaded. Loaded ${starterBank.questions.length} questions and ${starterBank.caseStudies.length} case studies.`,
+      `Bundled bank loaded from JSON. Loaded ${result.bank.questions.length} questions and ${result.bank.caseStudies.length} case studies.`,
     );
   };
 
@@ -153,7 +169,9 @@ function App() {
   };
 
   const onRequestNewRun = (): void => {
-    setView("simulation");
+    startTransition(() => {
+      setView("simulation");
+    });
   };
 
   const onSimulationRunActiveChange = (active: boolean): void => {
@@ -162,59 +180,75 @@ function App() {
 
   return (
     <div className="app-shell">
-      <header className="app-hero">
-        <div className="hero-copy">
-          <p className="hero-badge">AZ-104 Exam Simulator</p>
-          <h1>Microsoft Azure Administrator Associate</h1>
-          <p>
-            Run realistic 53-question simulations, enforce official domain/type quotas, and track
-            cumulative readiness across attempts.
-          </p>
-        </div>
+      {!isExamActive ? (
+        <>
+          <header className="app-hero">
+            <div className="hero-copy">
+              <p className="hero-badge">AZ-104 Exam Simulator</p>
+              <h1>Microsoft Azure Administrator Associate</h1>
+              <p>
+                Run realistic 53-question simulations, enforce official domain/type quotas, and track
+                cumulative readiness across attempts.
+              </p>
+            </div>
 
-        <div className="hero-art" aria-hidden="true">
-          <img className="hero-art-badge" src="/az104.png" alt="" />
-        </div>
-      </header>
+            <div className="hero-art" aria-hidden="true">
+              <img className="hero-art-badge" src="/az104.png" alt="" />
+            </div>
+          </header>
 
-      {blueprintErrors.length > 0 ? (
-        <section className="global-alert">
-          <h2>Blueprint Configuration Error</h2>
-          <ul>
-            {blueprintErrors.map((error) => (
-              <li key={error}>{error}</li>
-            ))}
-          </ul>
-        </section>
+          {blueprintErrors.length > 0 ? (
+            <section className="global-alert">
+              <h2>Blueprint Configuration Error</h2>
+              <ul>
+                {blueprintErrors.map((error) => (
+                  <li key={error}>{error}</li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          <nav className="app-nav" aria-label="Primary">
+            <button
+              type="button"
+              className={view === "simulation" ? "active" : ""}
+              onClick={() =>
+                startTransition(() => {
+                  setView("simulation");
+                })
+              }
+            >
+              Simulation
+            </button>
+            <button
+              type="button"
+              className={view === "question-bank" ? "active" : ""}
+              onClick={() =>
+                startTransition(() => {
+                  setView("question-bank");
+                })
+              }
+              disabled={isExamActive}
+              title={isExamActive ? "Finish or stop the current exam to access Question Bank." : undefined}
+            >
+              Question Bank
+            </button>
+            <button
+              type="button"
+              className={view === "history" ? "active" : ""}
+              onClick={() =>
+                startTransition(() => {
+                  setView("history");
+                })
+              }
+              disabled={isExamActive}
+              title={isExamActive ? "Finish or stop the current exam to access Results and Trends." : undefined}
+            >
+              Results and Trends
+            </button>
+          </nav>
+        </>
       ) : null}
-
-      <nav className="app-nav" aria-label="Primary">
-        <button
-          type="button"
-          className={view === "simulation" ? "active" : ""}
-          onClick={() => setView("simulation")}
-        >
-          Simulation
-        </button>
-        <button
-          type="button"
-          className={view === "question-bank" ? "active" : ""}
-          onClick={() => setView("question-bank")}
-          disabled={isExamActive}
-          title={isExamActive ? "Finish or stop the current exam to access Question Bank." : undefined}
-        >
-          Question Bank
-        </button>
-        <button
-          type="button"
-          className={view === "history" ? "active" : ""}
-          onClick={() => setView("history")}
-          disabled={isExamActive}
-          title={isExamActive ? "Finish or stop the current exam to access Results and Trends." : undefined}
-        >
-          Results and Trends
-        </button>
-      </nav>
 
       <main className="app-main">
         {view === "simulation" ? (
@@ -248,46 +282,50 @@ function App() {
           <section>
             <CumulativeAssessment assessment={cumulativeAssessment} />
             {runHistory.length > 0 ? (
-              <button type="button" className="danger" onClick={clearHistory}>
-                Clear Run History
-              </button>
+              <div className="history-actions">
+                <button type="button" className="danger" onClick={clearHistory}>
+                  Clear Run History
+                </button>
+              </div>
             ) : null}
           </section>
         ) : null}
       </main>
 
-      <footer className="app-references" aria-label="Official AZ-104 documents">
-        <h3>Reference Links (Official)</h3>
-        <ul className="reference-links">
-          <li>
-            <a
-              href="https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/az-104"
-              target="_blank"
-              rel="external noopener noreferrer"
-            >
-              Study guide
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://learn.microsoft.com/en-us/credentials/certifications/azure-administrator"
-              target="_blank"
-              rel="external noopener noreferrer"
-            >
-              Exam page
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://learn.microsoft.com/en-us/credentials/support/exam-duration-exam-experience"
-              target="_blank"
-              rel="external noopener noreferrer"
-            >
-              Exam duration and experience
-            </a>
-          </li>
-        </ul>
-      </footer>
+      {!isExamActive ? (
+        <footer className="app-references" aria-label="Official AZ-104 documents">
+          <h3>Reference Links (Official)</h3>
+          <ul className="reference-links">
+            <li>
+              <a
+                href="https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/az-104"
+                target="_blank"
+                rel="external noopener noreferrer"
+              >
+                Study guide
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://learn.microsoft.com/en-us/credentials/certifications/azure-administrator"
+                target="_blank"
+                rel="external noopener noreferrer"
+              >
+                Exam page
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://learn.microsoft.com/en-us/credentials/support/exam-duration-exam-experience"
+                target="_blank"
+                rel="external noopener noreferrer"
+              >
+                Exam duration and experience
+              </a>
+            </li>
+          </ul>
+        </footer>
+      ) : null}
     </div>
   );
 }

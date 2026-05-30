@@ -75,6 +75,9 @@ const createEmptySession = (run: GeneratedRun): ActiveSession => {
 
 const EXAM_DURATION_SECONDS = EXAM_DURATION_MINUTES * 60;
 const MAX_PAUSE_SECONDS = 5 * 60;
+const scrollToTop = (): void => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 
 const formatTime = (totalSeconds: number): string => {
   const hours = Math.floor(totalSeconds / 3600);
@@ -186,9 +189,11 @@ export const SimulationRunner = ({
   const [pauseStartedAt, setPauseStartedAt] = useState<number | null>(null);
   const [runNotice, setRunNotice] = useState<string>("");
   const [timeLeft, setTimeLeft] = useState<number>(EXAM_DURATION_SECONDS);
+  const [isGeneratingRun, setIsGeneratingRun] = useState<boolean>(false);
   const timeLeftRef = useRef<number>(EXAM_DURATION_SECONDS);
   const examEndAtRef = useRef<number>(0);
   const pauseLimitTimeoutRef = useRef<number | null>(null);
+  const lastReportedRunKeyRef = useRef<string>("");
 
   // Initialize examEndAtRef safely on mount
   useEffect(() => {
@@ -207,35 +212,43 @@ export const SimulationRunner = ({
       setError("Choose how you want questions presented before starting a run.");
       return;
     }
-
-    const generated = generateExamRun({
-      bank,
-      previousRuns,
-    });
-
-    if (!generated.run) {
-      setError(generated.error ?? "Unable to generate exam run.");
-      setWarnings(generated.warnings);
+    if (isGeneratingRun) {
       return;
     }
+    setIsGeneratingRun(true);
+    window.setTimeout(() => {
+      const generated = generateExamRun({
+        bank,
+        previousRuns,
+      });
 
-    setError("");
-    setWarnings(generated.warnings);
-    setPaused(false);
-    setPausedSummary("");
-    setSingleRevealId(null);
-    setBatchRevealIds([]);
-    setLatestReport(null);
-    setPendingFinalQuestionId(null);
-    setPauseUsedSeconds(0);
-    setPauseNow(Date.now());
-    setPauseStartedAt(null);
-    clearPauseLimitTimeout();
-    setRunNotice("");
-    setTimeLeft(EXAM_DURATION_SECONDS);
-    timeLeftRef.current = EXAM_DURATION_SECONDS;
-    examEndAtRef.current = Date.now() + EXAM_DURATION_SECONDS * 1000;
-    setSession(createEmptySession(generated.run));
+      if (!generated.run) {
+        setError(generated.error ?? "Unable to generate exam run.");
+        setWarnings(generated.warnings);
+        setIsGeneratingRun(false);
+        return;
+      }
+
+      setError("");
+      setWarnings(generated.warnings);
+      setPaused(false);
+      setPausedSummary("");
+      setSingleRevealId(null);
+      setBatchRevealIds([]);
+      setLatestReport(null);
+      setPendingFinalQuestionId(null);
+      setPauseUsedSeconds(0);
+      setPauseNow(Date.now());
+      setPauseStartedAt(null);
+      clearPauseLimitTimeout();
+      setRunNotice("");
+      setTimeLeft(EXAM_DURATION_SECONDS);
+      timeLeftRef.current = EXAM_DURATION_SECONDS;
+      examEndAtRef.current = Date.now() + EXAM_DURATION_SECONDS * 1000;
+      setSession(createEmptySession(generated.run));
+      setIsGeneratingRun(false);
+      scrollToTop();
+    }, 0);
   };
 
   const finalizeIfComplete = useCallback((nextSession: ActiveSession): ActiveSession => {
@@ -265,9 +278,8 @@ export const SimulationRunner = ({
     setPausedSummary("");
     setPauseStartedAt(null);
     clearPauseLimitTimeout();
-    onReportReady(report);
     return nextSession;
-  }, [clearPauseLimitTimeout, onReportReady]);
+  }, [clearPauseLimitTimeout]);
 
   const forceFinalizeSession = useCallback((current: ActiveSession): ActiveSession => {
     const nextAnswers = { ...current.answers };
@@ -300,6 +312,7 @@ export const SimulationRunner = ({
     timeLeftRef.current = EXAM_DURATION_SECONDS;
     examEndAtRef.current = Date.now() + EXAM_DURATION_SECONDS * 1000;
     onRequestNewRun();
+    scrollToTop();
   }, [clearPauseLimitTimeout, onRequestNewRun]);
 
   const stopRun = (): void => {
@@ -332,6 +345,7 @@ export const SimulationRunner = ({
 
       return finalizeIfComplete(current);
     });
+    scrollToTop();
   };
 
   // Tick + time-up: use a ref to avoid stale closure; setSession called inside
@@ -376,6 +390,21 @@ export const SimulationRunner = ({
   useEffect(() => {
     onRunActiveChange(Boolean(session) && !latestReport);
   }, [session, latestReport, onRunActiveChange]);
+
+  useEffect(() => {
+    if (!latestReport) {
+      return;
+    }
+
+    const reportKey = `${latestReport.runNumber}|${latestReport.completedAt}`;
+    if (lastReportedRunKeyRef.current === reportKey) {
+      return;
+    }
+
+    lastReportedRunKeyRef.current = reportKey;
+    onReportReady(latestReport);
+    scrollToTop();
+  }, [latestReport, onReportReady]);
 
   useEffect(() => {
     if (!paused || !pauseStartedAt) {
@@ -499,6 +528,7 @@ export const SimulationRunner = ({
 
     setSingleRevealId(null);
     setPendingFinalQuestionId(null);
+    scrollToTop();
   };
 
   const submitBatch = (): void => {
@@ -546,6 +576,7 @@ export const SimulationRunner = ({
     });
 
     setBatchRevealIds([]);
+    scrollToTop();
   };
 
   // Define resumeRun before pauseRun to avoid temporal dead zone
@@ -699,6 +730,39 @@ export const SimulationRunner = ({
   }, [pauseUsedSeconds, pauseInCurrentSession]);
 
   const canPause = remainingPauseSeconds > 0;
+  const completedCount = useMemo(() => {
+    if (!session) {
+      return 0;
+    }
+
+    return Object.keys(session.evaluations).length;
+  }, [session]);
+  const domainProgress = useMemo(() => {
+    if (!session) {
+      return [];
+    }
+
+    return (Object.entries(DOMAIN_DEFINITIONS) as [string, { shortTitle: string }][]).map(
+      ([domain, info]) => {
+        let total = 0;
+        let done = 0;
+
+        for (const question of session.run.questions) {
+          if (question.domain !== domain) {
+            continue;
+          }
+
+          total += 1;
+          if (session.evaluations[question.id]) {
+            done += 1;
+          }
+        }
+
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        return { domain, shortTitle: info.shortTitle, total, done, pct };
+      },
+    );
+  }, [session]);
 
   if (latestReport) {
     return <ResultsReport report={latestReport} onNewRun={resetToRunStart} />;
@@ -735,8 +799,8 @@ export const SimulationRunner = ({
             </button>
           </div>
 
-          <button type="button" className="btn-generate" onClick={startRun}>
-            Generate Run #{previousRuns.length + 1}
+          <button type="button" className="btn-generate" onClick={startRun} disabled={isGeneratingRun}>
+            {isGeneratingRun ? "Generating..." : `Generate Run #${previousRuns.length + 1}`}
           </button>
 
           {error ? <p className="inline-error">{error}</p> : null}
@@ -761,12 +825,12 @@ export const SimulationRunner = ({
                   <div
                     className="exam-progress-fill"
                     style={{
-                      width: `${Math.round((Object.keys(session.evaluations).length / session.run.questions.length) * 100)}%`,
+                      width: `${Math.round((completedCount / session.run.questions.length) * 100)}%`,
                     }}
                   />
                 </div>
                 <span className="run-progress-count">
-                  {Object.keys(session.evaluations).length}/{session.run.questions.length}
+                  {completedCount}/{session.run.questions.length}
                 </span>
               </div>
               <p
@@ -781,25 +845,17 @@ export const SimulationRunner = ({
             </div>
 
             <div className="domain-mini-bars">
-              {Object.entries(DOMAIN_DEFINITIONS).map(([domain, info]) => {
-                const total = session.run.questions.filter((q) => q.domain === domain).length;
-                const done = session.run.questions.filter(
-                  (q) => q.domain === domain && session.evaluations[q.id],
-                ).length;
-                const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-
-                return (
-                  <div key={domain} className="domain-mini-bar">
-                    <div className="domain-mini-bar-label">
-                      <span>{info.shortTitle}</span>
-                      <span>{done}/{total}</span>
-                    </div>
-                    <div className="domain-mini-bar-track">
-                      <div className="domain-mini-bar-fill" style={{ width: `${pct}%` }} />
-                    </div>
+              {domainProgress.map((entry) => (
+                <div key={entry.domain} className="domain-mini-bar">
+                  <div className="domain-mini-bar-label">
+                    <span>{entry.shortTitle}</span>
+                    <span>{entry.done}/{entry.total}</span>
                   </div>
-                );
-              })}
+                  <div className="domain-mini-bar-track">
+                    <div className="domain-mini-bar-fill" style={{ width: `${entry.pct}%` }} />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 

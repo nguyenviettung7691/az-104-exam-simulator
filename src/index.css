@@ -237,6 +237,12 @@ button.danger:focus-visible {
   padding: 1.2rem;
 }
 
+.history-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
 .app-references {
   margin-top: 0.85rem;
   padding: 0.75rem 0.1rem 0;
@@ -2466,6 +2472,10 @@ button:disabled {
   font-size: 0.78rem;
   color: var(--ink-soft);
   margin-bottom: 0.4rem;
+}
+
+.qbank-show-more {
+  margin-top: 0.6rem;
 }
 
 .question-list label {

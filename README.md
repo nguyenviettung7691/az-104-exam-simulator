@@ -31,7 +31,7 @@ A browser-based Azure Administrator (AZ-104) practice application featuring a st
 - Export current question bank
 - Question validation and health checks
 - Active/inactive question toggling
-- Bundled starter bank with 375+ questions and 7 case studies
+- Bundled starter bank from `public/data/az104-question-bank.json`
 
 ### Storage & Persistence
 - Browser local storage for question bank state
@@ -134,14 +134,6 @@ src/
 ├── types/               # TypeScript type definitions
 │   ├── exam.ts                 # Question, domain, and type definitions
 │   └── results.ts              # Result and analytics types
-├── data/                # Question banks and configuration
-│   ├── initialQuestions.ts     # Base 50 questions
-│   ├── additionalQuestions.ts  # Expansion set 1
-│   ├── finalPrepQuestions.ts   # Expansion set 2
-│   ├── april2026ExpansionQuestions.ts # Apr 2026 update
-│   ├── mayExpansionQuestions.ts       # May 2026 update
-│   ├── questionComplexity.ts   # Difficulty tuning
-│   └── rebalanceChoiceOptionIds.ts # Answer key balancing
 ├── config/              # Configuration
 │   └── examBlueprint.ts # Domain and type quotas
 ├── App.tsx              # Main application component
@@ -177,14 +169,14 @@ The simulator enforces Microsoft's official AZ-104 distribution constraints:
 - Respects domain and type quotas strictly
 - Tracks prior run history to avoid question repeats when possible
 - Falls back to reruns only when unseen pool is exhausted
-- Supports 6+ consecutive no-repeat runs with the bundled 375-question bank
+- Supports multiple consecutive no-repeat runs with the bundled JSON bank
 
 ## Question Bank
 
 ### Bundled Starter Bank
 
 The simulator ships with a comprehensive starter bank:
-- **375 questions** across all 5 domains
+- **Questions are loaded from** `public/data/az104-question-bank.json`
 - **7 case studies** with 5 linked questions each
 - Aligned to AZ-104 skills measured as of April 17, 2026
 - Supports 6+ consecutive 53-question no-repeat exam runs
@@ -308,7 +300,7 @@ git checkout -b add-questions-Q2501-Q2525
 **Step 3: Add Your Questions**
 
 1. Add your question bank JSON to the [public/data/](public/data/) directory
-2. Or modify [src/data/](src/data/) TypeScript files to programmatically add questions
+2. Prefer editing [public/data/az104-question-bank.json](public/data/az104-question-bank.json) directly
 3. Update the version timestamp in your JSON
 
 **Step 4: Test Your Changes**
@@ -391,3 +383,4 @@ This project is licensed under the MIT License — see [LICENSE](LICENSE) for de
 ---
 
 **Happy studying! Good luck on your AZ-104 exam!** 🚀
+
